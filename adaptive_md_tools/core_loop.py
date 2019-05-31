@@ -134,7 +134,7 @@ def core_loop(keywords, indi):
                 u, all_u = do_hop(u, all_u, indi, ts, keywords,
                        sels, groups, intra=True)
 
-        calc_indicator(u, all_u, indi, sels, keywords, groups, ts)
+        calc_indicator(u, all_u, indi, sels, keywords)
 
         if keywords["wrap"]:
             # Now translate the indicator into the center of the box and wrap
@@ -171,9 +171,7 @@ def core_loop(keywords, indi):
 
 def get_group_geom_center(u, types, ind, redundant=True, return_types=False):
     """
-    Get the center of geometry for a group with indices given by the
-    ind variable
-
+    Get the center of geometry for the group that index in ind is a member of.
 
     Parameters
     ----------
@@ -181,20 +179,21 @@ def get_group_geom_center(u, types, ind, redundant=True, return_types=False):
         Main universe that has the atoms which we want to get the com of
     types: list of str
         List of atom types for each ind
-    ind: list of lists of ints
-        Contains atoms in each group
+    ind: list ints
+        0-Based indices to get the group center of mass from.
     redundant: bool
         Not sure
     return_types: bool
-        Not sure
+        If True, return a tuple containing the type of the
 
     Returns
     -------
     com: list of float nd.arrays
+    ret_types: Optional, list of str
+       The types of the first atom in the selection for the COG.
 
-    TODO
-    ----
-    Figure out what the hell this does.
+    for return_types=True, the tuple is:
+    (com, ret_types)
 
     Warnings
     --------
@@ -236,8 +235,9 @@ def get_group_geom_center(u, types, ind, redundant=True, return_types=False):
 
 def get_group_ind(u, types, ind, redundant=True):
     """
-    Return the index of a COM group
-    Based on get_group_geom_center
+    Return a list of indices for atoms in COG groups for indicator 1.
+
+    I don't quite understand the code anymore...
 
     Parameters
     ----------
@@ -439,27 +439,34 @@ def calculate_weighted_coords(u, sels):
     return np.sum(don_com, axis=0)
 
 
-def ratio_topology_change(u, indi, sels, all_u, ts, keywords, groups):
+def ratio_topology_change(u, indi, sels, keywords):
     """
-    Adds a proton hop from one donor to the next depending on the D-H bond
-    lengths for different atoms in the system.
-
-    This can be used to describe tautomerization proton transfer reactions such
-    as that for the proton between the two oxygens in glutamic acid.
+    Adds a proton hop from one donor to the next to the indicator object
+    depending on the D-H bond lengths for different atoms in the system.
 
     The proton is transferred if:
-
     r_km / [r_km + r_jm] > 0.5 (the distance between the donor and it's proton
                                 is greater than an acceptor and the proton)
 
-    :param u:
-    :param indi:
-    :param sels:
-    :param all_u:
-    :param ts:
-    :param keywords:
-    :param groups:
-    :return:
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+
+    Notes
+    -----
+    This can be used to describe tautomerization proton transfer reactions such
+    as that for the proton between the two oxygens in glutamic acid.
+
+    TODO
+    ----
+    Remove dependency on keywords variable
     """
     if keywords["ind_method"] == 2:
         sels.set_donors(u, indi.donor)
@@ -467,6 +474,8 @@ def ratio_topology_change(u, indi, sels, all_u, ts, keywords, groups):
     if num_d == 1:
         return
     indi.hop = []
+
+    #Iterate over all donor-acceptor combinations
     for k in range(num_d):
         for j in range(num_d):
             if j == k:
@@ -474,6 +483,8 @@ def ratio_topology_change(u, indi, sels, all_u, ts, keywords, groups):
             sels.set_proton(u, sels.d.indices[k] + 1)
             num_h = len(sels.h.indices)
             for m in range(num_h):
+
+                # Standard rho calculation
                 rdh = sels.d.positions[k,:] - sels.h.positions[m,:]
                 rdh = np.linalg.norm(rdh)
                 rah = sels.d.positions[j,:] - sels.h.positions[m,:]
@@ -484,25 +495,35 @@ def ratio_topology_change(u, indi, sels, all_u, ts, keywords, groups):
     sels.set_dah(u, indi.donor)
     return
 
-def calc_indicator(u, all_u, indi, sels, keywords, groups, ts):
+
+def calc_indicator(u, all_u, indi, sels, keywords):
     """
     Stage and calculate the location of the indicator.
     Different things happen depending on the indicator method.
-    :param u: universe without indicator
-    :param all_u: universe with indicator
-    :param indi: indicator class
-    :param sels: selection class
-    :param keywords: dict with keywords
-    :param groups: groups class
-    :param ts: integer for timestep
-    :return:
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    all_u: MDAnalysis.universe
+        Universe with indicator atom appended to it
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+
+    Returns
+    -------
+
     """
     # Set up atom selections for donor and acceptors
     sels.set_dah(u, indi.donor)
 
     # Print out what the hydrogens, acceptors, donors are
     if keywords["indicator_verbose"]:
-        print("#**************** STEP %d" % ts.frame)
+        print("#**************** STEP %d" % u.trajectory.frame)
         print("Donor indicies in order: ", sels.d.indices)
         print("Acc indices: ", sels.a.indices)
         print("Hyd indices: ", sels.h.indices)
@@ -574,63 +595,132 @@ def calc_indicator(u, all_u, indi, sels, keywords, groups, ts):
 
 
 def get_group_positions(u, indi):
-    sels = []
+    """
+    Return the locations of the members in the correction groups.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    indi: Indicator class object
+        The indicator info for checking the transfer
+
+    Returns
+    -------
+    list of ndarrays with shape (n,3)
+
+    """
+    positions = []
     for i in indi.correction_groups:
         selstr = 'bynum %d' % i[0]
         for j in i[1:]:
             selstr += ' or bynum %d' %j
-        sels.append(u.select_atoms(selstr).positions)
-    return sels
+        positions.append(u.select_atoms(selstr).positions)
+    return positions
 
-def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False):
+
+def do_hop_ind_class(u, indi, sels, intra, keywords):
     """
-    This subroutine has a lot going on
-    We hop the proton, change the topology, and initialize the two universes
-    based on the new topologies.
-    :param u:
-    :param all_u:
-    :param indi:
-    :param translation_vector:
-    :param ts:
-    :param keywords:
-    :param sels:
-    :return:
+    Here we adjust the indicator class for a proton hop. We change the donors
+    and acceptors, and find the transferring hydrogen. Then we reset the
+    selections.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe that has the atoms which we want to get the com of
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+    intra: bool
+        Whether this is an intramolecular proton hop or not
+
+    Returns
+    -------
+    transfer_h: int
+        0-based atom index of hydrogen that is transfered.
+    old_don: int
+        0-based atom index of donor before transfer
+    new_don: int
+        0-based atom index of donor after transfer
     """
-    #
-    # Set up the new indicies based on the indicator calculation
-    #
-    frame = ts.frame
+    # Choose the correct hop if there are multiple
     if len(indi.hop) > 1:
-        print("Warning: multiple hops at frame ", frame)
+        print("Warning: multiple hops at frame ", u.trajectory.frame)
         print("Choosing largest pmj")
         for i in range(1, len(indi.hop)):
             if indi.hop[i][2] > indi.hop[0][2]:
                 indi.hop[0] = indi.hop[i]
+
+    # ???
     if keywords["ind_method"] == 7:
         if indi.hop[0][4] == True:
             intra = True
+
+    # We need to look for the new index from the donor selection rather than
+    # the acceptor if its an intramolecular hop
     if intra:
         if keywords["ind_method"] == 2:
             sels.set_donors(u, indi.donor)
         new_don = sels.d.indices[indi.hop[0][1]]
     else:
         new_don = sels.a.indices[indi.hop[0][1]]
+
+    # Choose the old donor from the list of multiple donors.
     if keywords["ind_method"] in [3, 4, 6, 7, 9, 11]:
         old_don = sels.d.indices[indi.hop[0][3]]
+        #
     elif keywords["ind_method"] in [1]:
         inds = get_group_ind(u, list(indi.rxh.keys()), sels.a.indices, redundant=False)
         new_don = inds[indi.hop[0][1]]
         old_don = indi.donor - 1
-    else:
+    else: # For original indicator
         old_don = indi.donor - 1
     sels.set_proton(u, old_don + 1)
     transfer_h = sels.h.indices[indi.hop[0][0]]
+    indi.donor = new_don + 1
 
+    return transfer_h, old_don, new_don
+
+def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False):
+    """
+    This subroutine has a lot going on. We hop the proton by:
+        1. Changing the donor in the indicator and resetting selections
+        2. Change the topology
+        3. Because we cannot change the topology for the whole trajectory, we
+        must delete u and all_u, then reinitialize them
+    based on the new topologies.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    all_u: MDAnalysis.universe
+        Universe with indicator atom appended to it
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    translation_vector:
+        Vector to translate system by before wrapping.
+    ts: MDAnalysis.universe.trajectory.frame
+        The current trajectory frame
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    intra: bool
+        Whether this is an intramolecular proton hop or not
+    """
+    # Fix the indicator class and get the indices of the atoms involved in the
+    # transfer
+    frame = ts.frame
+    transfer_h, old_don, new_don = do_hop_ind_class(u, indi, sels, intra,
+                                                    keywords)
     if keywords["verbose"]:
         print("Proton hop at frame ", ts.frame, "Donor: ", old_don + 1, "ACC:",
               new_don + 1)
-
-    indi.donor = new_don + 1
     #
     # Change groups of atoms
     groups.transferAtom(transfer_h, new_don)
@@ -676,14 +766,28 @@ def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False):
 
 def calc_new_bonds_from_u(u, old_don, transfer_h, new_don):
     """
+    Get the new bond list by deleting the bond between old_don and transfer_h,
+    and adding the one between new_don and transfer_h.
+
     Here we make the assumption that the transfer H is only
     bonded to one atom. We just switch that bond
-    This is to help with Method 1 PT
-    :param u:
-    :param old_don:
-    :param transfer_h:
-    :param new_don:
-    :return:
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    transfer_h: int
+        0-based atom index of hydrogen that is transfered.
+    old_don: int
+        0-based atom index of donor before transfer
+    new_don: int
+        0-based atom index of donor after transfer
+
+    Returns
+    -------
+    new_bonds: list of list of ints
+        List of bonds. Bonds are lists with a pair of ints.
+        Example: [[1,2],[3,4]]
     """
     num_bonds = u.bonds.indices.shape[0]
     new_bonds = []
@@ -707,13 +811,18 @@ def add_indicator_to_universe(u, ind_type="IND", ind_name="IND", frame=0,
                               natoms=1):
     """
     Add another atom and return the current universe
-    :param u: universe with original coordinates
-    :type MDAnalysis.Universe:
-    :param ind_type: the new atom type for the indicator
-    :type ind_type: str
-    :param ind_name: the new atom name for the indicator
-    :type ind_name: str
-    :return: the new universe
+
+    Parameters
+    ----------
+    u: MDAnalysis.Universe
+        Universe to add indicator to
+    natoms: int
+        The number of atoms to append to the universe.
+
+    Returns
+    -------
+    all_u: MDAnalysis.Universe
+        The new universe
     """
     all_atoms = u.select_atoms("all")
     ind_sel = u.select_atoms("bynum %d" % 1)
@@ -727,16 +836,23 @@ def add_indicator_to_universe(u, ind_type="IND", ind_name="IND", frame=0,
 
 
 def write_partitions(groups, ts, elements, center, keywords):
+    """
+    Write out the partitions that would be calculated if this were an adaptive
+    partitioning calculation.
+
+    Parameters
+    ----------
+    groups: mdtools.Groups
+        A groups object containing the adaptive partitioning groups
+    ts: MDAnalysis.trajectory.timestep
+        The current timestep
+    elements:
+    center: ndarray of floats with shape (3)
+        The center of the active zone
+    keywords: dict
+        Program parameters
+    """
     from itertools import combinations
-    """
-    Write out the partitions that would be caculated if this were an adaptive
-    partitioning calculation
-    :param groups:
-    :type groups: mdtools.Groups
-    :param u: MDAnalysis universe without indicator
-    :param center: center of active zone
-    :return:
-    """
 
     # Set up the variables
     r_a = keywords["active_radius"]
@@ -791,12 +907,22 @@ def write_partitions(groups, ts, elements, center, keywords):
 
 def initialize_universe(struct, coords, xdim, ydim, zdim, frame=0):
     """
-    Initialize an m
-    :param u: mdanalysis universe object
-    :param ts: integer for timestep to jump to
-    :param xdim: x dimension in A
-    :param ydim: y dimension in A
-    :param zdim: z dimension in A
+    Initialize an MDAnalysis universe
+
+    Parameters
+    ----------
+    struct: str
+        The name of the structure file to input to the universe
+    coords: str
+        The name of the coordinate file for the universe
+    frame: int
+        timestep to jump to
+    xdim: float
+        x dimension in A
+    ydim: float
+        y dimension in A
+    zdim: float
+        z dimension in A
     :return: universe
     """
     try:

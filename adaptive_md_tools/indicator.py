@@ -3,18 +3,11 @@
 This file contains classes for calculating the position of the indicator
 with Numpy
 """
-__author__ = 'Adam Duster'
-__copyright__ = ''
-__credits__ = ['Adam Duster']
-__license__ = 'CC-BY-SA'
-__version__ = '0.1'
-__email__ = 'adam.duster@ucdenver.edu'
-__status__ = 'Development'
 import sys
 import numpy as np
-from math import exp
 from itertools import permutations
 from numba import jit
+
 
 class Indicator:
     """
@@ -66,9 +59,13 @@ class Indicator:
     def set_output_freq(self, freq, prefix=''):
         """
         Initialize variables for writing the xyz and the log file
-        :param freq: int - output frequency
-        :param prefix: str - file prefix
-        :return:
+
+        Parameters
+        ----------
+        freq: int
+            output frequency
+        prefix: str
+            file prefix
         """
         try:
             int(freq)
@@ -86,7 +83,6 @@ class Indicator:
     def reset_hop(self):
         """
         After proton hop, clear the list of hops
-        :return:
         """
         self.hop = []
 
@@ -95,6 +91,9 @@ class Indicator:
         Write the results of a step
         Write the rho and dr coordinates
         If a matrix of coordinates is present, write them to the xyz file
+
+        Parameters
+        ----------
         :param p:
         :param dr:
         :param coords:
@@ -128,10 +127,15 @@ class Indicator:
 
     def add_rdh0(self, rdh, atom_type : str):
         """
-        Add a rho parameter and atom type to the list of parameters
-        :param rdh:
-        :param atom_type:
-        :return:
+        Add a rho parameter and atom type to the dict of parameters
+
+        Parameters
+        ----------
+        rdh: float
+            equilibrium dh distance in angstrom
+        atom_type: str
+            atom type to associate with rdh value
+
         """
         try:
             if rdh < 0:
@@ -157,8 +161,11 @@ class Indicator:
     def print_rdh0(self, ofi=None):
         """
         Output data for double checking
-        :param ofi:
-        :return:
+
+        Parameters
+        ----------
+        ofi: file object with write permissions
+            The output file object. If None, then this will print to stdout
         """
         print("Atom_Type  rDH", file=ofi)
         for key, rdh in self.rxh:
@@ -168,13 +175,21 @@ class Indicator:
     def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, ofi=None):
         """
         This is the main subroutine for calculating the indicator
-        :param x_d: ndarray float coordinates with shape [3]
-        :param x_as: ndarray of acceptor coordinates each with shape [j,3]
-        :param x_hms: ndarray of hydrogen coordiantes each with shape [m,3]
-        :param type_d: string of donor types to link with rho parameters
-        :param type_as: list of strings of acceptor types to link with rho parameters
-        :param ofi: where to print stuff
-        :return:
+
+        Parameters
+        ----------
+        x_d: ndarray of float
+            coordinates with shape [3]
+        x_as: ndarray of float
+            acceptor coordinates each with shape [j,3]
+        x_hms: ndarray of float
+            hydrogen coordinates each with shape [m,3]
+        type_d: str
+            donor type to link with rho parameters
+        type_as: list of str
+            acceptor types to link with rho parameters
+        ofi: file object
+            where to print stuff
         """
         cstr = "{0:0.5f}   {1:0.5f}   {2:0.5f}\n"
         icstr = "{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n"
@@ -275,41 +290,53 @@ class Indicator:
         return 0
 
     @staticmethod
+    @jit(nopython=True)
     def calc_pmj(x_d, x_aj, x_hm):
         """
         calculate the variable p_mj [ rho_mj ]
         this is the projection of the D-H vec onto the D-A vec
-        :param x_d: coordinates of donor (np.float array [3] )
-        :type x_d: np.float[3]
-        :param x_aj: coordinates of acceptor j (np.float array [3] )
-        :type x_aj: np.float
-        :param x_hm: coordinates of hydrogen m (np.float array [3] )
-        :type x_hm: np.float
-        :rtype x_d: np.float
-        :return:
+
+        Parameters
+        ----------
+        x_d: ndarray of float with shape(3)
+            coordinates of donor (np.float array [3] )
+        x_aj: ndarray of float with shape(3)
+            coordinates of acceptor j (np.float array [3] )
+        x_hm: ndarray of float with shape(3)
+            coordinates of hydrogen m (np.float array [3] )
+
+        Returns
+        -------
+        float
         """
         r_dhm = x_hm - x_d
         r_daj = x_aj - x_d
         return np.dot(r_dhm, r_daj) / np.linalg.norm(r_daj) ** 2
 
     @staticmethod
-    def calc_xmj(pmj, pmj0, pmax, debug=False):
+    @jit(nopython=True)
+    def calc_xmj(pmj, pmj0, pmax):
         """
-        calculate the variable x(p_mj) [ x(rho_mj) ]
-        :param pmj: projection scalar
-        :param pmj0: scaling parameter parameter
-        :param pmax: equilibrium bond constant ratio
-        :type pmj: float
-        :type pmj0: float
-        :type pmax: float
-        :return: x(p_mj)
-        :rtype: float
+        calculate the variable x(p_mj) [ x(rho_mj) ]. This is the ratio
+        that deals with how far we are away from equilibrium.
+
+        Parameters
+        ----------
+        pmj:  float
+            projection scalar
+        pmj0: float
+            scaling parameter parameter
+        pmax: float
+            equilibrium bond constant ratio
+
+        Returns
+        -------
+        x_pmj: float
         """
-        # if debug:
-        #     print(pmj, pmj0, pmax)
         return 1 - (pmj - pmj0) / (pmax - pmj0)
 
     @staticmethod
+    @jit(nopython=True)
     def calc_gmj(xmj):
 
         if 1 <= xmj:
@@ -321,9 +348,13 @@ class Indicator:
         return gmj
 
     @staticmethod
+    @jit(nopython=True)
     def calc_gI(gmjs):
         """
         Calculate the normalization constant gI
+
+        Parameters
+        ----------
         :param gmjs: the splined projection vectors
         :type gmjs: np.ndarray
         :return: the normalization constant
@@ -489,6 +520,9 @@ class Indicator4(Indicator):
     def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,
                        ofi=None):
         """
+
+        Parameters
+        ----------
         :param x_d:  ndarray of donor coordinates with shape [k,3]
         :param x_as: ndarray of acc coordinates with shape [j,3]
         :param x_hms: ndarra of hyd coordinates with shape [m,3]
@@ -657,9 +691,13 @@ class Indicator6(Indicator4):
         self.x_i /= gI
 
     @staticmethod
+    @jit(nopython=True)
     def calc_gI(gmjs):
         """
         Calculate the normalization constant gI
+
+        Parameters
+        ----------
         :param gmjs: the splined projection vectors
         :type gmjs: np.ndarray
         :return: the normalization constant
@@ -1011,9 +1049,12 @@ class Indicator9(Indicator4):
 
 class Indicator11(Indicator):
     """
-    This implementation of the indicator is the one I develped but
+    This implementation of the indicator is the one I developed but
     the distance between the donor center of mass and the kth donor
     are added to the final result.
+
+    This accounts for the distance between each of the k-th donors and the
+    center of mass.
     """
     # TODO: Finish this documentation
     def __init__(self):
@@ -1188,6 +1229,25 @@ class MCEC(Indicator4):
         self.correction_weights = []
 
     def calc_mcec(self, rH, rXj, acc_types, correction_groups=None):
+        """
+        Main loop for calculating the mCEC location.
+
+        The result is stored in self.x_mcec.
+
+        Parameters
+        ----------
+        rH: ndarray with shape(m,3)
+            The positions of the hydrogens
+        rXj: ndarray of float with shape (j,3)
+            The locations of the acceptors
+        acc_types: list of str with len (j)
+            The atom type corresponding to an the Jth acceptor
+        correction_groups: list of lr
+
+        Returns
+        -------
+
+        """
         if len(acc_types) != rXj.shape[0]:
             print("Error, number of acceptor types does not equal"
                   "the number of acceptor coordinates")
@@ -1206,11 +1266,35 @@ class MCEC(Indicator4):
         if correction_groups:
             self.x_mcec[:] += self.calc_mcec_correction(rH, correction_groups)
         print("Final mCEC", self.x_mcec)
-    def calc_mcec_correction(self, rH, rGroups):
+
+    def calc_mcec_correction(self, rH, rGroups, verbose=True):
+        """
+        Calculate the correction term for the mCEC.
+
+        Currently the max function is used instead of the nondifferentiable
+        max function due to numerical issues.
+
+        Parameters
+        ----------
+        rH: ndarray of float with shape(m,3)
+            The positions of the hydrogens
+        rGroups: list of ndarrays with shape(m,3)
+            The position of the groups.
+            Example:
+            ([[1.1 1.1 1.1],
+              [1.2 1.2 1.2]],
+             [[2.1 2.1 2.1],
+              [2.2 2.2 2.2],
+              [2.3 2.3 2.3]])
+
+        Returns
+        -------
+        ndarray of float with shape(3)
+
+        """
         num_groups = len(self.correction_groups)
         correction = np.asarray([0.,0.,0.])
         my_correction = np.asarray([0.,0.,0.])
-        print('num cor groups, positions',num_groups, rGroups)
         if num_groups != len(rGroups):
             print("Error, the number of groups found does not equal the number of groups parsed")
             raise LookupError
@@ -1218,22 +1302,41 @@ class MCEC(Indicator4):
             my_correction[:] = 0.
             group_length = len(self.correction_groups[g])
             group_diff_max = np.empty(group_length)
+            # Calculate the array of switching functions
             for x in range(group_length):
                 dists = rH - rGroups[g][x]
                 dists = np.linalg.norm(dists, axis=1)
-                dists = self.switch(dists, self.rsw, self.dsw)
-                #group_diff_max[x] = self.diff_max(dists)
+                dists = chakrabarti_switching(dists, self.rsw, self.dsw)
+                # The differentiable maximum function is disabled.
+                # group_diff_max[x] = self.diff_max(dists)
                 group_diff_max[x] = dists.max()
             print(group_diff_max)
             for l, k in permutations(range(group_length), 2):
                 my_correction += group_diff_max[k] * (rGroups[g][l] - rGroups[g][k])
             my_correction *= self.correction_weights[g]
             correction += my_correction
-        print('Correciton amount', correction)
+        if verbose:
+            print('Correciton amount', correction)
         return correction
 
 
     def get_weight_vector(self, types):
+        """
+        Return an array of weights for each exceptor in list 'types'
+
+        Parameters
+        ----------
+        types: list of str
+            list of atom types to lookup weights for
+
+        Returns
+        -------
+        ndarray of floats
+
+        Exceptions
+        ----------
+        LookupError: Could not find the type in the acceptor type dictionary
+        """
         num_acc = len(types)
         self.acc_weights = np.zeros(num_acc, dtype=float)
 
@@ -1245,12 +1348,20 @@ class MCEC(Indicator4):
                 raise
 
     @staticmethod
+    @jit(nopython=True)
     def diff_max(results, power=15):
         """
         Differentiable maximum function. Given a list of floats,
-        calculate the differentiable maximum funciton
-        :param results:
-        :return:
+        calculate the differentiable maximum function
+
+        Parameters
+        ----------
+        results: ndarray of floats
+            array of floats to exponentiate and sum
+
+        Returns
+        -------
+        float
         """
         a = results ** power
         b = a * results
@@ -1316,51 +1427,70 @@ class MCEC(Indicator4):
     #     return (1+np.exp((d-rsw)/dsw))**-1
 
     @staticmethod
+    @jit(nopython=True)
     def fos(x):
         """
         Our fifth order spline
+
+        Parameters
+        ----------
         :param x:
         :return:
         """
         return -6*x** 5 + 15*x**4 - 10*x**3 + 1
 
 
-@jit(parallel=True)
+@jit(nopython=True,parallel=True)
 def chakrabarti_switching(d, rsw, dsw):
     """
     Chakrabarti switching function from
     Konig et all
     J. Phys. Chem. A. Vol 110, No.2
-    :param d: real distance
-    :param rsw: real midpoint of switching function
-    :param dsw: real slope of switching function
-    :return:
+
+    Parameters
+    ----------
+    d: real
+       distance
+    rsw: real
+        midpoint of switching function
+    dsw: real
+        slope of switching function
+
+    Returns
+    -------
+    float
     """
     return (1+np.exp((d-rsw)/dsw))**-1
 
 
-@jit
-def calc_mcec_location(rH, rXj, w, rsw, dsw):
+@jit(nopython=True)
+def calc_mcec_location(rH, rXj, w, rsw, dsw, verbose=False):
     """
     Returns the mcec location from equation 6 of
     J. Phys. Chem. A, Vol. 110, 2006
 
     This is the mCEC location without the correction term
 
-    :param rH: np.ndarray of floats with size (n,3) where n is
-    number of hydrogens. hydrogen locations
-    :param rXj: np.ndarray of floats with size (J,3) where J is
-    number of acceptors. acceptor locations
-    :param w: np.ndarray of integers with size J representing
-    the minimum protonatied state of the acceptor
-    :param switch: vectorized switching function that takes a scalar
-     distance. Must accept numpy arrays.
-    :return: zeta: The mcec without the correction term
+    Parameters
+    ----------
+    rH: np.ndarray of floats with size (n,3) where n is
+    number of hydrogens.
+         hydrogen locations
+    rXj: np.ndarray of floats w ith size (J,3) where J is
+    number of acceptors.
+        acceptor locations
+    w: np.ndarray of int with size J
+        The reference protonation state of each acceptor
+
+    Returns
+    -------
+    zeta: The mcec without the correction term
     """
 
     # hydrogen and weighted acceptors
     zeta = np.sum(rH, axis=0)
-    print('sum_hydrogen', zeta)
+    if verbose:
+        print('sum_hydrogen', zeta)
     zeta -= np.dot(w, rXj)
     print('after subtracting acc', zeta)
     num_m = rH.shape[0]
