@@ -1,0 +1,1797 @@
+*********************** INPUT FILE ***********************
+coordinates mcec_in.xyz
+
+structure mcec_in.mol2 mol2
+
+donor_index 23
+
+output_coords ./mcec.dcd
+
+groups_file ./groups.in
+
+elements_file pdb ./mcec_in.pdb
+
+write_prefix mcec
+
+verbose 1
+
+ind_output_freq 1
+
+rlist 3.0
+
+nowrap
+
+rdh0 OT 1.0 NR2 1.0 NR1 1.0 NH3 1.0 OC 1.0 NC2 1.0
+
+proton_types HC H HT 
+
+ind_method 4
+
+indicator_verbose
+
+mcec OT 2 NR2 0.5 NR1 0.5 NH3 2 OC 0 NC2 1.333
+
+mcec_g 31,35,1 8,5,10,4 18,19,0
+
+****************************************************
+INPUT FILE VARIABLES
+Reading coordinates from: mcec_in.xyz
+Reading topology from: mcec_in.mol2
+Writing coordinates to: ./mcec.dcd
+Reading AP groups from: ./groups.in
+Reading atomic elements from: ./mcec_in.pdb
+
+INDICATOR VARIABLES
+rlist: 3.000
+rdh0 parameters:
+    OT          1.000
+    SOT         1.000
+    CLA         1.400
+    OC          1.000
+    NR2         1.000
+    NR1         1.000
+    NH3         1.000
+    NC2         1.000
+Initial donor: 23
+proton types: ['HC', 'H', 'HT']
+mCEC Variables
+rsw: 1.400
+dsw: 0.040
+SYSTEM VARIABLES
+Dimensions: 0.00000000   0.00000000   0.00000000
+#**************** STEP 0
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 0
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80000     0.00000     0.00000
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([3.92049992, 0.        , 0.        ])]
+For donor 0
+Hydrogen coordinates:
+        0     0.98900     0.00000     0.00000
+        1    -0.36800     0.82100     0.41100
+        2    -0.36800    -0.81800     0.41700
+pmjs
+[[ 0.3532143 ]
+ [-0.13142857]
+ [-0.13142857]]
+xmjs
+[[0.8807142 ]
+ [3.78857144]
+ [3.78857144]]
+gmjs
+[[0.0140812]
+ [0.       ]
+ [0.       ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.01408119640688188
+gI
+1.0140811964068819
+Final location
+[0.05443877 0.         0.        ]
+after subtracting acc [3.4296463 2.828341  0.823    ]
+MCEC before correction [2.33883047e+00 6.58486366e-01 2.84022572e-05]
+[3.44834437e-05 9.99942399e-01]
+[0.9999463  0.99992607 0.99994712]
+[5.18754028e-34 5.21062107e-10]
+Correciton amount [-1.12049697e+00  5.10215759e-05  0.00000000e+00]
+Final mCEC [1.21833350e+00 6.58537388e-01 2.84022572e-05]
+#**************** STEP 1
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 1
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80187     0.00029    -0.00380
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.92161453e+00,  1.90999999e-04, -3.31050006e-03])]
+For donor 0
+Hydrogen coordinates:
+        0     0.99704     0.01923     0.00833
+        1    -0.37071     0.82151     0.41055
+        2    -0.37183    -0.83367     0.42518
+pmjs
+[[ 0.35584287]
+ [-0.13247493]
+ [-0.13294382]]
+xmjs
+[[0.86494279]
+ [3.79484957]
+ [3.79766292]]
+gmjs
+[[0.01991394]
+ [0.        ]
+ [0.        ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.019913943718316673
+gI
+1.0199139437183167
+Final location
+[ 7.65700003e-02  3.72929820e-06 -6.46379161e-05]
+after subtracting acc [3.4203405  2.839656   0.84738886]
+MCEC before correction [ 2.33811378e+00  6.60137832e-01 -3.42582120e-04]
+[4.00894228e-05 9.99938232e-01]
+[0.9999464  0.99992921 0.99994808]
+[5.53549521e-34 5.48167488e-10]
+Correciton amount [-1.11971956e+00  1.35900840e-04 -4.85211957e-04]
+Final mCEC [ 1.21839423e+00  6.60273733e-01 -8.27794077e-04]
+#**************** STEP 2
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 2
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80333     0.00041    -0.00757
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.92234540e+00,  2.86999995e-04, -6.61549997e-03])]
+For donor 0
+Hydrogen coordinates:
+        0     1.01909     0.03910     0.01558
+        1    -0.37343     0.82590     0.41234
+        2    -0.37511    -0.85253     0.43534
+pmjs
+[[ 0.36351089]
+ [-0.13356169]
+ [-0.13427104]]
+xmjs
+[[0.81893466]
+ [3.80137014]
+ [3.80562625]]
+gmjs
+[[0.04440683]
+ [0.        ]
+ [0.        ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.04440683315012972
+gI
+1.0444068331501297
+Final location
+[ 1.66773074e-01  1.22028701e-05 -2.81282537e-04]
+after subtracting acc [3.4545968  2.850441   0.87412375]
+MCEC before correction [ 2.33729815e+00  6.61554039e-01 -7.08094973e-04]
+[6.63580044e-05 9.99928917e-01]
+[0.999949   0.99993622 0.99995018]
+[5.62543414e-34 5.51855589e-10]
+Correciton amount [-1.11892717e+00  1.58205056e-04 -9.55017732e-04]
+Final mCEC [ 1.21837098  0.66171224 -0.00166311]
+#**************** STEP 3
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 3
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80437     0.00037    -0.01132
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.92271137e+00,  2.82999994e-04, -9.90800001e-03])]
+For donor 0
+Hydrogen coordinates:
+        0     1.05346     0.05934     0.02179
+        1    -0.37607     0.83351     0.41618
+        2    -0.37720    -0.87315     0.44687
+pmjs
+[[ 0.37561384]
+ [-0.1346575 ]
+ [-0.13518519]]
+xmjs
+[[0.74631695]
+ [3.80794501]
+ [3.81111116]]
+gmjs
+[[0.10743818]
+ [0.        ]
+ [0.        ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.10743817667508981
+gI
+1.1074381766750898
+Final location
+[ 3.80562063e-01  2.74552602e-05 -9.61225175e-04]
+after subtracting acc [3.5283425 2.862686  0.901955 ]
+MCEC before correction [ 2.33648872e+00  6.62729740e-01 -1.05809106e-03]
+[1.49893993e-04 9.99913590e-01]
+[0.99995353 0.99994536 0.99995311]
+[5.51034500e-34 5.37583553e-10]
+Correciton amount [-1.11811465e+00  1.12440984e-04 -1.40734212e-03]
+Final mCEC [ 1.21837408  0.66284218 -0.00246543]
+#**************** STEP 4
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 4
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80497     0.00015    -0.01501
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.92273688e+00,  1.76000001e-04, -1.31725003e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.09812     0.07963     0.02699
+        1    -0.37837     0.84332     0.42174
+        2    -0.37751    -0.89405     0.45920
+pmjs
+[[ 0.39142967]
+ [-0.13567623]
+ [-0.13547536]]
+xmjs
+[[0.65142197]
+ [3.8140574 ]
+ [3.81285217]]
+gmjs
+[[0.23296565]
+ [0.        ]
+ [0.        ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.23296564584994695
+gI
+1.232965645849947
+Final location
+[ 7.41190912e-01  3.32547416e-05 -2.48890961e-03]
+after subtracting acc [3.6349733  2.8778923  0.92959017]
+MCEC before correction [ 2.33622169e+00  6.63665533e-01 -1.37470406e-03]
+[4.39100370e-04 9.99891388e-01]
+[0.99995905 0.99995477 0.99995645]
+[5.32488081e-34 5.16599696e-10]
+Correciton amount [-1.11716574e+00 -1.08941103e-05 -1.84029700e-03]
+Final mCEC [ 1.21905596  0.66365464 -0.003215  ]
+#**************** STEP 5
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 5
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80511    -0.00027    -0.01864
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.92245007e+00, -3.10000032e-05, -1.63889998e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.15121     0.09962     0.03115
+        1    -0.37998     0.85416     0.42867
+        2    -0.37554    -0.91374     0.47176
+pmjs
+[[ 0.41030143]
+ [-0.13649945]
+ [-0.13495941]]
+xmjs
+[[0.53819143]
+ [3.81899668]
+ [3.80975648]]
+gmjs
+[[0.4286691]
+ [0.       ]
+ [0.       ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.42866910346980736
+gI
+1.4286691034698074
+Final location
+[ 1.17692274e+00 -9.30148455e-06 -4.91748426e-03]
+after subtracting acc [3.7663636  2.8969536  0.95583487]
+MCEC before correction [ 2.33876276e+00  6.64397240e-01 -1.64542161e-03]
+[0.00159133 0.99986218]
+[0.99996464 0.9999631  0.99995981]
+[5.23625035e-34 5.02223627e-10]
+Correciton amount [-1.11539212e+00 -2.20673170e-04 -2.25008091e-03]
+Final mCEC [ 1.22337064  0.66417657 -0.0038955 ]
+#**************** STEP 6
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 6
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80478    -0.00088    -0.02217
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.92187798e+00, -3.30999996e-04, -1.95300002e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.21133     0.11894     0.03426
+        1    -0.38056     0.86477     0.43657
+        2    -0.37091    -0.93085     0.48404
+pmjs
+[[ 0.43174314]
+ [-0.13699966]
+ [-0.13349295]]
+xmjs
+[[0.40954114]
+ [3.82199797]
+ [3.80095772]]
+gmjs
+[[0.66594568]
+ [0.        ]
+ [0.        ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.6659456753093742
+gI
+1.6659456753093742
+Final location
+[ 1.56773280e+00 -1.32314048e-04 -7.80692873e-03]
+after subtracting acc [3.9139457  2.9201953  0.97972375]
+MCEC before correction [ 2.35567856e+00  6.65196121e-01 -1.87178759e-03]
+[0.00686994 0.99982758]
+[0.9999696  0.99996968 0.99996282]
+[5.42612578e-34 5.07858813e-10]
+Correciton amount [-1.10919401e+00 -5.24355420e-04 -2.62353313e-03]
+Final mCEC [ 1.24648455  0.66467177 -0.00449532]
+#**************** STEP 7
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 7
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80398    -0.00167    -0.02557
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.92104506e+00, -7.12000008e-04, -2.25644996e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.27761     0.13723     0.03628
+        1    -0.37977     0.87397     0.44509
+        2    -0.36333    -0.94411     0.49560
+pmjs
+[[ 0.45545735]
+ [-0.13705945]
+ [-0.13097802]]
+xmjs
+[[0.26725591]
+ [3.82235669]
+ [3.78586811]]
+gmjs
+[[0.87745439]
+ [0.        ]
+ [0.        ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.8774543886441614
+gI
+1.8774543886441615
+Final location
+[ 1.83255488e+00 -3.32763094e-04 -1.05458324e-02]
+after subtracting acc [4.0696754 2.9473743 1.0006201]
+MCEC before correction [ 2.45163345e+00  6.67778611e-01 -2.14015879e-03]
+[0.0339598  0.99979175]
+[0.99997355 0.99997439 0.99996523]
+[6.13018042e-34 5.48739569e-10]
+Correciton amount [-1.07885424e+00 -9.04522373e-04 -2.90210391e-03]
+Final mCEC [ 1.37277922  0.66687409 -0.00504226]
+#**************** STEP 8
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 8
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80270    -0.00263    -0.02880
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.91997349e+00, -1.15549999e-03, -2.54585007e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.34960     0.15420     0.03720
+        1    -0.37736     0.88076     0.45391
+        2    -0.35270    -0.95248     0.50603
+pmjs
+[[ 0.48129589]
+ [-0.13658424]
+ [-0.12736569]]
+xmjs
+[[0.11222468]
+ [3.81950542]
+ [3.76419415]]
+gmjs
+[[0.98813847]
+ [0.        ]
+ [0.        ]]
+pmaxs
+[0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.9881384683941803
+gI
+1.9881384683941803
+Final location
+[ 1.94829317e+00 -5.74303054e-04 -1.26533057e-02]
+after subtracting acc [4.2265406 2.9777265 1.0182599]
+MCEC before correction [ 2.93418002  0.67910528 -0.00367598]
+[0.17140972 0.99976105]
+[0.99997637 0.99997737 0.9999669 ]
+[7.77038364e-34 6.47737681e-10]
+Correciton amount [-0.92544881 -0.0011969  -0.00276578]
+Final mCEC [ 2.00873121  0.67790839 -0.00644176]
+#**************** STEP 9
+Donor indicies in order:  [22]
+Acc indices:  [30]
+Hyd indices:  [23 24 25]
+*****STEP 9
+Donor Coords:
+0.00000   0.00000   0.00000
+Acceptor Coords:
+        0     2.80095    -0.00373    -0.03182
+Proton Coords
+Donor COM
+[array([0., 0., 0.])]
+Acceptor COMs
+[array([ 3.91868460e+00, -1.63999999e-03, -2.81779999e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.42704     0.16961     0.03700
+        1    -0.37317     0.88432     0.46281
+        2    -0.33902    -0.95516     0.51503
+pmjs
+[[ 0.50918738]
+ [-0.13550913]
+ [-0.12265822]]
+xmjs
+[[-0.0551243 ]
+ [ 3.81305476]
+ [ 3.73594931]]
+gmjs
+[[1.]
+ [0.]
+ [0.]]
+pmaxs
+[0.5]
+Hops:
+[(0, 0, 0.5091873838849218, 0)]
+cumulative_sum_of_gI 1.0
+gI
+2.0
+Final location
+[ 1.95934230e+00 -8.19999994e-04 -1.40889999e-02]
+after subtracting acc [4.3790083 3.0100636 1.0327522]
+MCEC before correction [ 4.15586376  0.68652421 -0.01596607]
+[0.58353676 0.99974218]
+[0.99997807 0.99997883 0.99996777]
+[1.12674579e-33 8.47737444e-10]
+Correciton amount [-0.46515586 -0.00084303 -0.0015162 ]
+Final mCEC [ 3.6907079   0.68568118 -0.01748227]
+Proton hop at frame  9 Donor:  23 ACC: 31
+#**************** STEP 10
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 10
+Donor Coords:
+2.79877   -0.00493   -0.03461
+5.03563   0.00065   -0.02678
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86606    -0.02476    -0.02191
+Proton Coords
+Donor COM
+[array([ 3.91720247e+00, -2.14149992e-03, -3.06950007e-02])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86605597, -0.024758  , -0.02191   ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.50964     0.18330     0.03568
+pmjs
+[[ 0.46096354 -0.25450797]]
+xmjs
+[[0.23421875 4.52704785]]
+gmjs
+[[0.91242377 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.9124237704609836
+For donor 1
+Hydrogen coordinates:
+        0     6.03030     0.38897     0.04069
+pmjs
+[[-0.19745912  0.3502011 ]]
+xmjs
+[[4.18475471 0.89879337]]
+gmjs
+[[0.         0.00885636]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.9212801344367182
+gI
+1.921280134436718
+Final location
+[ 2.07510974e+00 -1.22874626e-03 -1.60773242e-02]
+after subtracting acc [4.523103  3.0429142 1.0445307]
+MCEC before correction [ 4.9472537   0.66882819 -0.03306936]
+[0.91548903 0.99973939]
+[0.99997874 0.99997894 0.99996784]
+[1.88530814e-33 1.23767381e-09]
+Correciton amount [-0.09417502 -0.00020647 -0.00032995]
+Final mCEC [ 4.85307868  0.66862172 -0.0333993 ]
+#**************** STEP 11
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 11
+Donor Coords:
+2.79625   -0.00620   -0.03713
+5.03488   0.00092   -0.02884
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86704    -0.02639    -0.02369
+Proton Coords
+Donor COM
+[array([ 3.91556454e+00, -2.63900010e-03, -3.29844989e-02])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86704493, -0.026386  , -0.02369   ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.59663     0.19521     0.03328
+pmjs
+[[ 0.42942611 -0.23668975]]
+xmjs
+[[0.42344336 4.4201385 ]]
+gmjs
+[[0.64131603 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.6413160258535628
+For donor 1
+Hydrogen coordinates:
+        0     6.02753     0.38803     0.04257
+pmjs
+[[-0.19708156  0.34918703]]
+xmjs
+[[4.18248938 0.90487783]]
+gmjs
+[[0.         0.00742554]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.6487415662176901
+gI
+1.64874156621769
+Final location
+[ 2.41031201e+00 -1.71945105e-03 -2.01125577e-02]
+after subtracting acc [4.6561193 3.0747032 1.0543078]
+MCEC before correction [ 5.10098028  0.66190565 -0.03974956]
+[0.98942772 0.99975244]
+[0.99997845 0.99997778 0.99996715]
+[3.63076854e-33 2.01089995e-09]
+Correciton amount [-1.15060806e-02 -5.12615467e-06 -4.30899672e-05]
+Final mCEC [ 5.0894742   0.66190052 -0.03979265]
+#**************** STEP 12
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 12
+Donor Coords:
+2.79351   -0.00750   -0.03938
+5.03413   0.00126   -0.03069
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86784    -0.02759    -0.02544
+Proton Coords
+Donor COM
+[array([ 3.91382039e+00, -3.11700004e-03, -3.50339999e-02])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.867836, -0.027591, -0.025442])]
+For donor 0
+Hydrogen coordinates:
+        0     1.68612     0.20540     0.02989
+pmjs
+[[ 0.39688877 -0.21835864]]
+xmjs
+[[0.61866736 4.31015186]]
+gmjs
+[[0.28571284 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.28571283989517937
+For donor 1
+Hydrogen coordinates:
+        0     6.02389     0.38585     0.04376
+pmjs
+[[-0.19653192  0.34791006]]
+xmjs
+[[4.17919152 0.91253965]]
+gmjs
+[[0.         0.00584314]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.2915559809166446
+gI
+1.2915559809166446
+Final location
+[ 3.06590912e+00 -2.53819284e-03 -2.72405236e-02]
+after subtracting acc [4.7763205 3.1038606 1.0632819]
+MCEC before correction [ 5.11606979  0.66041392 -0.04292951]
+[0.99883632 0.99977259]
+[0.99997724 0.99997534 0.99996576]
+[7.95067909e-33 3.60196677e-09]
+Correciton amount [-1.00346406e-03  3.13275183e-05 -4.17760263e-06]
+Final mCEC [ 5.11506633  0.66044525 -0.04293369]
+#**************** STEP 13
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 13
+Donor Coords:
+2.79080   -0.00881   -0.04136
+5.03327   0.00166   -0.03233
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86839    -0.02821    -0.02718
+Proton Coords
+Donor COM
+[array([ 3.91203606e+00, -3.57800000e-03, -3.68444994e-02])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86839294, -0.028211  , -0.027176  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.77456     0.21420     0.02578
+pmjs
+[[ 0.3646642 -0.2002682]]
+xmjs
+[[0.81201477 4.20160917]]
+gmjs
+[[0.04910751 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.04910751307787997
+For donor 1
+Hydrogen coordinates:
+        0     6.02274     0.38235     0.04434
+pmjs
+[[-0.19650404  0.34759833]]
+xmjs
+[[4.17902425 0.91441002]]
+gmjs
+[[0.        0.0054926]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.05460011439595025
+gI
+1.0546001143959502
+Final location
+[ 3.75047751e+00 -3.53968459e-03 -3.50784775e-02]
+after subtracting acc [4.883575  3.1291416 1.0731361]
+MCEC before correction [ 5.1139679   0.65972543 -0.04532347]
+[0.99986837 0.99978103]
+[0.99997516 0.99997151 0.9999638 ]
+[1.94116357e-32 7.01637973e-09]
+Correciton amount [1.34388606e-04 3.98087626e-05 5.56310018e-07]
+Final mCEC [ 5.11410228  0.65976524 -0.04532291]
+#**************** STEP 14
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 14
+Donor Coords:
+2.78849   -0.01017   -0.04309
+5.03231   0.00208   -0.03377
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86871    -0.02826    -0.02889
+Proton Coords
+Donor COM
+[array([ 3.91039908, -0.0040415 , -0.038429  ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86870718, -0.028265  , -0.028895  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.85678     0.22257     0.02129
+pmjs
+[[ 0.33470542 -0.18352471]]
+xmjs
+[[0.99176747 4.10114824]]
+gmjs
+[[5.51089487e-06 0.00000000e+00]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 5.510894874660721e-06
+For donor 1
+Hydrogen coordinates:
+        0     6.02435     0.37774     0.04435
+pmjs
+[[-0.19705321  0.34834468]]
+xmjs
+[[4.18231929 0.90993192]]
+gmjs
+[[0.         0.00635499]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.006360500211202158
+gI
+1.0063605002112022
+Final location
+[ 3.93537368 -0.00419445 -0.03836858]
+after subtracting acc [4.9748464 3.1504128 1.0847002]
+MCEC before correction [ 5.11008549  0.65912098 -0.04732529]
+[0.99998222 0.99977708]
+[0.99997229 0.99996636 0.99996145]
+[5.16448353e-32 1.46419090e-08]
+Correciton amount [2.53876050e-04 4.51298741e-05 1.51231264e-06]
+Final mCEC [ 5.11033936  0.65916611 -0.04732377]
+#**************** STEP 15
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 15
+Donor Coords:
+2.78717   -0.01165   -0.04462
+5.03123   0.00253   -0.03501
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86876    -0.02780    -0.03060
+Proton Coords
+Donor COM
+[array([ 3.90919662, -0.004561  , -0.0398135 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86876488, -0.027797  , -0.030603  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.92489     0.23236     0.01700
+pmjs
+[[ 0.31000899 -0.16980235]]
+xmjs
+[[1.13994608 4.01881408]]
+gmjs
+[[0. 0.]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.0
+For donor 1
+Hydrogen coordinates:
+        0     6.02877     0.37216     0.04381
+pmjs
+[[-0.19818809  0.35016105]]
+xmjs
+[[4.18912856 0.89903373]]
+gmjs
+[[0.         0.00879683]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.008796825661199215
+gI
+1.0087968256611992
+Final location
+[ 3.94372451 -0.00476362 -0.03973318]
+after subtracting acc [5.0446897 3.1687162 1.0988768]
+MCEC before correction [ 5.10637856  0.65850842 -0.04901138]
+[0.99999643 0.99975927]
+[0.99996882 0.99996017 0.99996254]
+[1.46179739e-31 3.22557752e-08]
+Correciton amount [2.54789988e-04 4.03832334e-05 2.33358393e-06]
+Final mCEC [ 5.10663335  0.6585488  -0.04900904]
+#**************** STEP 16
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 16
+Donor Coords:
+2.78750   -0.01344   -0.04600
+5.03004   0.00299   -0.03607
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86855    -0.02687    -0.03230
+Proton Coords
+Donor COM
+[array([ 3.90877211, -0.005223  , -0.0410355 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86854887, -0.026868  , -0.032303  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.96962     0.24630     0.01361
+pmjs
+[[ 0.29412634 -0.16106881]]
+xmjs
+[[1.23524194 3.96641286]]
+gmjs
+[[0. 0.]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.0
+For donor 1
+Hydrogen coordinates:
+        0     6.03584     0.36574     0.04276
+pmjs
+[[-0.19987927  0.35299494]]
+xmjs
+[[4.19927565 0.88203037]]
+gmjs
+[[0.         0.01364955]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.013649551067342891
+gI
+1.013649551067343
+Final location
+[ 3.96209347 -0.00551447 -0.04091791]
+after subtracting acc [5.086205  3.1862586 1.1165997]
+MCEC before correction [ 5.10343838  0.65784097 -0.05044135]
+[0.99999862 0.99972461]
+[0.99996505 0.99995353 0.99996261]
+[4.30524506e-31 7.40756219e-08]
+Correciton amount [2.64128049e-04 3.83292014e-05 3.25807681e-06]
+Final mCEC [ 5.10370251  0.6578793  -0.0504381 ]
+#**************** STEP 17
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 17
+Donor Coords:
+2.78994   -0.01567   -0.04730
+5.02878   0.00346   -0.03696
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86804    -0.02554    -0.03399
+Proton Coords
+Donor COM
+[array([ 3.90936244, -0.0061055 , -0.0421275 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86803579, -0.025545  , -0.033994  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.98463     0.26678     0.01163
+pmjs
+[[ 0.28948403 -0.15866237]]
+xmjs
+[[1.26309582 3.95197424]]
+gmjs
+[[0. 0.]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.0
+For donor 1
+Hydrogen coordinates:
+        0     6.04533     0.35853     0.04123
+pmjs
+[[-0.20206938  0.35674692]]
+xmjs
+[[4.21241629 0.85951846]]
+gmjs
+[[0.         0.02221031]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.022210311142232264
+gI
+1.0222103111422323
+Final location
+[ 3.99537543 -0.00652788 -0.04195078]
+after subtracting acc [5.0952787 3.2052348 1.1385326]
+MCEC before correction [ 5.10154533  0.65707088 -0.05166772]
+[0.99999878 0.99966792]
+[0.99996138 0.99994729 0.99996146]
+[1.29395793e-30 1.75456780e-07]
+Correciton amount [3.03824743e-04 3.87436400e-05 4.20135135e-06]
+Final mCEC [ 5.10184916  0.65710962 -0.05166352]
+#**************** STEP 18
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 18
+Donor Coords:
+2.79438   -0.01835   -0.04852
+5.02748   0.00393   -0.03769
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86720    -0.02390    -0.03567
+Proton Coords
+Donor COM
+[array([ 3.91092634, -0.007209  , -0.0431045 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86720419, -0.023903  , -0.035674  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.97141     0.29400     0.01100
+pmjs
+[[ 0.2955106  -0.16226707]]
+xmjs
+[[1.22693641 3.97360241]]
+gmjs
+[[0. 0.]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.0
+For donor 1
+Hydrogen coordinates:
+        0     6.05685     0.35056     0.03924
+pmjs
+[[-0.2046772   0.36127844]]
+xmjs
+[[4.22806319 0.83232933]]
+gmjs
+[[0.         0.03607765]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.036077647015057224
+gI
+1.0360776470150572
+Final location
+[ 4.04868937 -0.00779031 -0.04284576]
+after subtracting acc [5.0755296 3.2258303 1.1647063]
+MCEC before correction [ 5.10076952  0.65621603 -0.0527189 ]
+[0.99999761 0.99958121]
+[0.99995826 0.99994246 0.99995923]
+[3.90343871e-30 4.24538014e-07]
+Correciton amount [3.86555990e-04 4.25009057e-05 5.17085815e-06]
+Final mCEC [ 5.10115608  0.65625853 -0.05271373]
+#**************** STEP 19
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 19
+Donor Coords:
+2.80016   -0.02126   -0.04965
+5.02618   0.00439   -0.03827
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86603    -0.02202    -0.03734
+Proton Coords
+Donor COM
+[array([ 3.91316557, -0.0084345 , -0.04396   ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86602688, -0.022018  , -0.037335  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.93861     0.32535     0.01112
+pmjs
+[[ 0.30888556 -0.17004787]]
+xmjs
+[[1.14668666 4.0202872 ]]
+gmjs
+[[0. 0.]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.0
+For donor 1
+Hydrogen coordinates:
+        0     6.06995     0.34186     0.03683
+pmjs
+[[-0.20759984  0.36641655]]
+xmjs
+[[4.24559902 0.80150073]]
+gmjs
+[[0.         0.05677393]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.05677392779876289
+gI
+1.056773927798763
+Final location
+[ 4.12552836 -0.00916426 -0.04360408]
+after subtracting acc [5.0373588 3.245772  1.1945224]
+MCEC before correction [ 5.10078859  0.65537834 -0.05359728]
+[0.99999198 0.99945356]
+[0.99995614 0.99993986 0.99995612]
+[1.16545712e-29 1.03963637e-06]
+Correciton amount [5.23606936e-04 4.84334305e-05 6.09162574e-06]
+Final mCEC [ 5.1013122   0.65542678 -0.05359119]
+#**************** STEP 20
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 20
+Donor Coords:
+2.80651   -0.02411   -0.05064
+5.02492   0.00483   -0.03873
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86448    -0.01996    -0.03896
+Proton Coords
+Donor COM
+[array([ 3.91571891, -0.009645  , -0.0446855 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86448383, -0.019961  , -0.038964  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.89664     0.35709     0.01125
+pmjs
+[[ 0.32563599 -0.17979818]]
+xmjs
+[[1.04618405 4.07878908]]
+gmjs
+[[0. 0.]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.0
+For donor 1
+Hydrogen coordinates:
+        0     6.08412     0.33243     0.03400
+pmjs
+[[-0.21072789  0.37197831]]
+xmjs
+[[4.26436736 0.76813012]]
+gmjs
+[[0.         0.08532512]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.085325115682652
+gI
+1.085325115682652
+Final location
+[ 4.22615937 -0.01045601 -0.04423569]
+after subtracting acc [4.992582  3.2620971 1.2270765]
+MCEC before correction [ 5.10130072  0.65469706 -0.0542973 ]
+[0.99996599 0.99927073]
+[0.99995526 0.99993985 0.99995264]
+[3.40301517e-29 2.55076486e-06]
+Correciton amount [7.11878141e-04 5.61618557e-05 6.95340956e-06]
+Final mCEC [ 5.10201259  0.65475322 -0.05429034]
+#**************** STEP 21
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 21
+Donor Coords:
+2.81285   -0.02668   -0.05149
+5.02376   0.00523   -0.03906
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86255    -0.01780    -0.04054
+Proton Coords
+Donor COM
+[array([ 3.91830611, -0.010726  , -0.0452755 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.86255407, -0.017799  , -0.040544  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.85361     0.38610     0.01084
+pmjs
+[[ 0.34267127 -0.18978653]]
+xmjs
+[[0.94397237 4.13871918]]
+gmjs
+[[0.00161426 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.0016142648286070482
+For donor 1
+Hydrogen coordinates:
+        0     6.09894     0.32232     0.03080
+pmjs
+[[-0.21396308  0.37780152]]
+xmjs
+[[4.2837785  0.73319087]]
+gmjs
+[[0.         0.12203214]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.12364640236125712
+gI
+1.1236464023612571
+Final location
+[ 4.34103681 -0.01147874 -0.0446966 ]
+after subtracting acc [4.9503775 3.2728748 1.2612948]
+MCEC before correction [ 5.10204411  0.65430367 -0.0548133 ]
+[0.99985614 0.99901471]
+[0.99995568 0.99994224 0.99995351]
+[9.62562794e-29 6.20558384e-06]
+Correciton amount [8.78055890e-04 5.32263269e-05 7.73075347e-06]
+Final mCEC [ 5.10292216  0.6543569  -0.05480556]
+#**************** STEP 22
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 22
+Donor Coords:
+2.81877   -0.02881   -0.05218
+5.02274   0.00560   -0.03928
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.86022    -0.01558    -0.04205
+Proton Coords
+Donor COM
+[array([ 3.92075455, -0.0116035 , -0.0457325 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.860219, -0.015583, -0.042053])]
+For donor 0
+Hydrogen coordinates:
+        0     1.81460     0.41033     0.00958
+pmjs
+[[ 0.35808306 -0.19892868]]
+xmjs
+[[0.85150162 4.1935721 ]]
+gmjs
+[[0.02588559 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.02588558502286542
+For donor 1
+Hydrogen coordinates:
+        0     6.11405     0.31159     0.02724
+pmjs
+[[-0.21722478  0.38375529]]
+xmjs
+[[4.3033487  0.69746827]]
+gmjs
+[[0.         0.16644559]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.19233117421433654
+gI
+1.1923311742143365
+Final location
+[ 4.38557126 -0.01190711 -0.044226  ]
+after subtracting acc [4.916299  3.2776446 1.2959708]
+MCEC before correction [ 5.10263729  0.6543451  -0.05513968]
+[0.99947762 0.99866342]
+[0.99995721 0.9999464  0.99995492]
+[2.61919828e-28 1.48122882e-05]
+Correciton amount [8.57591629e-04 4.77085511e-05 7.26385042e-06]
+Final mCEC [ 5.10349488  0.6543928  -0.05513242]
+#**************** STEP 23
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 23
+Donor Coords:
+2.82408   -0.03039   -0.05272
+5.02187   0.00591   -0.03940
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.85747    -0.01335    -0.04347
+Proton Coords
+Donor COM
+[array([ 3.92297649, -0.0122405 , -0.046063  ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.85747194, -0.013348  , -0.043475  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.78233     0.42873     0.00731
+pmjs
+[[ 0.37085487 -0.20663375]]
+xmjs
+[[0.77487075 4.23980251]]
+gmjs
+[[0.07904074 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.0790407427182358
+For donor 1
+Hydrogen coordinates:
+        0     6.12917     0.30033     0.02338
+pmjs
+[[-0.22045158  0.38974165]]
+xmjs
+[[4.32270946 0.66155012]]
+gmjs
+[[0.         0.21751434]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.2965550798190848
+gI
+1.2965550798190848
+Final location
+[ 4.34388742 -0.01168009 -0.04282073]
+after subtracting acc [4.893289  3.2770364 1.3297282]
+MCEC before correction [ 5.10269308  0.65501153 -0.05526755]
+[0.99849822 0.99819044]
+[0.99995953 0.99995148 0.99995665]
+[6.82697589e-28 3.43378255e-05]
+Correciton amount [3.14672788e-04 3.36871793e-05 3.52753947e-06]
+Final mCEC [ 5.10300775  0.65504522 -0.05526402]
+#**************** STEP 24
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 24
+Donor Coords:
+2.82867   -0.03141   -0.05313
+5.02119   0.00616   -0.03943
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.85431    -0.01111    -0.04479
+Proton Coords
+Donor COM
+[array([ 3.92493057, -0.0126235 , -0.0462775 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.8543148, -0.011113 , -0.044794 ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.75811     0.44084     0.00395
+pmjs
+[[ 0.38051954 -0.212617  ]]
+xmjs
+[[0.71688276 4.27570201]]
+gmjs
+[[0.14147439 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.14147438913856547
+For donor 1
+Hydrogen coordinates:
+        0     6.14412     0.28863     0.01926
+pmjs
+[[-0.22360128  0.39569435]]
+xmjs
+[[4.3416077  0.62583388]]
+gmjs
+[[0.         0.27383456]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.41530894505369575
+gI
+1.4153089450536958
+Final location
+[ 4.29285309 -0.0110694  -0.04136457]
+after subtracting acc [4.882433  3.2721858 1.3611205]
+MCEC before correction [ 5.10195494  0.65641814 -0.05520697]
+[0.99670768 0.99756425]
+[0.99996223 0.99995669 0.99995849]
+[1.70171500e-27 7.66376704e-05]
+Correciton amount [-9.47554906e-04  7.99944003e-06 -4.90232681e-06]
+Final mCEC [ 5.10100738  0.65642614 -0.05521188]
+#**************** STEP 25
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 25
+Donor Coords:
+2.83250   -0.03185   -0.05340
+5.02071   0.00634   -0.03937
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.85076    -0.00888    -0.04601
+Proton Coords
+Donor COM
+[array([ 3.92660487, -0.012752  , -0.046385  ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.85076284, -0.008878  , -0.046007  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.74241     0.44661    -0.00048
+pmjs
+[[ 0.38691669 -0.21676764]]
+xmjs
+[[0.67849986 4.30060582]]
+gmjs
+[[0.19266248 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.19266247598253372
+For donor 1
+Hydrogen coordinates:
+        0     6.15880     0.27663     0.01493
+pmjs
+[[-0.22664785  0.40157255]]
+xmjs
+[[4.35988709 0.5905647 ]]
+gmjs
+[[0.         0.33386868]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.5265311530950629
+gI
+1.526531153095063
+Final location
+[ 4.28928598 -0.01029529 -0.04044811]
+after subtracting acc [4.8836756 3.2642472 1.388737 ]
+MCEC before correction [ 5.10092592  0.65833563 -0.0550148 ]
+[0.99456196 0.99674687]
+[0.99996495 0.99996144 0.99996024]
+[4.05819321e-27 1.63477484e-04]
+Correciton amount [-2.38494078e-03 -2.00606883e-05 -1.47856772e-05]
+Final mCEC [ 5.09854098  0.65831557 -0.05502958]
+#**************** STEP 26
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 26
+Donor Coords:
+2.83555   -0.03171   -0.05355
+5.02045   0.00644   -0.03924
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.84684    -0.00663    -0.04712
+Proton Coords
+Donor COM
+[array([ 3.92800105, -0.0126345 , -0.046396  ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.84684420e+00, -6.62800018e-03, -4.71169986e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.73526     0.44618    -0.00596
+pmjs
+[[ 0.39004952 -0.21906801]]
+xmjs
+[[0.65970288 4.31440806]]
+gmjs
+[[0.2202999 0.       ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.22029989808551642
+For donor 1
+Hydrogen coordinates:
+        0     6.17316     0.26447     0.01044
+pmjs
+[[-0.22957772  0.40735555]]
+xmjs
+[[4.37746635 0.5558667 ]]
+gmjs
+[[0.        0.3961185]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.6164183987251275
+gI
+1.6164183987251275
+Final location
+[ 4.35300737 -0.00944061 -0.04024943]
+after subtracting acc [4.8963532 3.2540932 1.4113435]
+MCEC before correction [ 5.10097218  0.66016388 -0.05478102]
+[0.99321719 0.99569187]
+[0.99996741 0.99996539 0.99996174]
+[9.27588956e-27 3.31511553e-04]
+Correciton amount [-2.68642108e-03 -2.68891454e-05 -1.75023451e-05]
+Final mCEC [ 5.09828575  0.66013699 -0.05479852]
+#**************** STEP 27
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 27
+Donor Coords:
+2.83785   -0.03102   -0.05360
+5.02040   0.00645   -0.03904
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.84259    -0.00434    -0.04814
+Proton Coords
+Donor COM
+[array([ 3.92912745, -0.012283  , -0.0463195 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.84259176e+00, -4.33599995e-03, -4.81380001e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.73646     0.43983    -0.01246
+pmjs
+[[ 0.39000992 -0.21955341]]
+xmjs
+[[0.65994049 4.31732049]]
+gmjs
+[[0.21994076 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.2199407626968677
+For donor 1
+Hydrogen coordinates:
+        0     6.18719     0.25230     0.00584
+pmjs
+[[-0.23238927  0.41304058]]
+xmjs
+[[4.39433564 0.52175654]]
+gmjs
+[[0.         0.45925795]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.6791987091897069
+gI
+1.679198709189707
+Final location
+[ 4.48481767 -0.00850069 -0.04074995]
+after subtracting acc [4.9195466 3.2422206 1.4279506]
+MCEC before correction [ 5.1032114   0.66145927 -0.05456442]
+[0.99354807 0.99433957]
+[0.99996942 0.99996838 0.99996289]
+[2.03771546e-26 6.36666374e-04]
+Correciton amount [-8.38081042e-04  5.39484123e-06 -5.77435518e-06]
+Final mCEC [ 5.10237332  0.66146466 -0.05457019]
+#**************** STEP 28
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 28
+Donor Coords:
+2.83942   -0.02980   -0.05356
+5.02057   0.00637   -0.03877
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.83805    -0.00197    -0.04909
+Proton Coords
+Donor COM
+[array([ 3.92999709, -0.011714  , -0.0461645 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.83804703e+00, -1.97200011e-03, -4.90880013e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.74564     0.42794    -0.01990
+pmjs
+[[ 0.38694804 -0.21829411]]
+xmjs
+[[0.67831173 4.30976468]]
+gmjs
+[[0.19293112 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.192931115008113
+For donor 1
+Hydrogen coordinates:
+        0     6.20093     0.24029     0.00121
+pmjs
+[[-0.23508846  0.41863634]]
+xmjs
+[[4.41053075 0.48818195]]
+gmjs
+[[0.        0.5221506]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.7150817130618676
+gI
+1.7150817130618676
+Final location
+[ 4.67770018 -0.00743036 -0.04186146]
+after subtracting acc [4.9522986 3.2287724 1.437812 ]
+MCEC before correction [ 5.10747004  0.66239548 -0.05436064]
+[0.9952533  0.99261174]
+[0.99997086 0.99997037 0.99996362]
+[4.31224670e-26 1.15524558e-03]
+Correciton amount [2.91224321e-03 6.85080886e-05 1.93806676e-05]
+Final mCEC [ 5.11038228  0.66246399 -0.05434125]
+#**************** STEP 29
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 29
+Donor Coords:
+2.84030   -0.02808   -0.05343
+5.02096   0.00619   -0.03845
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.83325     0.00050    -0.04999
+Proton Coords
+Donor COM
+[array([ 3.93062794, -0.0109465 , -0.04594   ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.83325005e+00,  4.95999993e-04, -4.99910004e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.76226     0.41100    -0.02822
+pmjs
+[[ 0.3810737  -0.21539782]]
+xmjs
+[[0.71355782 4.29238689]]
+gmjs
+[[0.14561249 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.1456124933761771
+For donor 1
+Hydrogen coordinates:
+        0     6.21444     0.22860    -0.00341
+pmjs
+[[-0.23768692  0.42416029]]
+xmjs
+[[4.42612153 0.45503828]]
+gmjs
+[[0.         0.58384987]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.7294623620551279
+gI
+1.729462362055128
+Final location
+[ 4.9171755  -0.00616198 -0.04343965]
+after subtracting acc [4.9936657 3.2136524 1.4404116]
+MCEC before correction [ 5.11269426  0.66352445 -0.0541544 ]
+[0.99724771 0.99040297]
+[0.99997169 0.99997137 0.99996389]
+[8.80169682e-26 1.97687499e-03]
+Correciton amount [7.49810537e-03 1.39004240e-04 5.10582079e-05]
+Final mCEC [ 5.12019237  0.66366345 -0.05410334]
+#**************** STEP 30
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 30
+Donor Coords:
+2.84054   -0.02592   -0.05322
+5.02155   0.00591   -0.03808
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.82824     0.00310    -0.05087
+Proton Coords
+Donor COM
+[array([ 3.93104649, -0.0100045 , -0.045654  ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.82823896e+00,  3.09600006e-03, -5.08709997e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.78556     0.38960    -0.03734
+pmjs
+[[ 0.3726781  -0.21102264]]
+xmjs
+[[0.76393142 4.26613586]]
+gmjs
+[[0.08937129 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.08937128691696694
+For donor 1
+Hydrogen coordinates:
+        0     6.22779     0.21739    -0.00794
+pmjs
+[[-0.24020179  0.42963884]]
+xmjs
+[[4.44121074 0.42216697]]
+gmjs
+[[0.         0.64359652]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.7329678085679092
+gI
+1.7329678085679092
+Final location
+[ 5.17567251e+00 -4.62323927e-03 -4.52370765e-02]
+after subtracting acc [5.042913  3.1966548 1.4352735]
+MCEC before correction [ 5.11847925  0.66521424 -0.05397157]
+[0.99870865 0.98756626]
+[0.9999719  0.99997144 0.99996371]
+[1.73158823e-25 3.18388132e-03]
+Correciton amount [1.21868054e-02 2.00627372e-04 8.41957517e-05]
+Final mCEC [ 5.13066606  0.66541487 -0.05388738]
+#**************** STEP 31
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 31
+Donor Coords:
+2.84023   -0.02337   -0.05296
+5.02234   0.00553   -0.03767
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.82305     0.00585    -0.05175
+Proton Coords
+Donor COM
+[array([ 3.93128753, -0.0089205 , -0.0453145 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.82304811e+00,  5.85300010e-03, -5.17489985e-02])]
+For donor 0
+Hydrogen coordinates:
+        0     1.81445     0.36463    -0.04715
+pmjs
+[[ 0.36217227 -0.20539915]]
+xmjs
+[[0.8269664 4.2323949]]
+gmjs
+[[0.03929142 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.03929141614450771
+For donor 1
+Hydrogen coordinates:
+        0     6.24111     0.20686    -0.01232
+pmjs
+[[-0.24266029  0.43511443]]
+xmjs
+[[4.45596176 0.38931341]]
+gmjs
+[[0.         0.70085664]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.7401480526561419
+gI
+1.740148052656142
+Final location
+[ 5.40995503e+00 -2.76895181e-03 -4.68828667e-02]
+after subtracting acc [5.099383  3.1778238 1.4203849]
+MCEC before correction [ 5.12561655  0.66745323 -0.05387902]
+[0.99949066 0.98388155]
+[0.9999715  0.99997059 0.9999631 ]
+[3.27350418e-25 4.81369488e-03]
+Correciton amount [0.01706533 0.00025064 0.00011928]
+Final mCEC [ 5.14268188  0.66770387 -0.05375975]
+#**************** STEP 32
+Donor indicies in order:  [30 34]
+Acc indices:  [22 42]
+Hyd indices:  [23]
+*****STEP 32
+Donor Coords:
+2.83950   -0.02054   -0.05264
+5.02331   0.00506   -0.03721
+Acceptor Coords:
+        0     0.00000     0.00000     0.00000
+        1     7.81770     0.00878    -0.05265
+Proton Coords
+Donor COM
+[array([ 3.93140805, -0.007739  , -0.0449275 ])]
+Acceptor COMs
+[array([0., 0., 0.]), array([ 7.81770182,  0.008779  , -0.052645  ])]
+For donor 0
+Hydrogen coordinates:
+        0     1.84727     0.33726    -0.05756
+pmjs
+[[ 0.3501797  -0.19888549]]
+xmjs
+[[0.89892181 4.19331291]]
+gmjs
+[[0.00882452 0.        ]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.008824516890289402
+For donor 1
+Hydrogen coordinates:
+        0     6.25454     0.19716    -0.01649
+pmjs
+[[-0.24509601  0.440642  ]]
+xmjs
+[[4.47057605 0.356148  ]]
+gmjs
+[[0.         0.75520817]]
+pmaxs
+[0.5 0.5]
+Hops:
+[]
+cumulative_sum_of_gI 0.7640326896492429
+gI
+1.7640326896492429
+Final location
+[ 5.57552046e+00 -6.28688920e-04 -4.80067269e-02]
+after subtracting acc [5.1621156 3.1575541 1.3927222]
+MCEC before correction [ 5.13613367  0.66999221 -0.05392895]
+[0.99982144 0.97901408]
+[0.9999705  0.99996886 0.99996209]
+[5.91319791e-25 6.80515986e-03]
+Correciton amount [0.02275125 0.00029322 0.00016062]
+Final mCEC [ 5.15888492  0.67028543 -0.05376833]

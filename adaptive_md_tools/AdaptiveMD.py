@@ -2,20 +2,18 @@
 """
 This is the file that contains the main program.
 
-This code offers many features that are useful for analyzing adaptive partitioning
-simulations.
+This code offers many features that are useful for analyzing adaptive
+partitioning simulations.
 
 Translates the system such that the donor
 is in the center. Then calculates the indicator and retranslates the system
 such that the indicator is now in the center. Also keeps track of the
 topology and groups for the system.
 """
-
-import argparse
-from .indicator import *
-from .core_loop import core_loop
 import os
-import sys
+import argparse
+from adaptive_md_tools.indicator import *
+from adaptive_md_tools.core_loop import core_loop
 
 
 def get_args(args=None):
@@ -49,6 +47,19 @@ def get_args(args=None):
 
 
 def read_input_file(ifpath):
+    """
+    Read the input file and save the parameters
+
+    Parameters
+    ----------
+    ifpath: str
+        input file path
+
+    Returns
+    -------
+    keywords: dict
+        Dictionary of parameters
+    """
     try:
         ifi = open(ifpath, 'r')
     except FileNotFoundError:
@@ -79,7 +90,7 @@ def read_input_file(ifpath):
                 "mcec": False,
                 "rsw": 1.4,
                 "dsw": 0.04,
-                'mcec_g':[]
+                'mcec_g': []
                 }
     print("*********************** INPUT FILE ***********************")
     while True:
@@ -88,7 +99,7 @@ def read_input_file(ifpath):
             break
         print(line)
         words = line.split()
-        if len(words) == 0:
+        if not words:
             continue
         if words[0][0] == "#":
             continue
@@ -146,7 +157,7 @@ def read_input_file(ifpath):
                 continue
             if words[0] == "dimensions":
                 keywords['dimensions'] = [float(words[1]), float(words[2]),
-                                      float(words[3])]
+                                          float(words[3])]
                 continue
             if words[0] == "pap_order":
                 keywords['pap_order'] = int(words[1])
@@ -260,14 +271,13 @@ def check_keywords(keywords, indi):
         print("rsw: %.3f" % keywords['rsw'])
         print("dsw: %.3f" % keywords['dsw'])
 
-
-    # Print other stuff
+    # Print general things
     print("SYSTEM VARIABLES")
     try:
         if 'dimensions' in keywords:
             print("Dimensions: {0:0.8f}   {1:0.8f}   {2:0.8f}".format(
                 *keywords['dimensions']))
-        elif keywords['wrap'] == True:
+        elif keywords['wrap']:
             print("\n\nERROR: Please supply system dimensions as three floats"
                   " corresponding to x, y, z vectors")
             sys.exit()
@@ -364,33 +374,37 @@ def initialize_mcec(keywords, indi):
     :param indi:
     :return:
     """
-    #Parse the acceptor type keywords. Make sure they are also acceptors for
-    #Indicator 4
+    # Parse the acceptor type keywords. Make sure they are also acceptors for
+    # Indicator 4
     vals = keywords["mcec_w"][:]
     if len(vals) == 1:
         print("Error, no acceptor types found after keyword 'mcec'")
         raise NameError
     vals = vals[1:]
     if len(vals) % 2 != 0:
-        print("Error, each acceptor type for keyword 'mcec' must be followed by integer")
-        print("The integer is the reference state for the least protonated state of the atom")
+        print("Error, each acceptor type for keyword 'mcec' must be followed by"
+              " integer")
+        print("The integer is the reference state for the least protonated"
+              " state of the atom")
         raise NameError
     for i in range(len(vals) // 2):
         acc = vals[2*i]
         w = vals[2*i+1]
         if acc not in indi.rxh.keys():
-            print("Error, mCEC weight found but does not correspond with rxh list")
+            print("Error, mCEC weight found but does not correspond with "
+                  " list")
             raise
         try:
             indi.m_acc_weight[acc] = float(w)
-        except:
+        except TypeError:
             print("Error, weight is not float for acceptor %s" % acc)
             print("Error keyword mcec")
-            raise TypeError
+            raise
 
     for key in list(indi.rxh.keys()):
         if key not in indi.m_acc_weight.keys():
-            print("Error, acceptor %s is not in mcec list but is in rxh list" %key)
+            print("Error, acceptor %s is not in mcec list but is in rxh list"
+                  % key)
             raise KeyError
     indi.rsw = keywords['rsw']
     indi.dsw = keywords['dsw']
@@ -399,7 +413,8 @@ def initialize_mcec(keywords, indi):
         for val in vals:
             words = val.split(',')
             if len(words) <= 2:
-                print("Error parsing mcec_g keyword, there are not enough integers for the group" )
+                print("Error parsing mcec_g keyword, there are not enough"
+                      " integers for the group")
                 raise TypeError
             group_ids = []
             for w in words[:-1]:
@@ -408,7 +423,8 @@ def initialize_mcec(keywords, indi):
                     raise TypeError
                 group_ids.append(int(w))
             if not words[-1].isdigit():
-                print("Error, group weight must be an integer corresponding to the reference state")
+                print("Error, group weight must be an integer corresponding to"
+                      " the reference state")
                 raise TypeError
             indi.correction_groups.append(group_ids)
             indi.correction_weights.append(int(words[-1])/float(len(group_ids)))
@@ -429,7 +445,6 @@ def cleanup():
     """
     if os.path.isfile('tmp.mol2'):
         os.remove('tmp.mol2')
-
 
 
 def main():
@@ -458,6 +473,6 @@ def main():
     core_loop(keywords, indi)
     cleanup()
 
+
 if __name__ == "__main__":
     main()
-

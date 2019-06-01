@@ -1,6 +1,7 @@
 """
 adaptive_md_tools
-This package provides tools for analyizing adaptive partitioning simulations and calculating the l an excess proton
+This package provides tools for analyizing adaptive partitioning simulations and
+ calculating the an excess proton
 """
 
 # Add imports here

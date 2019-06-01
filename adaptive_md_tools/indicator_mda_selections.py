@@ -178,7 +178,7 @@ class Selections:
             1-based integer to base donor search from
         """
         self.set_donor(u, donor_ind)
-        self.set_acc(u, donor_ind)
+        self.set_acc(u)
         self.set_proton(u, donor_ind)
 
     def reset_universe_selections(self, u, all_u):

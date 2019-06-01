@@ -14,15 +14,11 @@ class Indicator:
     This is the implementation of the indicator as detailed in our 2019
     paper on EcCLC
     """
+
     def __init__(self):
         # Dictionary (atom_type: rdh) These are used to calculate
         # rdh0 and pmax
-        self.rxh = {
-            'OT': 1.0,
-            'SOT': 1.0,
-            'CLA': 1.4,
-            'OC': 1.0
-        }
+        self.rxh = {'OT': 1.0, 'SOT': 1.0, 'CLA': 1.4, 'OC': 1.0}
         # self.num_rdh0 = 0
         self.rlist = 3.5
         # The coordinates of the donor
@@ -69,7 +65,7 @@ class Indicator:
         """
         try:
             int(freq)
-        except:
+        except TypeError:
             sys.exit("Error: indicator output frequency must be an integer")
         if freq > 0:
             self.output_freq = freq
@@ -99,7 +95,8 @@ class Indicator:
         :param coords:
         :return:
         """
-        self._lfi.write('{0:10d}  {1:10.6f}   {2:10.6f}\n'.format(self.step, p, dr))
+        self._lfi.write('{0:10d}  {1:10.6f}   {2:10.6f}\n'.format(
+            self.step, p, dr))
 
         if coords is None:
             return
@@ -120,12 +117,13 @@ class Indicator:
             for i in range(natoms):
                 self._xyz.write(xyz_str.format(*coords[i], els[i]))
             for j in range(i + 1, self.max_xyz_atoms):
-                self._xyz.write(xyz_str.format(0., 0., 0., els[j] ))
-        except:
-            sys.exit("Error writing coords")
+                self._xyz.write(xyz_str.format(0., 0., 0., els[j]))
+        except IOError:
+            print("Error writing coords")
+            raise
+        return
 
-
-    def add_rdh0(self, rdh, atom_type : str):
+    def add_rdh0(self, rdh, atom_type: str):
         """
         Add a rho parameter and atom type to the dict of parameters
 
@@ -155,7 +153,7 @@ class Indicator:
             self.rxh[atom_type] = rdh
         except TypeError("add rdh 4"):
             print("Error adding atom {0} and rdh parameter {1} to "
-                  "rdh".format( atom_type, rdh))
+                  "rdh".format(atom_type, rdh))
         return
 
     def print_rdh0(self, ofi=None):
@@ -229,8 +227,9 @@ class Indicator:
         try:
             rdh0 = self.rxh[type_d]
         except RuntimeError:
-            "Error hashing donor. Is donor in rdh0 list? is only one donor " \
-            "passed to subroutine?"
+            print("Error hashing donor. Is donor in rdh0 list? is only one"
+                  " donor passed to subroutine?")
+            raise
         pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
         pmj0 = rdh0 / self.rlist
 
@@ -246,21 +245,21 @@ class Indicator:
         dr = 0
         for m in range(self.num_h):
             for j in range(self.num_acceptors):
-                pmjs[m,j] = self.calc_pmj(self.x_d, self.x_as[j], self.x_hs[m])
+                pmjs[m, j] = self.calc_pmj(self.x_d, self.x_as[j], self.x_hs[m])
                 if pmjs[m, j] > pmaxs[j]:
                     self.hop.append((m, j, pmjs[m, j]))
                 if pmjs[m, j] > largest_p:
                     largest_p = pmjs[m, j]
                     dr = np.linalg.norm(self.x_d - self.x_hs[m]) - \
                          np.linalg.norm(self.x_as[j] - self.x_hs[m] )
-                xmjs[m,j] = self.calc_xmj(pmjs[m,j], pmj0, pmaxs[j])
-                gmjs[m,j] = self.calc_gmj(xmjs[m,j])
+                xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                gmjs[m, j] = self.calc_gmj(xmjs[m, j])
 
         gI = self.calc_gI(gmjs)
         self.x_i[:] = self.x_d[:]
         for j in range(self.num_acceptors):
             for m in range(self.num_h):
-                self.x_i[:] += gmjs[m,j] * x_as[j]
+                self.x_i[:] += gmjs[m, j] * x_as[j]
         self.x_i *= 1. / gI
 
         if self.print_all:
@@ -290,7 +289,7 @@ class Indicator:
         return 0
 
     @staticmethod
-    @jit(nopython=True)
+    @jit
     def calc_pmj(x_d, x_aj, x_hm):
         """
         calculate the variable p_mj [ rho_mj ]
@@ -311,7 +310,7 @@ class Indicator:
         """
         r_dhm = x_hm - x_d
         r_daj = x_aj - x_d
-        return np.dot(r_dhm, r_daj) / np.linalg.norm(r_daj) ** 2
+        return np.dot(r_dhm, r_daj) / np.linalg.norm(r_daj)**2
 
     @staticmethod
     @jit(nopython=True)
@@ -344,11 +343,11 @@ class Indicator:
         elif xmj < 0:
             gmj = 1
         else:
-            gmj = -6*xmj**5 + 15*xmj**4 -10*xmj**3 + 1
+            gmj = -6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1
         return gmj
 
     @staticmethod
-    @jit(nopython=True)
+    @jit
     def calc_gI(gmjs):
         """
         Calculate the normalization constant gI
@@ -501,6 +500,7 @@ class Indicator:
 #         self.step += 1
 #         return 0
 
+
 class Indicator4(Indicator):
     """
     This implementation of the indicator is the one where the projection
@@ -511,11 +511,11 @@ class Indicator4(Indicator):
     X_I = 1./g_I * [ X_D_com + \sum_k \sum_j \sum_m { rho_kmj * X_A_j } ] s
 
     """
+
     def __init__(self):
         Indicator.__init__(self)
         self.donor_com = []
         self.acceptor_com = []
-
 
     def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,
                        ofi=None):
@@ -582,7 +582,7 @@ class Indicator4(Indicator):
         for k in range(num_d):
 
             # Set hydrogen coordinates
-            self.num_h = x_hms[k].shape[0]
+            self.num_h = np.shape(x_hms[k])[0]
             if self.num_h <= 0:
                 continue
             found_proton = True
@@ -597,8 +597,9 @@ class Indicator4(Indicator):
             try:
                 rdh0 = self.rxh[type_d[k]]
             except RuntimeError:
-                "Error hashing donor. Is donor in rdh0 list? is only one donor " \
-                "passed to subroutine?"
+                print("Error hashing donor. Is donor in rdh0 list? is only"
+                      " one donor passed to subroutine?")
+                raise
             pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
             pmj0 = rdh0 / self.rlist
 
@@ -611,15 +612,16 @@ class Indicator4(Indicator):
             #Begin the calculations
             for m in range(self.num_h):
                 for j in range(self.num_acceptors):
-                    pmjs[m,j] = self.calc_pmj(self.x_d[k], self.x_as[j], self.x_hs[m])
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
                     if pmjs[m, j] > pmaxs[j]:
                         self.hop.append((m, j, pmjs[m, j], k))
                     if pmjs[m, j] > largest_p:
                         largest_p = pmjs[m, j]
                         dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
                              np.linalg.norm(self.x_as[j] - self.x_hs[m] )
-                    xmjs[m,j] = self.calc_xmj(pmjs[m,j], pmj0, pmaxs[j])
-                    gmjs[m,j] = self.calc_gmj(xmjs[m,j])
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
                     # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
                     # self.x_i[:] += gmjs[m, j] * (x_as[j])
                     self.x_i[:] += gmjs[m, j] * (as_com[j])
@@ -658,7 +660,7 @@ class Indicator4(Indicator):
 
         if self.output_freq:
             if self.step % self.output_freq == 0:
-                self._write_log(largest_p, dr, d_com[0][np.newaxis,:])
+                self._write_log(largest_p, dr, d_com[0][np.newaxis, :])
         self.step += 1
         return 0
 
@@ -674,6 +676,7 @@ class Indicator6(Indicator4):
     g(pmj) -> exp[g(pmj)]
     gI -> e + sum{exp[g(pmj)]}
     """
+
     def __init__(self):
         Indicator4.__init__(self)
 
@@ -683,7 +686,7 @@ class Indicator6(Indicator4):
         elif xmj < 0:
             gmj = 1
         else:
-            gmj = -6*xmj**5 + 15*xmj**4 -10*xmj**3 + 1
+            gmj = -6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1
         return gmj * np.exp(gmj)
 
     def calc_ind(self, d_com, gI):
@@ -710,10 +713,18 @@ class Indicator7(Indicator4):
     """
     This is indicator 4 with the intramolecular rho's added to the location
     """
+
     def __init__(self):
         Indicator4.__init__(self)
 
-    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
                        ofi=None):
         cstr = "{0:0.5f}   {1:0.5f}   {2:0.5f}\n"
         icstr = "{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n"
@@ -781,8 +792,10 @@ class Indicator7(Indicator4):
             try:
                 rdh0 = self.rxh[type_d[k]]
             except RuntimeError:
-                "Error hashing donor. Is donor in rdh0 list? is only one donor " \
-                "passed to subroutine?"
+                print(
+                "Error hashing donor. Is donor in rdh0 list? is only one donor "
+                "passed to subroutine?")
+                raise
             pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
             pmj0 = rdh0 / self.rlist
 
@@ -795,20 +808,20 @@ class Indicator7(Indicator4):
             #Begin the calculations
             for m in range(self.num_h):
                 for j in range(self.num_acceptors):
-                    pmjs[m,j] = self.calc_pmj(self.x_d[k], self.x_as[j], self.x_hs[m])
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
                     if pmjs[m, j] > pmaxs[j] and not intra_p:
                         self.hop.append((m, j, pmjs[m, j], k, False))
                     if pmjs[m, j] > largest_p:
                         largest_p = pmjs[m, j]
                         dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
                              np.linalg.norm(self.x_as[j] - self.x_hs[m] )
-                    xmjs[m,j] = self.calc_xmj(pmjs[m,j], pmj0, pmaxs[j])
-                    gmjs[m,j] = self.calc_gmj(xmjs[m,j])
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
                     # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
                     # self.x_i[:] += gmjs[m, j] * (x_as[j])
                     self.x_i[:] += gmjs[m, j] * (as_com[j])
             sum_gs += np.sum(gmjs[:])
-
 
             if self.print_all:
                 print("For donor %d" % k)
@@ -840,7 +853,8 @@ class Indicator7(Indicator4):
                     continue
                 for m in range(self.num_h):
                     rah = np.linalg.norm(self.x_hs[m] - self.x_d[j])
-                    my_p_don = rah / (rah + np.linalg.norm(self.x_hs[m] - self.x_d[k]))
+                    my_p_don = rah / (
+                        rah + np.linalg.norm(self.x_hs[m] - self.x_d[k]))
                     if my_p_don < 0.5:
                         if not found_intra_hop:
                             self.hop = []
@@ -860,7 +874,6 @@ class Indicator7(Indicator4):
             print("Final location", file=ofi)
             print(self.x_i)
 
-
         if self.output_freq:
             if self.step % self.output_freq == 0:
                 self._write_log(largest_p, dr)
@@ -878,10 +891,18 @@ class Indicator9(Indicator4):
     It worked slightly better in some cases than 4 but was
     very sensitive to vibrations of molecular bonds at equilbirium
     """
+
     def __init__(self):
         Indicator4.__init__(self)
 
-    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
                        ofi=None):
         cstr = "{0:0.5f}   {1:0.5f}   {2:0.5f}\n"
         icstr = "{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n"
@@ -966,15 +987,16 @@ class Indicator9(Indicator4):
             #Begin the calculations
             for m in range(self.num_h):
                 for j in range(self.num_acceptors):
-                    pmjs[m,j] = self.calc_pmj(self.x_d[k], self.x_as[j], self.x_hs[m])
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
                     if pmjs[m, j] > pmaxs[j]:
                         self.hop.append((m, j, pmjs[m, j], k))
                     if pmjs[m, j] > largest_p:
                         largest_p = pmjs[m, j]
                         dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
                              np.linalg.norm(self.x_as[j] - self.x_hs[m] )
-                    xmjs[m,j] = self.calc_xmj(pmjs[m,j], pmj0, pmaxs[j])
-                    gmjs[m,j] = self.calc_gmj(xmjs[m,j])
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
                     # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
                     # self.x_i[:] += gmjs[m, j] * (x_as[j])
                     self.x_i[:] += gmjs[m, j] * (as_com[j])
@@ -1012,7 +1034,7 @@ class Indicator9(Indicator4):
 
         if self.output_freq:
             if self.step % self.output_freq == 0:
-                self._write_log(largest_p, dr, my_dcom[0][np.newaxis,:])
+                self._write_log(largest_p, dr, my_dcom[0][np.newaxis, :])
         self.step += 1
         return 0
 
@@ -1056,14 +1078,21 @@ class Indicator11(Indicator):
     This accounts for the distance between each of the k-th donors and the
     center of mass.
     """
+
     # TODO: Finish this documentation
     def __init__(self):
         Indicator.__init__(self)
         self.donor_com = []
         self.acceptor_com = []
 
-
-    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
                        ofi=None):
         cstr = "{0:0.5f}   {1:0.5f}   {2:0.5f}\n"
         icstr = "{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n"
@@ -1129,8 +1158,11 @@ class Indicator11(Indicator):
             try:
                 rdh0 = self.rxh[type_d[k]]
             except RuntimeError:
+                print(
                 "Error hashing donor. Is donor in rdh0 list? is only one donor " \
                 "passed to subroutine?"
+                )
+                raise
             pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
             pmj0 = rdh0 / self.rlist
 
@@ -1143,18 +1175,20 @@ class Indicator11(Indicator):
             #Begin the calculations
             for m in range(self.num_h):
                 for j in range(self.num_acceptors):
-                    pmjs[m,j] = self.calc_pmj(self.x_d[k], self.x_as[j], self.x_hs[m])
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
                     if pmjs[m, j] > pmaxs[j]:
                         self.hop.append((m, j, pmjs[m, j], k))
                     if pmjs[m, j] > largest_p:
                         largest_p = pmjs[m, j]
                         dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
                              np.linalg.norm(self.x_as[j] - self.x_hs[m] )
-                    xmjs[m,j] = self.calc_xmj(pmjs[m,j], pmj0, pmaxs[j])
-                    gmjs[m,j] = self.calc_gmj(xmjs[m,j])
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
                     # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
                     # self.x_i[:] += gmjs[m, j] * (x_as[j])
-                    self.x_i[:] += gmjs[m, j] * (x_as[j] + self.x_d[k] - d_com[0].reshape(3))
+                    self.x_i[:] += gmjs[m, j] * (x_as[j] + self.x_d[k] -
+                                                 d_com[0].reshape(3))
             sum_gs += np.sum(gmjs[:])
 
             if self.print_all:
@@ -1189,7 +1223,7 @@ class Indicator11(Indicator):
 
         if self.output_freq:
             if self.step % self.output_freq == 0:
-                self._write_log(largest_p, dr, d_com[0][np.newaxis,:])
+                self._write_log(largest_p, dr, d_com[0][np.newaxis, :])
         self.step += 1
         return 0
 
@@ -1204,6 +1238,7 @@ class MCEC(Indicator4):
     This implementation of mCEC has indicator 4 as base class for switching
     topology. Then the mCEC stuff sits right on top of it.
     """
+
     def __init__(self, switching='chakrabarti'):
         Indicator4.__init__(self)
         if switching == 'chakrabarti':
@@ -1218,10 +1253,7 @@ class MCEC(Indicator4):
             sys.exit()
 
         self.switch = np.vectorize(self.switch)
-        self.m_acc_weight = {'OT': 2,
-                             'SOT': 2,
-                             'CLA': 0,
-                             'OC': 0}
+        self.m_acc_weight = {'OT': 2, 'SOT': 2, 'CLA': 0, 'OC': 0}
         self.rsw = 1.40
         self.dsw = 0.04
         self.x_mcec = np.asarray([0.00, 0.00, 0.00])
@@ -1258,8 +1290,8 @@ class MCEC(Indicator4):
             print("Error, no acceptor coordinates found")
             raise IndexError
         self.get_weight_vector(acc_types)
-        self.x_mcec[:] = calc_mcec_location(rH, rXj, self.acc_weights,
-                                                 self.rsw, self.dsw)
+        self.x_mcec[:] = calc_mcec_location(rH, rXj, self.acc_weights, self.rsw,
+                                            self.dsw)
         # self.x_mcec[:] = self.calc_mcec_location(rH, rXj, self.acc_weights,
         #                                          self.switch, self.rsw, self.dsw)
         print("MCEC before correction", self.x_mcec)
@@ -1293,10 +1325,12 @@ class MCEC(Indicator4):
 
         """
         num_groups = len(self.correction_groups)
-        correction = np.asarray([0.,0.,0.])
-        my_correction = np.asarray([0.,0.,0.])
+        correction = np.asarray([0., 0., 0.])
+        my_correction = np.asarray([0., 0., 0.])
         if num_groups != len(rGroups):
-            print("Error, the number of groups found does not equal the number of groups parsed")
+            print(
+                "Error, the number of groups found does not equal the number of groups parsed"
+            )
             raise LookupError
         for g in range(num_groups):
             my_correction[:] = 0.
@@ -1312,13 +1346,13 @@ class MCEC(Indicator4):
                 group_diff_max[x] = dists.max()
             print(group_diff_max)
             for l, k in permutations(range(group_length), 2):
-                my_correction += group_diff_max[k] * (rGroups[g][l] - rGroups[g][k])
+                my_correction += group_diff_max[k] * (rGroups[g][l] -
+                                                      rGroups[g][k])
             my_correction *= self.correction_weights[g]
             correction += my_correction
         if verbose:
             print('Correciton amount', correction)
         return correction
-
 
     def get_weight_vector(self, types):
         """
@@ -1363,12 +1397,12 @@ class MCEC(Indicator4):
         -------
         float
         """
-        a = results ** power
+        a = results**power
         b = a * results
         if (a[:] == np.nan).any():
-            a[a==np.nan] == 0.0
+            a[a == np.nan] == 0.0
         if (b[:] == np.nan).any():
-            b[b==np.nan] == 0.0
+            b[b == np.nan] == 0.0
         return b.sum() / a.sum()
 
     # @staticmethod
@@ -1437,10 +1471,10 @@ class MCEC(Indicator4):
         :param x:
         :return:
         """
-        return -6*x** 5 + 15*x**4 - 10*x**3 + 1
+        return -6 * x**5 + 15 * x**4 - 10 * x**3 + 1
 
 
-@jit(nopython=True,parallel=True)
+@jit(nopython=True, parallel=True)
 def chakrabarti_switching(d, rsw, dsw):
     """
     Chakrabarti switching function from
@@ -1460,10 +1494,10 @@ def chakrabarti_switching(d, rsw, dsw):
     -------
     float
     """
-    return (1+np.exp((d-rsw)/dsw))**-1
+    return (1 + np.exp((d - rsw) / dsw))**-1
 
 
-@jit(nopython=True)
+@jit
 def calc_mcec_location(rH, rXj, w, rsw, dsw, verbose=False):
     """
     Returns the mcec location from equation 6 of
@@ -1495,7 +1529,7 @@ def calc_mcec_location(rH, rXj, w, rsw, dsw, verbose=False):
     print('after subtracting acc', zeta)
     num_m = rH.shape[0]
     num_j = rXj.shape[0]
-    slow = False # Is 2 seconds slower for 25 second job...
+    slow = False  # Is 2 seconds slower for 25 second job...
     #_Slow way to calculate zeta
     if slow:
         for m in range(num_m):
@@ -1509,5 +1543,7 @@ def calc_mcec_location(rH, rXj, w, rsw, dsw, verbose=False):
         rHXj = np.zeros((rXj.shape[0], rH.shape[0], 3))
         rHXj[:] = rH[:]
         rHXj = np.transpose(rHXj, (1, 0, 2)) - rXj
-        zeta -= np.tensordot(rHXj, chakrabarti_switching(np.linalg.norm(rHXj, axis=2), rsw, dsw), [(0,1),(0,1)])
+        zeta -= np.tensordot(
+            rHXj, chakrabarti_switching(np.linalg.norm(rHXj, axis=2), rsw, dsw),
+            [(0, 1), (0, 1)])
     return zeta

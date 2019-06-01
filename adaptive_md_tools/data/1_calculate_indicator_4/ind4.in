@@ -1,0 +1,15 @@
+coordinates xyz.xyz
+structure mol2.mol2 mol2
+donor_index 1
+output_coords ./ind4.dcd
+groups_file ./groups.in
+elements_file xyz ./xyz.xyz
+write_prefix ind4
+verbose 1
+ind_output_freq 1
+rlist 3.0
+nowrap
+rdh0 N 1.0 O 1.0 F 1.0
+proton_types H
+ind_method 4
+indicator_verbose
