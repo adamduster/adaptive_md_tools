@@ -1,0 +1,60 @@
+
+\documentclass{article}
+\title{Adaptive MD Tools}
+\author{Adam Duster}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Adaptive MD Tools is a package that aims to help with getting partitions from completed MD simulations.
+The user supplies a topology file and trajectory file, and then selects the active zone center.
+The active zone center can be an individual atom, or one of several proton tracking algorithms including our indicator and the modified center of excess charge (mCEC).
+The program can then create a new trajectory where the active center is placed in the center of the box and the other atoms are wrapped around it based on supplied unit cell dimensions for an NVT simulation.
+The user can calculate the partitions from the permuted AP algorithm for a given permute order and buffer zone radius, and output them as xyz files to a folder.
+\end{abstract}
+\section{Installation}
+This program is a python package with a few dependencies. I recommend that the user create a conda environment specifically for using this pacakge. Then they can install the dependencies and use pip to install this program.
+
+Directions
+\begin{enumerate}
+\item Clone the pacakge from github into the specified directory
+\item Create a new conda environment with the name qmmm ap tools
+\item Install the MDAnalysis package with
+\item Install Numpy and Numba with conda install 
+\end{enumerate}
+
+\section{Methodology}
+This program has several unpublished indicator methods enabled, as well as an implementation of the mCEC.
+
+\subsection{Indicators}
+The indicators are based off of the original equation published in ref. 
+
+The indicator is a weighted sum of donor and acceptor atoms:
+\begin{equation}
+	X_I = \frac{X_D + \sum_j^J \sum_m^M g(\rho_{mj})X_{A_j}}{g_I}
+\end{equation}
+
+
+\subsection{mCEC}
+The mCEC is implemented as such:
+\begin{equation}
+\sum_{h \in H} \mathbf{r}_h - \sum_{j \in J} w_j \mathbf{r}_j + \sum_{h \in H} \sum_{j \in J} f_{sw}(r_{hj}) + \zeta`
+\end{equation}
+
+Here, $\zeta`$ is a correction term to account for groups of atoms with multiple protonatable sites. It can be expressed as:
+\begin{equation}
+\sum_{g \in G} \sum_{k\in g}\sum_{j \in g}m_k (\mathbf{r}_j - \mathbf{r}_k)
+\end{equation}
+where $g$ is a residue with multiple protonation sites in the collection of all residues $G$, and $j$ and $k$ are acecptor molecules within the same protonation site. 
+The multiplier $m$ is a differentiable maximum function times a constant related to the number of protons in the residue:
+\begin{equation}
+m = \frac{P}/{N} * \sum_h f_{sw}(r_{hj})^{16} / \sum_h f_{sw}(r_{hj})^{15}
+\end{equation}
+
+In the implementation within this code, the mCEC cannot be used alone and must be used with the one of the other indicator based methods. Those track the topology.
+\section{Input File}
+
+\subsection{Keywords}
+\end{document}
+
