@@ -266,7 +266,8 @@ class SelectionsInd1(Selections):
 
 
     """
-    def __init__(self, u, all_u, proton_types, acceptor_types, rlist, donor_index=None, a=None):
+    def __init__(self, u, all_u, proton_types, acceptor_types, rlist,
+                 donor_index=None):
         """
         Initialize the selection class
 
@@ -293,7 +294,8 @@ class SelectionsInd1(Selections):
             subroutine to select it
 
         """
-        Selections.__init__(self, u, all_u, proton_types, acceptor_types, rlist, donor_index=donor_index, a=a)
+        Selections.__init__(self, u, all_u, proton_types, acceptor_types, rlist,
+                            donor_index=donor_index)
 
     def set_proton(self, u, donor_ind):
         """

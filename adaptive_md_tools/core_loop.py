@@ -159,7 +159,7 @@ def core_loop(keywords, indi):
     return
 
 
-def setup_selection(u, all_u, indi, keywords):
+def  setup_selection(u, all_u, indi, keywords):
     """
     Set up the selections for the system
 

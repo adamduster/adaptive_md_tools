@@ -203,7 +203,9 @@ class Indicator:
         try:
             self.num_acceptors = x_as.shape[0]
             if self.num_acceptors == 0:
-                print("WARNING: NO ACCEPTOR")
+                print("Warning: NO ACCEPTOR")
+                print("Setting indicator location to donor coordinates")
+                self.x_i[:] = self.x_d[:]
                 return 1
             self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
             self.x_as[:, :] = x_as[:, :]
@@ -549,7 +551,9 @@ class Indicator4(Indicator):
         try:
             self.num_acceptors = x_as.shape[0]
             if self.num_acceptors == 0:
-                print("WARNING: NO ACCEPTOR")
+                print("Warning: NO ACCEPTOR")
+                print("Setting indicator location to donor com")
+                self.x_i[:] = self.d_com[:]
                 return 1
             self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
             self.x_as[:, :] = x_as[:, :]
@@ -624,7 +628,8 @@ class Indicator4(Indicator):
                     gmjs[m, j] = self.calc_gmj(xmjs[m, j])
                     # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
                     # self.x_i[:] += gmjs[m, j] * (x_as[j])
-                    self.x_i[:] += gmjs[m, j] * (as_com[j])
+                    self.x_i[:] += gmjs[m, j] * (as_com[j] + self.x_d[k] -
+                                                 d_com[0].reshape(3))
             sum_gs += np.sum(gmjs[:])
 
             if self.print_all:
@@ -1110,7 +1115,9 @@ class Indicator11(Indicator):
         try:
             self.num_acceptors = x_as.shape[0]
             if self.num_acceptors == 0:
-                print("WARNING: NO ACCEPTOR")
+                print("Warning: NO ACCEPTOR")
+                print("Setting indicator location to donor com")
+                self.x_i[:] = self.x_d[:]
                 return 1
             self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
             self.x_as[:, :] = x_as[:, :]

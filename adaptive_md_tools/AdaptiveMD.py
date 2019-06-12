@@ -68,7 +68,7 @@ def read_input_file(ifpath):
     keywords = {"groups_path": None,
                 "rlist": 3.5,
                 "indicator_verbose": False,
-                "proton_types": ["HT", "SHT"],
+                "proton_types": [],
                 "write_freq": 20,
                 "write_folder": './',
                 "write_partitions": False,
@@ -308,7 +308,7 @@ def set_indicator(keywords):
     :rtype: Indicator
     """
     if keywords["mcec"]:
-        if keywords["ind_method"] == 4:
+        if keywords["ind_method"] in [4, 11]:
             indi = MCEC()
         else:
             print("Currently, you must only use mcec with indicator 4")
@@ -391,8 +391,9 @@ def initialize_mcec(keywords, indi):
         acc = vals[2*i]
         w = vals[2*i+1]
         if acc not in indi.rxh.keys():
-            print("Error, mCEC weight found but does not correspond with "
-                  " list")
+            print()
+            print("Error, mCEC type found but does not correspond with "
+                  " the acceptors in the rdh0 list")
             raise
         try:
             indi.m_acc_weight[acc] = float(w)
@@ -413,16 +414,19 @@ def initialize_mcec(keywords, indi):
         for val in vals:
             words = val.split(',')
             if len(words) <= 2:
+                print("For keyword mcec_g")
                 print("Error parsing mcec_g keyword, there are not enough"
                       " integers for the group")
                 raise TypeError
             group_ids = []
             for w in words[:-1]:
                 if not w.isdigit():
+                    print("For keyword mcec_g")
                     print("Error parsing integer for group id")
                     raise TypeError
                 group_ids.append(int(w))
             if not words[-1].isdigit():
+                print("For keyword mcec_g")
                 print("Error, group weight must be an integer corresponding to"
                       " the reference state")
                 raise TypeError
