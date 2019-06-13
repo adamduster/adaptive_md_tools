@@ -1,0 +1,1455 @@
+<p>lang: en</p>
+<p>classoption: oneside
+geometry: margin=1in
+papersize: a4</p>
+<p>linkcolor: blue
+links-as-notes: true
+&hellip;</p>
+<h1 id="adaptive_md_tools">Module <code>adaptive_md_tools</code></h1>
+<p>adaptive_md_tools
+This package provides tools for analyizing adaptive partitioning simulations and
+ calculating the an excess proton</p>
+<h2 id="sub-modules">Sub-modules</h2>
+<ul>
+<li><a href="#adaptive_md_tools.AdaptiveMD">adaptive_md_tools.AdaptiveMD</a></li>
+<li><a href="#adaptive_md_tools.core_loop">adaptive_md_tools.core_loop</a></li>
+<li><a href="#adaptive_md_tools.indicator">adaptive_md_tools.indicator</a></li>
+<li><a href="#adaptive_md_tools.indicator_mda_selections">adaptive_md_tools.indicator_mda_selections</a></li>
+<li><a href="#adaptive_md_tools.mdtools">adaptive_md_tools.mdtools</a></li>
+<li><a href="#adaptive_md_tools.tests">adaptive_md_tools.tests</a></li>
+</ul>
+<h1 id="adaptive_md_tools.AdaptiveMD">Module <code>adaptive_md_tools.AdaptiveMD</code></h1>
+<p>This is the file that contains the main program.</p>
+<p>This code offers many features that are useful for analyzing adaptive
+partitioning simulations.</p>
+<p>Translates the system such that the donor
+is in the center. Then calculates the indicator and retranslates the system
+such that the indicator is now in the center. Also keeps track of the
+topology and groups for the system.</p>
+<h2 id="functions">Functions</h2>
+<h3 id="adaptive_md_tools.AdaptiveMD.check_keywords">Function <code>check_keywords</code></h3>
+<blockquote>
+<p><code>def check_keywords(keywords, indi)</code></p>
+</blockquote>
+<p>Check and print out the keywords and initial variables
+:param keywords: The parsed keywords
+:type keywords: dict
+:param indi: The indicator class used for the run
+:type indi: Indicator
+:return:</p>
+<h3 id="adaptive_md_tools.AdaptiveMD.cleanup">Function <code>cleanup</code></h3>
+<blockquote>
+<p><code>def cleanup()</code></p>
+</blockquote>
+<p>This subroutine deletes any temporary files which have been created during
+program execution.</p>
+<h6 id="parameters">Parameters</h6>
+<h2 id="returns">Returns</h2>
+<h3 id="adaptive_md_tools.AdaptiveMD.get_args">Function <code>get_args</code></h3>
+<blockquote>
+<p><code>def get_args(args=None)</code></p>
+</blockquote>
+<p>This is written as a default funtion to put at beginning of all Python
+scripts which require command line arguments. This uses the argparse module
+which must be declared in the main program to ensure that the object is able
+to be used by the caller
+&ndash;Adam Duster 21 June 2017</p>
+<h3 id="adaptive_md_tools.AdaptiveMD.initialize_mcec">Function <code>initialize_mcec</code></h3>
+<blockquote>
+<p><code>def initialize_mcec(keywords, indi)</code></p>
+</blockquote>
+<p>Initialize the mCEC variables for the mCEC indicator. Note that currently
+you must have initialized Indicator4 variables previously to initializing
+the mCEC.
+:param keywords: dict user input
+:param indi:
+:return:</p>
+<h3 id="adaptive_md_tools.AdaptiveMD.main">Function <code>main</code></h3>
+<blockquote>
+<p><code>def main()</code></p>
+</blockquote>
+<p>This is the main hook. Here we parse the input, initialize data structures,
+and call the main loop over the trajectory.</p>
+<h6 id="parameters_1">Parameters</h6>
+<h2 id="returns_1">Returns</h2>
+<h3 id="adaptive_md_tools.AdaptiveMD.read_input_file">Function <code>read_input_file</code></h3>
+<blockquote>
+<p><code>def read_input_file(ifpath)</code></p>
+</blockquote>
+<p>Read the input file and save the parameters</p>
+<h6 id="parameters_2">Parameters</h6>
+<dl>
+<dt><strong><code>ifpath</code></strong> :&ensp;<code>str</code></dt>
+<dd>input file path</dd>
+</dl>
+<h6 id="returns_2">Returns</h6>
+<dl>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Dictionary of parameters</dd>
+</dl>
+<h3 id="adaptive_md_tools.AdaptiveMD.set_indicator">Function <code>set_indicator</code></h3>
+<blockquote>
+<p><code>def set_indicator(keywords)</code></p>
+</blockquote>
+<p>Initialize the indicator
+:param keywords: input keywords
+:type keywords: dict
+:return: indicator
+:rtype: Indicator</p>
+<h1 id="adaptive_md_tools.core_loop">Module <code>adaptive_md_tools.core_loop</code></h1>
+<p>This file contains the &lsquo;core loop&rsquo; subroutine which iterates over all of the
+frames in the trajectory and is the main driver of the program.</p>
+<p>It currently also contains all the logic for printing out adaptive partitioning
+files, and for handling the indicator.</p>
+<p>TODO:
+Move indicator subroutines to their own file to clean up code.</p>
+<h2 id="functions_1">Functions</h2>
+<h3 id="adaptive_md_tools.core_loop.add_indicator_to_universe">Function <code>add_indicator_to_universe</code></h3>
+<blockquote>
+<p><code>def add_indicator_to_universe(u, ind_type='IND', ind_name='IND', frame=0, natoms=1)</code></p>
+</blockquote>
+<p>Add another atom and return the current universe</p>
+<h6 id="parameters_3">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.Universe</code></dt>
+<dd>Universe to add indicator to</dd>
+<dt><strong><code>natoms</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of atoms to append to the universe.</dd>
+</dl>
+<h6 id="returns_3">Returns</h6>
+<dl>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.Universe</code></dt>
+<dd>The new universe</dd>
+</dl>
+<h3 id="adaptive_md_tools.core_loop.calc_indicator">Function <code>calc_indicator</code></h3>
+<blockquote>
+<p><code>def calc_indicator(u, all_u, indi, sels, keywords)</code></p>
+</blockquote>
+<p>Stage and calculate the location of the indicator.
+Different things happen depending on the indicator method.</p>
+<h6 id="parameters_4">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Universe with indicator atom appended to it</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+<dt><strong><code>sels</code></strong> :&ensp;<code>Selection</code> <code>class</code> <code>object</code></dt>
+<dd>Contains selections that correspond to the indicator class</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>Dictionary object which contains indicator method we are using.</dd>
+</dl>
+<h2 id="returns_4">Returns</h2>
+<h3 id="adaptive_md_tools.core_loop.calc_new_bonds_from_u">Function <code>calc_new_bonds_from_u</code></h3>
+<blockquote>
+<p><code>def calc_new_bonds_from_u(u, old_don, transfer_h, new_don)</code></p>
+</blockquote>
+<p>Get the new bond list by deleting the bond between old_don and transfer_h,
+and adding the one between new_don and transfer_h.</p>
+<p>Here we make the assumption that the transfer H is only
+bonded to one atom. We just switch that bond</p>
+<h6 id="parameters_5">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>transfer_h</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of hydrogen that is transfered.</dd>
+<dt><strong><code>old_don</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of donor before transfer</dd>
+<dt><strong><code>new_don</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of donor after transfer</dd>
+</dl>
+<h6 id="returns_5">Returns</h6>
+<dl>
+<dt><strong><code>new_bonds</code></strong> :&ensp;<code>list</code> of <code>list</code> of <code>ints</code></dt>
+<dd>List of bonds. Bonds are lists with a pair of ints.
+Example: [[1,2],[3,4]]</dd>
+</dl>
+<h3 id="adaptive_md_tools.core_loop.calculate_weighted_coords">Function <code>calculate_weighted_coords</code></h3>
+<blockquote>
+<p><code>def calculate_weighted_coords(u, sels)</code></p>
+</blockquote>
+<p>Calculate a weighted coordinate for a group of donors in the system based
+on the projection vectors between them and surrounding accpetors.</p>
+<h6 id="parameters_6">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+</dl>
+<p>sels: Selection class object.
+    Contains selections that correspond to the indicator class</p>
+<h6 id="returns_6">Returns</h6>
+<dl>
+<dt><code>ndarray</code> of <code>floats</code> <code>with</code> <code>shape</code> (<code>3</code>)</dt>
+<dd>&nbsp;</dd>
+</dl>
+<h6 id="raises">Raises</h6>
+<dl>
+<dt><strong><code>DivideByZero</code></strong> :&ensp;<code>The</code> <code>sum</code> of <code>the</code> <code>weights</code> <code>is</code> <code>0</code> <code>and</code> <code>thus</code> <code>unnormalizable</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h6 id="notes">Notes</h6>
+<p>Here we calculate the vector between the donor K and all acceptors J. For
+each proton M, we calculate the projection onto the J-K vector and get
+the normalized distance of the projection D. We then weight each donor&rsquo;s
+location based on the sum of D&rsquo;s for each donor and return the weighted
+coordinate.</p>
+<p>The idea here is that if a proton is further from a given donor, it is
+more likely to transfer. We should weight the location of the indicator
+towards that donor.</p>
+<h3 id="adaptive_md_tools.core_loop.check_for_donor_switch">Function <code>check_for_donor_switch</code></h3>
+<blockquote>
+<p><code>def check_for_donor_switch(u, indi, sels)</code></p>
+</blockquote>
+<p>Check to see if an intramolecular proton transfer has occured.</p>
+<p>Compare the distances between the protons and protonatable sites of a
+donor group. If a proton is closer to another site than the one that
+it is bonded to, add the hop to the indi.hop list.f</p>
+<h6 id="parameters_7">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+</dl>
+<p>indi: Indicator class object.
+    Has info about donors, acceptors, etc
+sels: Selection class object.
+    Contains selections that correspond to the indi class</p>
+<h2 id="returns_7">Returns</h2>
+<h3 id="adaptive_md_tools.core_loop.core_loop">Function <code>core_loop</code></h3>
+<blockquote>
+<p><code>def core_loop(keywords, indi)</code></p>
+</blockquote>
+<p>Main loop for processing indicator. Here, the indicator is calculated if
+requested. The atoms can be translated such that a specific atom or the
+indicator is in the center of the box if requested.</p>
+<ol>
+<li>Set up universe</li>
+<li>
+<p>Set up groups</p>
+</li>
+<li>
+<p>Main Loop</p>
+</li>
+</ol>
+<p>:param keywords: input keywords
+:type keywords: dict
+:param indi: indicator class
+:type indi: Indicator</p>
+<h3 id="adaptive_md_tools.core_loop.do_hop">Function <code>do_hop</code></h3>
+<blockquote>
+<p><code>def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False)</code></p>
+</blockquote>
+<p>This subroutine has a lot going on. We hop the proton by:
+    1. Changing the donor in the indicator and resetting selections
+    2. Change the topology
+    3. Because we cannot change the topology for the whole trajectory, we
+    must delete u and all_u, then reinitialize them
+based on the new topologies.</p>
+<h6 id="parameters_8">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Universe with indicator atom appended to it</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+<dt>translation_vector:</dt>
+<dt>Vector to translate system by before wrapping.</dt>
+<dt><strong><code>ts</code></strong> :&ensp;<code>MDAnalysis.universe.trajectory.frame</code></dt>
+<dd>The current trajectory frame</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>Dictionary object which contains indicator method we are using.</dd>
+<dt><strong><code>sels</code></strong> :&ensp;<code>Selection</code> <code>class</code> <code>object</code></dt>
+<dd>Contains selections that correspond to the indicator class</dd>
+<dt><strong><code>intra</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether this is an intramolecular proton hop or not</dd>
+</dl>
+<h3 id="adaptive_md_tools.core_loop.do_hop_ind_class">Function <code>do_hop_ind_class</code></h3>
+<blockquote>
+<p><code>def do_hop_ind_class(u, indi, sels, intra, keywords)</code></p>
+</blockquote>
+<p>Here we adjust the indicator class for a proton hop. We change the donors
+and acceptors, and find the transferring hydrogen. Then we reset the
+selections.</p>
+<h6 id="parameters_9">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe that has the atoms which we want to get the com of</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+<dt><strong><code>sels</code></strong> :&ensp;<code>Selection</code> <code>class</code> <code>object</code></dt>
+<dd>Contains selections that correspond to the indicator class</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>Dictionary object which contains indicator method we are using.</dd>
+<dt><strong><code>intra</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether this is an intramolecular proton hop or not</dd>
+</dl>
+<h6 id="returns_8">Returns</h6>
+<dl>
+<dt><strong><code>transfer_h</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of hydrogen that is transfered.</dd>
+<dt><strong><code>old_don</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of donor before transfer</dd>
+<dt><strong><code>new_don</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of donor after transfer</dd>
+</dl>
+<h3 id="adaptive_md_tools.core_loop.get_group_geom_center">Function <code>get_group_geom_center</code></h3>
+<blockquote>
+<p><code>def get_group_geom_center(u, types, ind, redundant=True, return_types=False)</code></p>
+</blockquote>
+<p>Get the center of geometry for the group that index in ind is a member of.</p>
+<h6 id="parameters_10">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe that has the atoms which we want to get the com of</dd>
+<dt><strong><code>types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>List of atom types for each ind</dd>
+<dt><strong><code>ind</code></strong> :&ensp;<code>list</code> <code>ints</code></dt>
+<dd>0-Based indices to get the group center of mass from.</dd>
+<dt><strong><code>redundant</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Not sure</dd>
+<dt><strong><code>return_types</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, return a tuple containing the type of the</dd>
+</dl>
+<h6 id="returns_9">Returns</h6>
+<dl>
+<dt><strong><code>com</code></strong> :&ensp;<code>list</code> of <code>float</code> <code>nd.arrays</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>ret_types</code></strong> :&ensp;<code>Optional</code>, <code>list</code> of <code>str</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>The types of the first atom in the selection for the COG.</p>
+<dl>
+<dt><code>for</code> <code>return_types</code>=<code>True</code>, <code>the</code> <code>tuple</code> <code>is</code>:</dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>(com, ret_types)</p>
+<h6 id="warnings">Warnings</h6>
+<p>This subroutine frequently has issues.</p>
+<h3 id="adaptive_md_tools.core_loop.get_group_ind">Function <code>get_group_ind</code></h3>
+<blockquote>
+<p><code>def get_group_ind(u, types, ind, redundant=True)</code></p>
+</blockquote>
+<p>Return a list of indices for atoms in COG groups for indicator 1.</p>
+<p>I don&rsquo;t quite understand the code anymore&hellip;</p>
+<h6 id="parameters_11">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe that has the atoms which we want to get the com of</dd>
+<dt><strong><code>types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>List of atom types for each ind</dd>
+<dt><strong><code>ind</code></strong> :&ensp;<code>list</code> of <code>lists</code> of <code>ints</code></dt>
+<dd>Contains atoms in each group</dd>
+<dt><strong><code>redundant</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Not sure</dd>
+</dl>
+<h6 id="returns_10">Returns</h6>
+<dl>
+<dt><strong><code>com</code></strong> :&ensp;<code>list</code> of <code>float</code> <code>nd.arrays</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h6 id="todo">TODO</h6>
+<p>Figure out what the hell this does.</p>
+<h6 id="warnings_1">Warnings</h6>
+<p>This subroutine frequently has issues.</p>
+<h3 id="adaptive_md_tools.core_loop.get_group_positions">Function <code>get_group_positions</code></h3>
+<blockquote>
+<p><code>def get_group_positions(u, indi)</code></p>
+</blockquote>
+<p>Return the locations of the members in the correction groups.</p>
+<h6 id="parameters_12">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+</dl>
+<h6 id="returns_11">Returns</h6>
+<dl>
+<dt><code>list</code> of <code>ndarrays</code> <code>with</code> <code>shape</code> (<code>n</code>,<code>3</code>)</dt>
+<dd>&nbsp;</dd>
+</dl>
+<h3 id="adaptive_md_tools.core_loop.initialize_universe">Function <code>initialize_universe</code></h3>
+<blockquote>
+<p><code>def initialize_universe(struct, coords, xdim, ydim, zdim, frame=0)</code></p>
+</blockquote>
+<p>Initialize an MDAnalysis universe</p>
+<h6 id="parameters_13">Parameters</h6>
+<dl>
+<dt><strong><code>struct</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the structure file to input to the universe</dd>
+<dt><strong><code>coords</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the coordinate file for the universe</dd>
+<dt><strong><code>frame</code></strong> :&ensp;<code>int</code></dt>
+<dd>timestep to jump to</dd>
+<dt><strong><code>xdim</code></strong> :&ensp;<code>float</code></dt>
+<dd>x dimension in A</dd>
+<dt><strong><code>ydim</code></strong> :&ensp;<code>float</code></dt>
+<dd>y dimension in A</dd>
+<dt><strong><code>zdim</code></strong> :&ensp;<code>float</code></dt>
+<dd>z dimension in A</dd>
+</dl>
+<p>:return: universe</p>
+<h3 id="adaptive_md_tools.core_loop.ratio_topology_change">Function <code>ratio_topology_change</code></h3>
+<blockquote>
+<p><code>def ratio_topology_change(u, indi, sels, keywords)</code></p>
+</blockquote>
+<p>Adds a proton hop from one donor to the next to the indicator object
+depending on the D-H bond lengths for different atoms in the system.</p>
+<p>The proton is transferred if:
+r_km / [r_km + r_jm] &gt; 0.5 (the distance between the donor and it&rsquo;s proton
+                            is greater than an acceptor and the proton)</p>
+<h6 id="parameters_14">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+<dt><strong><code>sels</code></strong> :&ensp;<code>Selection</code> <code>class</code> <code>object</code></dt>
+<dd>Contains selections that correspond to the indicator class</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>Dictionary object which contains indicator method we are using.</dd>
+</dl>
+<h6 id="notes_1">Notes</h6>
+<p>This can be used to describe tautomerization proton transfer reactions such
+as that for the proton between the two oxygens in glutamic acid.</p>
+<h6 id="todo_1">TODO</h6>
+<p>Remove dependency on keywords variable</p>
+<h3 id="adaptive_md_tools.core_loop.sel_type_and_same_res">Function <code>sel_type_and_same_res</code></h3>
+<blockquote>
+<p><code>def sel_type_and_same_res(u, types, ind)</code></p>
+</blockquote>
+<p>Generic subroutine to select atoms with a type given in the list &lsquo;types&rsquo;
+with the same resnum as the index of ind</p>
+<h6 id="parameters_15">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>List of atom types for each ind</dd>
+<dt><strong><code>ind</code></strong> :&ensp;<code>integer</code></dt>
+<dd>1-based index of atom with resnum.</dd>
+</dl>
+<h6 id="returns_12">Returns</h6>
+<dl>
+<dt><strong><code>sel</code></strong> :&ensp;<code>MDAnalysis.selection</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h6 id="todo_2">TODO</h6>
+<p>This subroutine contains logic that is used throughout the code. That
+could all be consolidated.</p>
+<h3 id="adaptive_md_tools.core_loop.setup_selection">Function <code>setup_selection</code></h3>
+<blockquote>
+<p><code>def setup_selection(u, all_u, indi, keywords)</code></p>
+</blockquote>
+<p>Set up the selections for the system</p>
+<h6 id="parameters_16">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.Universe</code></dt>
+<dd>main universe object</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.Universe</code></dt>
+<dd>universe with proton</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code></dt>
+<dd>proton indicator</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dict</code></dt>
+<dd>program parameters</dd>
+</dl>
+<h2 id="returns_13">Returns</h2>
+<h3 id="adaptive_md_tools.core_loop.write_partitions">Function <code>write_partitions</code></h3>
+<blockquote>
+<p><code>def write_partitions(groups, ts, elements, center, keywords)</code></p>
+</blockquote>
+<p>Write out the partitions that would be calculated if this were an adaptive
+partitioning calculation.</p>
+<h6 id="parameters_17">Parameters</h6>
+<dl>
+<dt><strong><code>groups</code></strong> :&ensp;<code>mdtools.Groups</code></dt>
+<dd>A groups object containing the adaptive partitioning groups</dd>
+<dt><strong><code>ts</code></strong> :&ensp;<code>MDAnalysis.trajectory.timestep</code></dt>
+<dd>The current timestep</dd>
+<dt>elements:</dt>
+<dt><strong><code>center</code></strong> :&ensp;<code>ndarray</code> of <code>floats</code> <code>with</code> <code>shape</code> (<code>3</code>)</dt>
+<dd>The center of the active zone</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Program parameters</dd>
+</dl>
+<h1 id="adaptive_md_tools.indicator">Module <code>adaptive_md_tools.indicator</code></h1>
+<p>This file contains classes for calculating the position of the indicator
+with Numpy</p>
+<h2 id="functions_2">Functions</h2>
+<h3 id="adaptive_md_tools.indicator.calc_mcec_location">Function <code>calc_mcec_location</code></h3>
+<blockquote>
+<p><code>def calc_mcec_location(rH, rXj, w, rsw, dsw, verbose=False)</code></p>
+</blockquote>
+<p>Returns the mcec location from equation 6 of
+J. Phys. Chem. A, Vol. 110, 2006</p>
+<p>This is the mCEC location without the correction term</p>
+<h6 id="parameters_18">Parameters</h6>
+<dl>
+<dt><strong><code>rH</code></strong> :&ensp;<code>np.ndarray</code> of <code>floats</code> <code>with</code> <code>size</code> (<code>n</code>,<code>3</code>) <code>where</code> <code>n</code> <code>is</code></dt>
+<dd>&nbsp;</dd>
+<dt>number of hydrogens.</dt>
+<dt>hydrogen locations</dt>
+<dt><strong><code>rXj</code></strong> :&ensp;<code>np.ndarray</code> of <code>floats</code> <code>w</code> <code>ith</code> <code>size</code> (<code>J</code>,<code>3</code>) <code>where</code> <code>J</code> <code>is</code></dt>
+<dd>&nbsp;</dd>
+<dt>number of acceptors.</dt>
+<dt>acceptor locations</dt>
+<dt><strong><code>w</code></strong> :&ensp;<code>np.ndarray</code> of <code>int</code> <code>with</code> <code>size</code> <code>J</code></dt>
+<dd>The reference protonation state of each acceptor</dd>
+</dl>
+<h6 id="returns_14">Returns</h6>
+<dl>
+<dt><strong><code>zeta</code></strong> :&ensp;<code>The</code> <code>mcec</code> <code>without</code> <code>the</code> <code>correction</code> <code>term</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h3 id="adaptive_md_tools.indicator.chakrabarti_switching">Function <code>chakrabarti_switching</code></h3>
+<blockquote>
+<p><code>def chakrabarti_switching(d, rsw, dsw)</code></p>
+</blockquote>
+<p>Chakrabarti switching function from
+Konig et all
+J. Phys. Chem. A. Vol 110, No.2</p>
+<h6 id="parameters_19">Parameters</h6>
+<dl>
+<dt><strong><code>d</code></strong> :&ensp;<code>real</code></dt>
+<dd>&nbsp;</dd>
+<dt>distance</dt>
+<dt><strong><code>rsw</code></strong> :&ensp;<code>real</code></dt>
+<dd>midpoint of switching function</dd>
+<dt><strong><code>dsw</code></strong> :&ensp;<code>real</code></dt>
+<dd>slope of switching function</dd>
+</dl>
+<h6 id="returns_15">Returns</h6>
+<dl>
+<dt><code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="classes">Classes</h2>
+<h3 id="adaptive_md_tools.indicator.Indicator">Class <code>Indicator</code></h3>
+<blockquote>
+<p><code>class Indicator()</code></p>
+</blockquote>
+<p>This is the implementation of the indicator as detailed in our 2019
+paper on EcCLC</p>
+<h4 id="descendants">Descendants</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator.Indicator4">adaptive_md_tools.indicator.Indicator4</a></li>
+<li><a href="#adaptive_md_tools.indicator.Indicator11">adaptive_md_tools.indicator.Indicator11</a></li>
+</ul>
+<h4 id="static-methods">Static methods</h4>
+<h5 id="adaptive_md_tools.indicator.Indicator.calc_gI"><code>Method calc_gI</code></h5>
+<blockquote>
+<p><code>def calc_gI(gmjs)</code></p>
+</blockquote>
+<p>Calculate the normalization constant gI</p>
+<h6 id="parameters_20">Parameters</h6>
+<p>:param gmjs: the splined projection vectors
+:type gmjs: np.ndarray
+:return: the normalization constant
+:rtype: np.float</p>
+<h5 id="adaptive_md_tools.indicator.Indicator.calc_gmj"><code>Method calc_gmj</code></h5>
+<blockquote>
+<p><code>def calc_gmj(xmj)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.indicator.Indicator.calc_pmj"><code>Method calc_pmj</code></h5>
+<blockquote>
+<p><code>def calc_pmj(x_d, x_aj, x_hm)</code></p>
+</blockquote>
+<p>calculate the variable p_mj [ rho_mj ]
+this is the projection of the D-H vec onto the D-A vec</p>
+<h6 id="parameters_21">Parameters</h6>
+<dl>
+<dt><strong><code>x_d</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>3</code>)</dt>
+<dd>coordinates of donor (np.float array [3] )</dd>
+<dt><strong><code>x_aj</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>3</code>)</dt>
+<dd>coordinates of acceptor j (np.float array [3] )</dd>
+<dt><strong><code>x_hm</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>3</code>)</dt>
+<dd>coordinates of hydrogen m (np.float array [3] )</dd>
+</dl>
+<h6 id="returns_16">Returns</h6>
+<dl>
+<dt><code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator.Indicator.calc_xmj"><code>Method calc_xmj</code></h5>
+<blockquote>
+<p><code>def calc_xmj(pmj, pmj0, pmax)</code></p>
+</blockquote>
+<p>calculate the variable x(p_mj) [ x(rho_mj) ]. This is the ratio
+that deals with how far we are away from equilibrium.</p>
+<h6 id="parameters_22">Parameters</h6>
+<dl>
+<dt><strong><code>pmj</code></strong> :&ensp; <code>float</code></dt>
+<dd>projection scalar</dd>
+<dt><strong><code>pmj0</code></strong> :&ensp;<code>float</code></dt>
+<dd>scaling parameter parameter</dd>
+<dt><strong><code>pmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>equilibrium bond constant ratio</dd>
+</dl>
+<h6 id="returns_17">Returns</h6>
+<dl>
+<dt><strong><code>x_pmj</code></strong> :&ensp;<code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h4 id="methods">Methods</h4>
+<h5 id="adaptive_md_tools.indicator.Indicator.add_rdh0">Method <code>add_rdh0</code></h5>
+<blockquote>
+<p><code>def add_rdh0(self, rdh, atom_type)</code></p>
+</blockquote>
+<p>Add a rho parameter and atom type to the dict of parameters</p>
+<h6 id="parameters_23">Parameters</h6>
+<dl>
+<dt><strong><code>rdh</code></strong> :&ensp;<code>float</code></dt>
+<dd>equilibrium dh distance in angstrom</dd>
+<dt><strong><code>atom_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>atom type to associate with rdh value</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator.Indicator.calc_indicator">Method <code>calc_indicator</code></h5>
+<blockquote>
+<p><code>def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, ofi=None)</code></p>
+</blockquote>
+<p>This is the main subroutine for calculating the indicator</p>
+<h6 id="parameters_24">Parameters</h6>
+<dl>
+<dt><strong><code>x_d</code></strong> :&ensp;<code>ndarray</code> of <code>float</code></dt>
+<dd>coordinates with shape [3]</dd>
+<dt><strong><code>x_as</code></strong> :&ensp;<code>ndarray</code> of <code>float</code></dt>
+<dd>acceptor coordinates each with shape [j,3]</dd>
+<dt><strong><code>x_hms</code></strong> :&ensp;<code>ndarray</code> of <code>float</code></dt>
+<dd>hydrogen coordinates each with shape [m,3]</dd>
+<dt><strong><code>type_d</code></strong> :&ensp;<code>str</code></dt>
+<dd>donor type to link with rho parameters</dd>
+<dt><strong><code>type_as</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>acceptor types to link with rho parameters</dd>
+<dt><strong><code>ofi</code></strong> :&ensp;<code>file</code> <code>object</code></dt>
+<dd>where to print stuff</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator.Indicator.print_rdh0">Method <code>print_rdh0</code></h5>
+<blockquote>
+<p><code>def print_rdh0(self, ofi=None)</code></p>
+</blockquote>
+<p>Output data for double checking</p>
+<h6 id="parameters_25">Parameters</h6>
+<dl>
+<dt><strong><code>ofi</code></strong> :&ensp;<code>file</code> <code>object</code> <code>with</code> <code>write</code> <code>permissions</code></dt>
+<dd>The output file object. If None, then this will print to stdout</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator.Indicator.reset_hop">Method <code>reset_hop</code></h5>
+<blockquote>
+<p><code>def reset_hop(self)</code></p>
+</blockquote>
+<p>After proton hop, clear the list of hops</p>
+<h5 id="adaptive_md_tools.indicator.Indicator.set_output_freq">Method <code>set_output_freq</code></h5>
+<blockquote>
+<p><code>def set_output_freq(self, freq, prefix='')</code></p>
+</blockquote>
+<p>Initialize variables for writing the xyz and the log file</p>
+<h6 id="parameters_26">Parameters</h6>
+<dl>
+<dt><strong><code>freq</code></strong> :&ensp;<code>int</code></dt>
+<dd>output frequency</dd>
+<dt><strong><code>prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>file prefix</dd>
+</dl>
+<h3 id="adaptive_md_tools.indicator.Indicator11">Class <code>Indicator11</code></h3>
+<blockquote>
+<p><code>class Indicator11()</code></p>
+</blockquote>
+<p>This implementation of the indicator is the one I developed but
+the distance between the donor center of mass and the kth donor
+are added to the final result.</p>
+<p>This accounts for the distance between each of the k-th donors and the
+center of mass.</p>
+<h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator.Indicator">adaptive_md_tools.indicator.Indicator</a></li>
+</ul>
+<h4 id="methods_1">Methods</h4>
+<h5 id="adaptive_md_tools.indicator.Indicator11.calc_ind">Method <code>calc_ind</code></h5>
+<blockquote>
+<p><code>def calc_ind(self, d_com, gI)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.indicator.Indicator4">Class <code>Indicator4</code></h3>
+<blockquote>
+<p><code>class Indicator4()</code></p>
+</blockquote>
+<p>This implementation of the indicator is the one where the projection
+vectors between donors in a group and other acceptors are calcualted.
+The results from each donor are then added back to calculate the final
+location for the indicator.</p>
+<p>X_I = 1./g_I * [ X_D_com + \sum_k \sum_j \sum_m { rho_kmj * X_A_j } ] s</p>
+<h4 id="ancestors-in-mro_1">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator.Indicator">adaptive_md_tools.indicator.Indicator</a></li>
+</ul>
+<h4 id="descendants_1">Descendants</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator.Indicator6">adaptive_md_tools.indicator.Indicator6</a></li>
+<li><a href="#adaptive_md_tools.indicator.Indicator7">adaptive_md_tools.indicator.Indicator7</a></li>
+<li><a href="#adaptive_md_tools.indicator.Indicator9">adaptive_md_tools.indicator.Indicator9</a></li>
+<li><a href="#adaptive_md_tools.indicator.MCEC">adaptive_md_tools.indicator.MCEC</a></li>
+</ul>
+<h4 id="methods_2">Methods</h4>
+<h5 id="adaptive_md_tools.indicator.Indicator4.calc_ind">Method <code>calc_ind</code></h5>
+<blockquote>
+<p><code>def calc_ind(self, d_com, gI)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.indicator.Indicator4.calc_indicator">Method <code>calc_indicator</code></h5>
+<blockquote>
+<p><code>def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com, ofi=None)</code></p>
+</blockquote>
+<h2 id="parameters_27">Parameters</h2>
+<p>:param x_d:  ndarray of donor coordinates with shape [k,3]
+:param x_as: ndarray of acc coordinates with shape [j,3]
+:param x_hms: ndarra of hyd coordinates with shape [m,3]
+:param type_d: list of strings with length k
+:param type_as: list of strings with length j
+:param d_com: list of length 1 with [3] array !TODO make this less wacky
+:param as_com: list of acceptor centers of mass
+:param ofi: where to print stuff
+:return:</p>
+<h3 id="adaptive_md_tools.indicator.Indicator6">Class <code>Indicator6</code></h3>
+<blockquote>
+<p><code>class Indicator6()</code></p>
+</blockquote>
+<p>Modify indicator 4 by exponentiating the gmj terms</p>
+<p>g(pmj) -&gt; exp[g(pmj)]
+gI -&gt; e + sum{exp[g(pmj)]}</p>
+<h4 id="ancestors-in-mro_2">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator.Indicator4">adaptive_md_tools.indicator.Indicator4</a></li>
+<li><a href="#adaptive_md_tools.indicator.Indicator">adaptive_md_tools.indicator.Indicator</a></li>
+</ul>
+<h4 id="methods_3">Methods</h4>
+<h5 id="adaptive_md_tools.indicator.Indicator6.calc_gmj">Method <code>calc_gmj</code></h5>
+<blockquote>
+<p><code>def calc_gmj(self, xmj)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.indicator.Indicator6.calc_ind">Method <code>calc_ind</code></h5>
+<blockquote>
+<p><code>def calc_ind(self, d_com, gI)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.indicator.Indicator7">Class <code>Indicator7</code></h3>
+<blockquote>
+<p><code>class Indicator7()</code></p>
+</blockquote>
+<p>This is indicator 4 with the intramolecular rho&rsquo;s added to the location</p>
+<h4 id="ancestors-in-mro_3">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator.Indicator4">adaptive_md_tools.indicator.Indicator4</a></li>
+<li><a href="#adaptive_md_tools.indicator.Indicator">adaptive_md_tools.indicator.Indicator</a></li>
+</ul>
+<h3 id="adaptive_md_tools.indicator.Indicator9">Class <code>Indicator9</code></h3>
+<blockquote>
+<p><code>class Indicator9()</code></p>
+</blockquote>
+<p>Indicator 4 with weighting of the donor coordinate by the following formula</p>
+<p>X_k_w = [r_km - rDH^0] / [\sum_k (\sum_m_k r_km - rDH^0)]</p>
+<p>It worked slightly better in some cases than 4 but was
+very sensitive to vibrations of molecular bonds at equilbirium</p>
+<h4 id="ancestors-in-mro_4">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator.Indicator4">adaptive_md_tools.indicator.Indicator4</a></li>
+<li><a href="#adaptive_md_tools.indicator.Indicator">adaptive_md_tools.indicator.Indicator</a></li>
+</ul>
+<h4 id="methods_4">Methods</h4>
+<h5 id="adaptive_md_tools.indicator.Indicator9.calc_d_weights">Method <code>calc_d_weights</code></h5>
+<blockquote>
+<p><code>def calc_d_weights(self, type_d, x_hms)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.indicator.MCEC">Class <code>MCEC</code></h3>
+<blockquote>
+<p><code>class MCEC(switching='chakrabarti')</code></p>
+</blockquote>
+<p>Implementation of the mCEC.
+This implementation of mCEC has indicator 4 as base class for switching
+topology. Then the mCEC stuff sits right on top of it.</p>
+<h4 id="ancestors-in-mro_5">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator.Indicator4">adaptive_md_tools.indicator.Indicator4</a></li>
+<li><a href="#adaptive_md_tools.indicator.Indicator">adaptive_md_tools.indicator.Indicator</a></li>
+</ul>
+<h4 id="static-methods_1">Static methods</h4>
+<h5 id="adaptive_md_tools.indicator.MCEC.diff_max"><code>Method diff_max</code></h5>
+<blockquote>
+<p><code>def diff_max(results, power=15)</code></p>
+</blockquote>
+<p>Differentiable maximum function. Given a list of floats,
+calculate the differentiable maximum function</p>
+<h6 id="parameters_28">Parameters</h6>
+<dl>
+<dt><strong><code>results</code></strong> :&ensp;<code>ndarray</code> of <code>floats</code></dt>
+<dd>array of floats to exponentiate and sum</dd>
+</dl>
+<h6 id="returns_18">Returns</h6>
+<dl>
+<dt><code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator.MCEC.fos"><code>Method fos</code></h5>
+<blockquote>
+<p><code>def fos(x)</code></p>
+</blockquote>
+<p>Our fifth order spline</p>
+<h6 id="parameters_29">Parameters</h6>
+<p>:param x:
+:return:</p>
+<h4 id="methods_5">Methods</h4>
+<h5 id="adaptive_md_tools.indicator.MCEC.calc_mcec">Method <code>calc_mcec</code></h5>
+<blockquote>
+<p><code>def calc_mcec(self, rH, rXj, acc_types, correction_groups=None)</code></p>
+</blockquote>
+<p>Main loop for calculating the mCEC location.</p>
+<p>The result is stored in self.x_mcec.</p>
+<h6 id="parameters_30">Parameters</h6>
+<dl>
+<dt><strong><code>rH</code></strong> :&ensp;<code>ndarray</code> <code>with</code> <code>shape</code>(<code>m</code>,<code>3</code>)</dt>
+<dd>The positions of the hydrogens</dd>
+<dt><strong><code>rXj</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code> (<code>j</code>,<code>3</code>)</dt>
+<dd>The locations of the acceptors</dd>
+<dt><strong><code>acc_types</code></strong> :&ensp;<code>list</code> of <code>str</code> <code>with</code> <code>len</code> (<code>j</code>)</dt>
+<dd>The atom type corresponding to an the Jth acceptor</dd>
+<dt><strong><code>correction_groups</code></strong> :&ensp;<code>list</code> of <code>lr</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns_19">Returns</h2>
+<h5 id="adaptive_md_tools.indicator.MCEC.calc_mcec_correction">Method <code>calc_mcec_correction</code></h5>
+<blockquote>
+<p><code>def calc_mcec_correction(self, rH, rGroups, verbose=True)</code></p>
+</blockquote>
+<p>Calculate the correction term for the mCEC.</p>
+<p>Currently the max function is used instead of the nondifferentiable
+max function due to numerical issues.</p>
+<h6 id="parameters_31">Parameters</h6>
+<dl>
+<dt><strong><code>rH</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>m</code>,<code>3</code>)</dt>
+<dd>The positions of the hydrogens</dd>
+<dt><strong><code>rGroups</code></strong> :&ensp;<code>list</code> of <code>ndarrays</code> <code>with</code> <code>shape</code>(<code>m</code>,<code>3</code>)</dt>
+<dd>The position of the groups.
+Example:
+([[1.1 1.1 1.1],
+  [1.2 1.2 1.2]],
+ [[2.1 2.1 2.1],
+  [2.2 2.2 2.2],
+  [2.3 2.3 2.3]])</dd>
+</dl>
+<h6 id="returns_20">Returns</h6>
+<dl>
+<dt><code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>3</code>)</dt>
+<dd>&nbsp;</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator.MCEC.get_weight_vector">Method <code>get_weight_vector</code></h5>
+<blockquote>
+<p><code>def get_weight_vector(self, types)</code></p>
+</blockquote>
+<p>Return an array of weights for each exceptor in list &lsquo;types&rsquo;</p>
+<h6 id="parameters_32">Parameters</h6>
+<dl>
+<dt><strong><code>types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>list of atom types to lookup weights for</dd>
+</dl>
+<h6 id="returns_21">Returns</h6>
+<dl>
+<dt><code>ndarray</code> of <code>floats</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h6 id="exceptions">Exceptions</h6>
+<dl>
+<dt><strong><code>LookupError</code></strong> :&ensp;<code>Could</code> <code>not</code> <code>find</code> <code>the</code> <code>type</code> <code>in</code> <code>the</code> <code>acceptor</code> <code>type</code> <code>dictionary</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h1 id="adaptive_md_tools.indicator_mda_selections">Module <code>adaptive_md_tools.indicator_mda_selections</code></h1>
+<p>This module contains classes for selecting donors, acceptors, and transferring
+protons for the indicator classes in indicator.py.</p>
+<p>All of the selections are for an MDAnalysis universe.</p>
+<h2 id="classes_1">Classes</h2>
+<h3 id="adaptive_md_tools.indicator_mda_selections.Selections">Class <code>Selections</code></h3>
+<blockquote>
+<p><code>class Selections(u, all_u, proton_types, acceptor_types, rlist, donor_index=None)</code></p>
+</blockquote>
+<p>This is the base selection class. It contains functionality for the
+mCEC, original indicator, and the new best indicator method (indicator B in
+the paper)</p>
+<h4 id="parameters_33">Parameters</h4>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object without any proton indicator in it</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object with the proton indicator appended to the
+end</dd>
+<dt><strong><code>proton_types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>A list of atom types corresponding to the protons that qualify for
+the indicator calculations. Protons not in this list that are
+connected to the donor residue will be ignored</dd>
+<dt><strong><code>acceptor_types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>A list of atom types corresponding to the acceptors that qualify for
+the indicator calculations.</dd>
+<dt><strong><code>rlist</code></strong> :&ensp;<code>float</code></dt>
+<dd>Search radius for looking for acceptor molecules</dd>
+</dl>
+<p>donor_index:
+    1-based index for setting the initial donor of the selection.
+    If this is present, the donor selection will automatically be
+    set up. Otherwise, it is necessary to manually call another
+    subroutine to select it</p>
+<h2 id="returns_22">Returns</h2>
+<h4 id="descendants_2">Descendants</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator_mda_selections.SelectionsInd1">adaptive_md_tools.indicator_mda_selections.SelectionsInd1</a></li>
+<li><a href="#adaptive_md_tools.indicator_mda_selections.SelectionsInd2">adaptive_md_tools.indicator_mda_selections.SelectionsInd2</a></li>
+</ul>
+<h4 id="methods_6">Methods</h4>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.reset_all">Method <code>reset_all</code></h5>
+<blockquote>
+<p><code>def reset_all(self, u, all_u, donor_ind)</code></p>
+</blockquote>
+<p>Convenience function for resetting the universe and indicator
+selections. Calls the reset universe function and then sets the donor,
+acceptor, and protons.</p>
+<h6 id="parameters_34">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object without any proton indicator in it</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object with the proton indicator appended to the
+end</dd>
+<dt><strong><code>donor_ind</code></strong> :&ensp;<code>int</code></dt>
+<dd>1-based integer to base donor search from</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.reset_universe_selections">Method <code>reset_universe_selections</code></h5>
+<blockquote>
+<p><code>def reset_universe_selections(self, u, all_u)</code></p>
+</blockquote>
+<p>Selects all of the atoms in the universe and universe with indicator.</p>
+<h6 id="parameters_35">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object without any proton indicator in it</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object with the proton indicator appended to the
+end</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.set_acc">Method <code>set_acc</code></h5>
+<blockquote>
+<p><code>def set_acc(self, u)</code></p>
+</blockquote>
+<p>Use the MDAnalysis selection tools to find the acceptors within
+self.rlist of the donor selection.</p>
+<h6 id="note">Note</h6>
+<ol>
+<li>this selects atoms around all donor atoms in the self.d selection</li>
+<li>this deselects atoms that have the same resnum as the donor</li>
+</ol>
+<h6 id="parameters_36">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.set_all_acc">Method <code>set_all_acc</code></h5>
+<blockquote>
+<p><code>def set_all_acc(self, u)</code></p>
+</blockquote>
+<p>Select all of the donor/acceptor atoms in the universe.
+This is used in conjunction with mCEC calculations.</p>
+<h6 id="parameters_37">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.set_all_protons">Method <code>set_all_protons</code></h5>
+<blockquote>
+<p><code>def set_all_protons(self, u)</code></p>
+</blockquote>
+<p>Select all of the protons in the universe.
+This is used in conjunction with mCEC calculations.</p>
+<h6 id="parameters_38">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.set_dah">Method <code>set_dah</code></h5>
+<blockquote>
+<p><code>def set_dah(self, u, donor_ind)</code></p>
+</blockquote>
+<p>Convenience function for setting the donor, then calculating the
+acceptor and proton selections.</p>
+<h6 id="parameters_39">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+<dt><strong><code>donor_ind</code></strong> :&ensp;<code>int</code></dt>
+<dd>1-based integer to base donor search from</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.set_donor">Method <code>set_donor</code></h5>
+<blockquote>
+<p><code>def set_donor(self, u, donor_ind)</code></p>
+</blockquote>
+<p>Set the new donor(s) from a 1-based donor atom index.</p>
+<p>This will set the donor selection to a list of atoms that have:
+    1. the same <em>resnum</em> as the input parameter donor_ind
+    2. atom types from the self.acc_string variable</p>
+<h6 id="parameters_40">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+<dt><strong><code>donor_ind</code></strong> :&ensp;<code>int</code></dt>
+<dd>1-based integer to base donor search from</dd>
+</dl>
+<h2 id="returns_23">Returns</h2>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.set_one_donor">Method <code>set_one_donor</code></h5>
+<blockquote>
+<p><code>def set_one_donor(self, u, donor_ind)</code></p>
+</blockquote>
+<p>Set the donor to be an individual atom.</p>
+<p>This is in contrast to the set_donor function which selects multiple
+atoms with the same resnum.</p>
+<h6 id="parameters_41">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+<dt><strong><code>donor_ind</code></strong> :&ensp;<code>int</code></dt>
+<dd>1-based integer to base donor search from</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.set_original_acc">Method <code>set_original_acc</code></h5>
+<blockquote>
+<p><code>def set_original_acc(self, u)</code></p>
+</blockquote>
+<p>Uses the MDAnalysis selection tools to select acceptors within
+self.rlist of the list of self.d</p>
+<p>This does not deselect atoms that are in the same residue as the donor.</p>
+<p>It is called set_original_acc as it follows the rules of the original
+proton indicator.</p>
+<h6 id="parameters_42">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+</dl>
+<h5 id="adaptive_md_tools.indicator_mda_selections.Selections.set_proton">Method <code>set_proton</code></h5>
+<blockquote>
+<p><code>def set_proton(self, u, atom_ind)</code></p>
+</blockquote>
+<p>Select protons bonded to the atom given by atom_ind</p>
+<h6 id="parameters_43">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+<dt><strong><code>atom_ind</code></strong> :&ensp;<code>int</code></dt>
+<dd>1-based integer to base donor search from</dd>
+</dl>
+<h3 id="adaptive_md_tools.indicator_mda_selections.SelectionsInd1">Class <code>SelectionsInd1</code></h3>
+<blockquote>
+<p><code>class SelectionsInd1(u, all_u, proton_types, acceptor_types, rlist, donor_index=None)</code></p>
+</blockquote>
+<p>This is the selection class for indicator A in the paper.</p>
+<p>Here, we need to select all protons in the donor group. In
+the program, we just pretend the COM is the donor position
+and use this for the H positions.</p>
+<p>Initialize the selection class</p>
+<h4 id="parameters_44">Parameters</h4>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object without any proton indicator in it</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object with the proton indicator appended to the
+end</dd>
+<dt><strong><code>proton_types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>A list of atom types corresponding to the protons that qualify for
+the indicator calculations. Protons not in this list that are
+connected to the donor residue will be ignored</dd>
+<dt><strong><code>acceptor_types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>A list of atom types corresponding to the acceptors that qualify for
+the indicator calculations.</dd>
+<dt><strong><code>rlist</code></strong> :&ensp;<code>float</code></dt>
+<dd>Search radius for looking for acceptor molecules</dd>
+</dl>
+<p>donor_index:
+    1-based index for setting the initial donor of the selection.
+    If this is present, the donor selection will automatically be
+    set up. Otherwise, it is necessary to manually call another
+    subroutine to select it</p>
+<h4 id="ancestors-in-mro_6">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator_mda_selections.Selections">adaptive_md_tools.indicator_mda_selections.Selections</a></li>
+</ul>
+<h4 id="methods_7">Methods</h4>
+<h5 id="adaptive_md_tools.indicator_mda_selections.SelectionsInd1.set_proton">Method <code>set_proton</code></h5>
+<blockquote>
+<p><code>def set_proton(self, u, donor_ind)</code></p>
+</blockquote>
+<p>Set all of the protons bonded do the donor group.</p>
+<h6 id="notes_2">Notes</h6>
+<p>The below code suffers from some bug in glu-w where it selects properly
+when  &lsquo;( bonded bynum 7 or bonded bynum 5 )&rsquo;
+but not
+     &lsquo;( bonded bynum 5 or bonded bynum 7 )&rsquo;</p>
+<p>I think I just had to switch the order in the input file&hellip;</p>
+<p>It can also run into a bug if two donors are bonded to proton</p>
+<h6 id="parameters_45">Parameters</h6>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>MDA universe to search for atoms within</dd>
+<dt><strong><code>donor_ind</code></strong> :&ensp;<code>int</code></dt>
+<dd>1-based integer to base donor search from</dd>
+</dl>
+<h2 id="returns_24">Returns</h2>
+<h3 id="adaptive_md_tools.indicator_mda_selections.SelectionsInd2">Class <code>SelectionsInd2</code></h3>
+<blockquote>
+<p><code>class SelectionsInd2(u, all_u, proton_types, acceptor_types, rlist, donor_index=None, a=None)</code></p>
+</blockquote>
+<p>The selection class for indicator 2.</p>
+<p>This class is experimental and may not work as expected due to the fact that
+there was no congnizent equation for indicator 2.</p>
+<h4 id="parameters_46">Parameters</h4>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object without any proton indicator in it</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code> <code>object</code></dt>
+<dd>The MDA universe object with the proton indicator appended to the
+end</dd>
+<dt><strong><code>proton_types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>A list of atom types corresponding to the protons that qualify for
+the indicator calculations. Protons not in this list that are
+connected to the donor residue will be ignored</dd>
+<dt><strong><code>acceptor_types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>A list of atom types corresponding to the acceptors that qualify for
+the indicator calculations.</dd>
+<dt><strong><code>rlist</code></strong> :&ensp;<code>float</code></dt>
+<dd>Search radius for looking for acceptor molecules</dd>
+</dl>
+<p>donor_index:
+    1-based index for setting the initial donor of the selection.
+    If this is present, the donor selection will automatically be
+    set up. Otherwise, it is necessary to manually call another
+    subroutine to select it</p>
+<h2 id="returns_25">Returns</h2>
+<h4 id="ancestors-in-mro_7">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.indicator_mda_selections.Selections">adaptive_md_tools.indicator_mda_selections.Selections</a></li>
+</ul>
+<h4 id="methods_8">Methods</h4>
+<h5 id="adaptive_md_tools.indicator_mda_selections.SelectionsInd2.set_donors">Method <code>set_donors</code></h5>
+<blockquote>
+<p><code>def set_donors(self, u, donor_ind)</code></p>
+</blockquote>
+<h1 id="adaptive_md_tools.mdtools">Module <code>adaptive_md_tools.mdtools</code></h1>
+<p>This is currently a set of classes that contains the bonding
+topology and AP groups for the system</p>
+<h2 id="functions_3">Functions</h2>
+<h3 id="adaptive_md_tools.mdtools.get_args">Function <code>get_args</code></h3>
+<blockquote>
+<p><code>def get_args(args=None)</code></p>
+</blockquote>
+<p>This is written as a default funtion to put at beginning of all Python
+scripts which require command line arguments. This uses the argparse module
+which must be declared in the main program to ensure that the object is able
+to be used by the caller
+&ndash;Adam Duster 21 June 2017</p>
+<h3 id="adaptive_md_tools.mdtools.get_elements">Function <code>get_elements</code></h3>
+<blockquote>
+<p><code>def get_elements(in_path, file_type)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.main">Function <code>main</code></h3>
+<blockquote>
+<p><code>def main()</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.print_xyz">Function <code>print_xyz</code></h3>
+<blockquote>
+<p><code>def print_xyz(num_atoms, x, y, z, atom_type, title=None, ofi=None)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.print_xyz_traj">Function <code>print_xyz_traj</code></h3>
+<blockquote>
+<p><code>def print_xyz_traj(coords, types, title=None, ofi=None)</code></p>
+</blockquote>
+<p>Write an xyz trajectory file to ofi
+:param coords: float ndarray with size [f,num_atoms,3] where f is num frames
+:param types: elements
+:param title: title for each frame
+:param ofi: open file handle for writing
+:return:</p>
+<h3 id="adaptive_md_tools.mdtools.rawincount">Function <code>rawincount</code></h3>
+<blockquote>
+<p><code>def rawincount(filename)</code></p>
+</blockquote>
+<p>Get the number of lines in filename
+:param filename:
+:return:</p>
+<h3 id="adaptive_md_tools.mdtools.read_xyz">Function <code>read_xyz</code></h3>
+<blockquote>
+<p><code>def read_xyz(ifpath, return_coord_array=False)</code></p>
+</blockquote>
+<p>Reads an xyz file
+:param ifpath:
+:return: num_atoms, x, y, z, atom_type, title as numpy int or float arrays</p>
+<h3 id="adaptive_md_tools.mdtools.read_xyz2">Function <code>read_xyz2</code></h3>
+<blockquote>
+<p><code>def read_xyz2(ifpath)</code></p>
+</blockquote>
+<p>Reads an xyz file and returns numpy array and atomic numbers from element
+:param ifpath:
+:return: num_atoms, coords, atom_type, atom_number as numpy int or float
+:rtype: (np.ndarray(n, dtype=int16), np.ndarray(n,3, dtype=float),
+np.ndarray(n, dtype=&rdquo;U2&rdquo;), np.ndarray(n, dtype=int8)</p>
+<h3 id="adaptive_md_tools.mdtools.read_xyz_trajectory">Function <code>read_xyz_trajectory</code></h3>
+<blockquote>
+<p><code>def read_xyz_trajectory(ifpath)</code></p>
+</blockquote>
+<p>Reads an xyz file
+:param ifpath:
+:return: num_atoms, x, y, z, atom_type, title as numpy int or float arrays</p>
+<h3 id="adaptive_md_tools.mdtools.testGroups">Function <code>testGroups</code></h3>
+<blockquote>
+<p><code>def testGroups(groupsPath='./test_files/groups.log')</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.testPSFBonds">Function <code>testPSFBonds</code></h3>
+<blockquote>
+<p><code>def testPSFBonds(psfPath='./test_files/h3o.psf')</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.wrap_coords">Function <code>wrap_coords</code></h3>
+<blockquote>
+<p><code>def wrap_coords(cell_x, cell_y, cell_z, x, y, z, num_atoms, center)</code></p>
+</blockquote>
+<ol>
+<li>Translate all atoms by vector from atom designated by center
+to center of box defined by [[0, cell_x],[0, cell_y], [0, cell_z]]</li>
+<li>wrap all atoms outside of the above box into the box</li>
+</ol>
+<p>:param cell_x: x cell dimention float
+:param cell_y: y cell dimention float
+:param cell_z: float z cell dimension
+:param x: np float array x coords
+:param y: np float array y coords
+:param z: np float array z coords
+:param num_atoms: int
+:param center: int 0-based index of atom center
+:return: x, y, z</p>
+<h2 id="classes_2">Classes</h2>
+<h3 id="adaptive_md_tools.mdtools.Bonds">Class <code>Bonds</code></h3>
+<blockquote>
+<p><code>class Bonds(numAtoms, bond_list=[])</code></p>
+</blockquote>
+<p>A class to keep track of the bonding for system</p>
+<h4 id="methods_9">Methods</h4>
+<h5 id="adaptive_md_tools.mdtools.Bonds.addBonds">Method <code>addBonds</code></h5>
+<blockquote>
+<p><code>def addBonds(self, a1, a2)</code></p>
+</blockquote>
+<p>Add a bond to a1 and a2. This means a1 is added to a2&rsquo;s bonds and
+a2 is added to a1&rsquo;s bonds
+:param a1:
+:param a2:
+:return:</p>
+<h5 id="adaptive_md_tools.mdtools.Bonds.getUniqueBonds">Method <code>getUniqueBonds</code></h5>
+<blockquote>
+<p><code>def getUniqueBonds(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Bonds.printBonds">Method <code>printBonds</code></h5>
+<blockquote>
+<p><code>def printBonds(self, style=None)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.File">Class <code>File</code></h3>
+<blockquote>
+<p><code>class File(filePath, fileType='')</code></p>
+</blockquote>
+<h4 id="descendants_3">Descendants</h4>
+<ul>
+<li><a href="#adaptive_md_tools.mdtools.Mol2File">adaptive_md_tools.mdtools.Mol2File</a></li>
+<li><a href="#adaptive_md_tools.mdtools.PDBFile">adaptive_md_tools.mdtools.PDBFile</a></li>
+</ul>
+<h3 id="adaptive_md_tools.mdtools.Groups">Class <code>Groups</code></h3>
+<blockquote>
+<p><code>class Groups(numGroups, numAtoms)</code></p>
+</blockquote>
+<p>A class to keep track of the AP group stuff</p>
+<h4 id="methods_10">Methods</h4>
+<h5 id="adaptive_md_tools.mdtools.Groups.checkGroups">Method <code>checkGroups</code></h5>
+<blockquote>
+<p><code>def checkGroups(self)</code></p>
+</blockquote>
+<p>Check to ensure all atoms are assigned to group and all groups have
+a representative atom. Return false if this is not the case
+:return: goodCheck = logical</p>
+<h5 id="adaptive_md_tools.mdtools.Groups.printGroups">Method <code>printGroups</code></h5>
+<blockquote>
+<p><code>def printGroups(self, style='groups.log')</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Groups.setAtomGroup">Method <code>setAtomGroup</code></h5>
+<blockquote>
+<p><code>def setAtomGroup(self, ind, group)</code></p>
+</blockquote>
+<p>Affiliate the atom with a group. If this is the first atom
+affiliated with the group, make it the group representative.
+:param ind: the atom index
+:param group: the group to affiliate atom with
+:return:</p>
+<h5 id="adaptive_md_tools.mdtools.Groups.setGroupRep">Method <code>setGroupRep</code></h5>
+<blockquote>
+<p><code>def setGroupRep(self, ind, group)</code></p>
+</blockquote>
+<p>Set the group representative
+:param ind: atom index to make representative
+:param group: group to make representative of
+:return:</p>
+<h5 id="adaptive_md_tools.mdtools.Groups.transferAtom">Method <code>transferAtom</code></h5>
+<blockquote>
+<p><code>def transferAtom(self, atom, new_atom)</code></p>
+</blockquote>
+<p>Change the group of an atom specified by ATOM to the group of the atom
+specified by NEW_BOND
+:param atom:
+:param new_atom:
+:return:</p>
+<h3 id="adaptive_md_tools.mdtools.GroupsFile">Class <code>GroupsFile</code></h3>
+<blockquote>
+<p><code>class GroupsFile(groupsPath)</code></p>
+</blockquote>
+<h4 id="methods_11">Methods</h4>
+<h5 id="adaptive_md_tools.mdtools.GroupsFile.getGroups">Method <code>getGroups</code></h5>
+<blockquote>
+<p><code>def getGroups(self)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.MMTypes">Class <code>MMTypes</code></h3>
+<blockquote>
+<p><code>class MMTypes(numAtoms)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.Mol2File">Class <code>Mol2File</code></h3>
+<blockquote>
+<p><code>class Mol2File(filePath, fileType='')</code></p>
+</blockquote>
+<h4 id="ancestors-in-mro_8">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.mdtools.File">adaptive_md_tools.mdtools.File</a></li>
+</ul>
+<h4 id="methods_12">Methods</h4>
+<h5 id="adaptive_md_tools.mdtools.Mol2File.getBonds">Method <code>getBonds</code></h5>
+<blockquote>
+<p><code>def getBonds(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Mol2File.getMMTypes">Method <code>getMMTypes</code></h5>
+<blockquote>
+<p><code>def getMMTypes(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Mol2File.getNumAtoms">Method <code>getNumAtoms</code></h5>
+<blockquote>
+<p><code>def getNumAtoms(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Mol2File.getTopo">Method <code>getTopo</code></h5>
+<blockquote>
+<p><code>def getTopo(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Mol2File.read_atom">Method <code>read_atom</code></h5>
+<blockquote>
+<p><code>def read_atom(self, mmType)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Mol2File.read_bonds">Method <code>read_bonds</code></h5>
+<blockquote>
+<p><code>def read_bonds(self, bonds, numBonds)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.PDBFile">Class <code>PDBFile</code></h3>
+<blockquote>
+<p><code>class PDBFile(pdbPath, required=None)</code></p>
+</blockquote>
+<h4 id="ancestors-in-mro_9">Ancestors (in MRO)</h4>
+<ul>
+<li><a href="#adaptive_md_tools.mdtools.File">adaptive_md_tools.mdtools.File</a></li>
+</ul>
+<h4 id="methods_13">Methods</h4>
+<h5 id="adaptive_md_tools.mdtools.PDBFile.parsePDB">Method <code>parsePDB</code></h5>
+<blockquote>
+<p><code>def parsePDB(self)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.PSFFile">Class <code>PSFFile</code></h3>
+<blockquote>
+<p><code>class PSFFile(psfPath)</code></p>
+</blockquote>
+<h4 id="methods_14">Methods</h4>
+<h5 id="adaptive_md_tools.mdtools.PSFFile.getBonds">Method <code>getBonds</code></h5>
+<blockquote>
+<p><code>def getBonds(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.PSFFile.getMMTypes">Method <code>getMMTypes</code></h5>
+<blockquote>
+<p><code>def getMMTypes(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.PSFFile.getNumAtoms">Method <code>getNumAtoms</code></h5>
+<blockquote>
+<p><code>def getNumAtoms(self)</code></p>
+</blockquote>
+<p>Read the number of atoms from the PSF file
+This leave the file at the NATOM line! Rewind it if you need to
+go from beginning and don&rsquo;t change because other programs depend
+on it!
+:return:</p>
+<h5 id="adaptive_md_tools.mdtools.PSFFile.getTopo">Method <code>getTopo</code></h5>
+<blockquote>
+<p><code>def getTopo(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.PSFFile.read_beginning_lines">Method <code>read_beginning_lines</code></h5>
+<blockquote>
+<p><code>def read_beginning_lines(self)</code></p>
+</blockquote>
+<h3 id="adaptive_md_tools.mdtools.Topology">Class <code>Topology</code></h3>
+<blockquote>
+<p><code>class Topology(of_path=None, num_atoms=0)</code></p>
+</blockquote>
+<h4 id="methods_15">Methods</h4>
+<h5 id="adaptive_md_tools.mdtools.Topology.close_ofi">Method <code>close_ofi</code></h5>
+<blockquote>
+<p><code>def close_ofi(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Topology.make_str">Method <code>make_str</code></h5>
+<blockquote>
+<p><code>def make_str(self, inds, str_width=8)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Topology.set_ofi">Method <code>set_ofi</code></h5>
+<blockquote>
+<p><code>def set_ofi(self, of_path)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Topology.write_atom">Method <code>write_atom</code></h5>
+<blockquote>
+<p><code>def write_atom(self)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Topology.write_bond">Method <code>write_bond</code></h5>
+<blockquote>
+<p><code>def write_bond(self, bonds)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Topology.write_mol2">Method <code>write_mol2</code></h5>
+<blockquote>
+<p><code>def write_mol2(self, bonds)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Topology.write_natom">Method <code>write_natom</code></h5>
+<blockquote>
+<p><code>def write_natom(self)</code></p>
+</blockquote>
+<p>Write the mm atom types into the psf file
+:return:</p>
+<h5 id="adaptive_md_tools.mdtools.Topology.write_psf">Method <code>write_psf</code></h5>
+<blockquote>
+<p><code>def write_psf(self, bonds, num_atoms, start_lines=None)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Topology.write_section">Method <code>write_section</code></h5>
+<blockquote>
+<p><code>def write_section(self, tstring, inds, groups_per_line)</code></p>
+</blockquote>
+<h5 id="adaptive_md_tools.mdtools.Topology.write_title">Method <code>write_title</code></h5>
+<blockquote>
+<p><code>def write_title(self)</code></p>
+</blockquote>
+<p>Write a title for the psf file
+:return:</p>
+<h1 id="adaptive_md_tools.tests">Module <code>adaptive_md_tools.tests</code></h1>
+<p>Empty init file in case you choose a package besides PyTest such as Nose which may look for such a file</p>
+<h2 id="sub-modules_1">Sub-modules</h2>
+<ul>
+<li><a href="#adaptive_md_tools.tests.test_adaptive_md_tools">adaptive_md_tools.tests.test_adaptive_md_tools</a></li>
+</ul>
+<h1 id="adaptive_md_tools.tests.test_adaptive_md_tools">Module <code>adaptive_md_tools.tests.test_adaptive_md_tools</code></h1>
+<p>Unit and regression test for the adaptive_md_tools package.</p>
+<h2 id="functions_4">Functions</h2>
+<h3 id="adaptive_md_tools.tests.test_adaptive_md_tools.test_adaptive_md_tools_imported">Function <code>test_adaptive_md_tools_imported</code></h3>
+<blockquote>
+<p><code>def test_adaptive_md_tools_imported()</code></p>
+</blockquote>
+<p>Sample test, will always pass so long as import statement worked</p>
+<hr />
+<p>Generated by <em>pdoc</em> 0.6.2 (<a href="https://pdoc3.github.io">https://pdoc3.github.io</a>).</p>
