@@ -328,6 +328,9 @@ def set_indicator(keywords):
     else:
         print("Error, could not recognize indicator type")
         raise TypeError
+    if keywords["ind_method"] in [2, 3]:
+        print("Unfortunately the requested indicator type is not implemented")
+        raise NotImplementedError
 
     if "rlist" in keywords:
         try:

@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 """
+This file contains the 'core loop' subroutine which iterates over all of the
+frames in the trajectory and is the main driver of the program.
 
+It currently also contains all the logic for printing out adaptive partitioning
+files, and for handling the indicator.
+
+TODO:
+Move indicator subroutines to their own file to clean up code.
 """
 __author__ = 'Adam Duster'
 __copyright__ = ''
@@ -159,7 +166,7 @@ def core_loop(keywords, indi):
     return
 
 
-def  setup_selection(u, all_u, indi, keywords):
+def setup_selection(u, all_u, indi, keywords):
     """
     Set up the selections for the system
 
@@ -774,7 +781,7 @@ def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False):
     groups.transferAtom(transfer_h, new_don)
     #
     # Go through and get the new list of bonds for rewriting the topology
-    new_bonds = calc_new_bonds_from_u(u, old_don, transfer_h, new_don)
+    new_bonds = calc_new_bonds_from_u(u, transfer_h, new_don)
     #
     # Write the new psf in a confusing and horrible way
     if keywords["topology_type"] == 'psf':
@@ -814,7 +821,7 @@ def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False):
     return new_u, new_all_u
 
 
-def calc_new_bonds_from_u(u, old_don, transfer_h, new_don):
+def calc_new_bonds_from_u(u, transfer_h, new_don):
     """
     Get the new bond list by deleting the bond between old_don and transfer_h,
     and adding the one between new_don and transfer_h.
@@ -843,8 +850,6 @@ def calc_new_bonds_from_u(u, old_don, transfer_h, new_don):
     new_bonds = []
     found_bond = False
     for b in range(num_bonds):
-        # if old_don in u.bonds.indices[b, :2] and \
-        #         transfer_h in u.bonds.indices[b, :2]:
         if transfer_h in u.bonds.indices[b, :2]:
             new_bonds.append((new_don, transfer_h))
             if found_bond == False:

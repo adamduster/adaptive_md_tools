@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 """
 This module contains classes for selecting donors, acceptors, and transferring
-protons for the indicator classes in indicator.py
+protons for the indicator classes in indicator.py.
+
+All of the selections are for an MDAnalysis universe.
 """
 import warnings
 
