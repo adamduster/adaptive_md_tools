@@ -12,6 +12,12 @@
 \setlength{\heavyrulewidth}{1.5pt}
 \setlength{\abovetopsep}{4pt}
 \usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[nottoc]{tocbibind}
+% Bibliography
+\usepackage[sort&compress,numbers,super]{natbib}
+% ACS style
+\bibliographystyle{achemso}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -19,10 +25,11 @@ Adaptive MD Tools is a package that aims to help with getting partitions from co
 The user supplies a topology file and trajectory file, and then selects the active zone center.
 The active zone center can be an individual atom, or one of several proton tracking algorithms including our indicator and the modified center of excess charge (mCEC).
 The program can then create a new trajectory where the active center is placed in the center of the box and the other atoms are wrapped around it based on supplied unit cell dimensions for an NVT simulation.
-The user can calculate the partitions from the permuted AP algorithm for a given permute order and buffer zone radius, and output them as xyz files to a folder.
+The user can calculate the partitions from the permuted AP algorithm for a given permute order and buffer zone radius, and output them as \texttt{.xyz} files to a folder.
 \end{abstract}
+
 \section{Installation}
-This program is a python package with dependencies on MDAnalysis, Numba, and NumPY. I recommend that the user create a conda environment specifically for using this pacakge. Then they can install the dependencies and use pip to install this program.
+This program is a python package with dependencies on MDAnalysis, Numba, and NumPy. I recommend that the user create a Conda environment specifically for using this package. Then they can install the dependencies and use pip to install this program.
 
 \paragraph{Prerequisites}
 
@@ -30,15 +37,15 @@ Python3 via Conda
 
 \paragraph{Directions}
 \begin{enumerate}
-\item Clone the pacakge from github into the specified directory
+\item Clone the package from GitHub into the specified directory
 
 \texttt{git clone \url{https://github.com/adamduster/adaptive_md_tools}}
 
-\item Create a new conda environment with the name "qmmm\_ap\_tools"
+\item Create a new Conda environment with the name "qmmm\_ap\_tools"
 
 \texttt{conda create --name qmmm\_ap\_tools python=3}
 
-\item Enter the conda environment
+\item Enter the Conda environment
 
 \texttt{ conda activate qmmm\_ap\_tools }
 
@@ -50,7 +57,7 @@ Python3 via Conda
 
 \texttt{pip install -e .}
 
-\item The installation shoudl now be complete!
+\item The installation should now be complete!
 You can call the file \texttt{AdaptiveMD.py} to run the program!
 \end{enumerate}
 
@@ -59,13 +66,13 @@ The program can be invoked by typing:
 
 \texttt{AdaptiveMD.py -i [your input file] > [your output path]}
 
-As stated in the abstract, this program has a couple funcitons with keywords that need to be specified together in the input file.
+As stated in the abstract, this program has a couple functions with keywords that need to be specified together in the input file.
 Examples for each function are given in the \texttt{examples} folder found within the module directory.
-However, a brief walkthrough of the input file is given here.
+However, a brief walk through of the input file is given here.
 For the full list of keywords and more detail, see section \ref{sec:keywords}.
 
 \paragraph{All Input Files}
-All input files must specify the coordinates, topoplogy, and output coordinates with the following keywords:
+All input files must specify the coordinates, topology, and output coordinates with the following keywords:
 
 \begin{enumerate}
 	\item \texttt{coordinates}
@@ -92,7 +99,7 @@ The following variables are relevant:
 \begin{enumerate}
 	\item \texttt{write\_partitions} (to flag for writing partitions)
 	\item \texttt{write\_n\_steps}
-	\item \texttt{elements\_file} (if xyz files are to be written)
+	\item \texttt{elements\_file} (if \texttt{.xyz} files are to be written)
 	\item \texttt{write\_prefix}
 \end{enumerate} 
 
@@ -124,17 +131,19 @@ The following variables are relevant:
 \end{enumerate}
 
 \section{Methodology}
-This program has several unpublished indicator methods enabled, as well as an implementation of the mCEC. The adaptive partition methodology is discussed elsewhere.
+This program has several unpublished indicator methods enabled, as well as an implementation of the mCEC.
+The adaptive partition methodology is discussed elsewhere.
 
 \subsection{Indicators}
-This package contains a variety of proton indicators developed by our group, as well as the center of excess charge (mCEC) developed by K\"onig et. al.
+This package contains a variety of proton indicators developed by our group,\cite{Wu2013,Pezeshki2015} as well as the center of excess charge (mCEC) developed by K\"onig et al.\cite{Konig2006}
 These indicators are developed to describe proton transfer in a variety of conditions.
 The location of these indicators can be appended to any arbitrary trajectory and used as the center of the active zone for the AP functionality of the package.
-Originally, these equations were only meant to describe proton transfer through water and molecules with one protonatable site (e.g. monoatomic anions).
+Originally, these equations were only meant to describe proton transfer through water.\cite{Wu2013,Pezeshki2015}
+Later this was extended to any molecule with one protonatable site (e.g. monoatomic anions).\cite{Garza2019}
 These sets of equations are described in section \ref{ss:original_indicator}.
 
-However it became necessary to describe proton transfer through molecules or residues with multiple protonation sites.
-We call these groups donor groups if they are in posession of the excess proton, or acceptor groups if the atoms could be protonated. 
+It became necessary to describe proton transfer through molecules or residues with multiple protonation sites to study more complicated systems with adaptive partitioning, 
+We call these groups donor groups if they are in possession of the excess proton, or acceptor groups if the atoms could be protonated. 
 There are many different attempts at solving this problem implemented within this package.
 Arguably only two are useful: the original indicator (Indicator0 here) and the indicator mentioned in our upcoming publication as "Indicator B" (Indicator4 here).
 In fact, as the Indicator4 reduces to Indicator0, there may even be no reason to use Indicator4.
@@ -142,12 +151,12 @@ Indicator1 is well tested and may also be used, but based on the results of the 
 
 \subsubsection{Original Indicator}\label{ss:original_indicator}
 This is implemented as Indicator0.
-The position of the proton  indicator is a linear combination of the coordinates of the donor $D$ and all possilbe acceptors $A_j$ within a predefined enlisting radius $r_\mathrm{\textsc{list}}$ from $D$:
+The position of the proton  indicator is a linear combination of the coordinates of the donor $D$ and all possible acceptors $A_j$ within a predefined enlisting radius $r_\mathrm{\textsc{list}}$ from $D$:
 \begin{equation}
 \mathbf{X}_I = \frac{1}{g_I} \left( \mathbf{X}_D + \sum^{J}_{j=1} \sum^{M}_{m=1} g \left( \rho_{mj} \right) \mathbf{X}_{A_j} \right)
 \end{equation}
 Here, $\mathbf{X}_D$ and $\mathbf{X}_{A_{j}}$ are the Cartesian coordinates of the donor oxygen and the $j$-th possible acceptor oxygen respectively, $g ( \rho_{mj} )$ is the weight function associated with $\rho_{mj}$ (the ratio of the projected donor-acceptor vector), $M$ is the total number of $H_m$ (hydrogen atoms bonded to $D$), $J$ is the total number of possible acceptors within a radius of size $r_\mathrm{\textsc{list}}$ and $g_I$ is a normalization factor.
-The ratio $\rho_{mj}$ is a metric for how close a given atom $H_m$ is to the donor $D$ versus a possible acceptor $A_j$ and is calcuated according to the following equation:
+The ratio $\rho_{mj}$ is a metric for how close a given atom $H_m$ is to the donor $D$ versus a possible acceptor $A_j$ and is calculated according to the following equation:
 \begin{equation}
 \rho_{mj}=\frac{ \mathbf{r}_{\mathrm{DH}_m} \cdot \mathbf{r}_{\mathrm{DA}_j} } { | \mathbf{r}_{\mathrm{DA}_j} |^2 }
 \end{equation}
@@ -175,14 +184,14 @@ x = x ( \rho_{mj} ) = 1 - \frac{\rho_{mj} - \rho^0_{mj}}{\rho_{\mathrm{max}} - \
 \begin{equation}
 \rho_{\mathrm{max}} = \frac{r^0_{\mathrm{DH}}}{r^0_{\mathrm{DH}}+r^0_{AH}}
 \end{equation}
-where $\rho^0_{mj} = \left( \frac{r^0_{DH}}{r_{\mathrm{\textsc{list}}}} \right)$, $r^0_{DH}$ is a parameter that is set to slightly larger than the equilibrium $D-H$ bond distance (e.g. 1.00 $\mathrm{\AA}$ in a hydronium ion) to reduce the sensitivity to the $D-H$ vibrations near equilibrium, $r^0_{AH}$ is simularily a paramter for the $A-H$ bond distance, $r_{\mathrm{\textsc{list}}}$ is the threshold distance for enlisting possible acceptors, and $\rho_{\mathrm{max}}$ represents the percentage of the distance that a transferring proton needs to travel from the donor towards an acceptor before the donor and acceptor switch their status.
+where $\rho^0_{mj} = \left( \frac{r^0_{DH}}{r_{\mathrm{\textsc{list}}}} \right)$, $r^0_{DH}$ is a parameter that is set to slightly larger than the equilibrium $D-H$ bond distance (e.g. 1.00 $\mathrm{\AA}$ in a hydronium ion) to reduce the sensitivity to the $D-H$ vibrations near equilibrium, $r^0_{AH}$ is similarly a parameter for the $A-H$ bond distance, $r_{\mathrm{\textsc{list}}}$ is the threshold distance for enlisting possible acceptors, and $\rho_{\mathrm{max}}$ represents the percentage of the distance that a transferring proton needs to travel from the donor towards an acceptor before the donor and acceptor switch their status.
 In this work, the parameters $r^0_{\mr{DH}}$ or $r^0_{\mr{AH}}$ are based on gas-phase geometries optimized at the B3LYP/6-31G* level for the protonated species and rounded up to the nearest 0.1 \AA.
 
 \paragraph{Switching}
 To reiterate, Donor switching occurs theoretically at $\rho = \rho_{\mr{max}}$.
 Theoretically, switching is time-reversible in this case.
 It should be noted however, that switching is non time-reversible in most practical situations. 
-However, in the case of finite timesteps, switching will occur when $\rho \geq \rho_{\mr{max}}$.
+However, in the case of finite time steps, switching will occur when $\rho \geq \rho_{\mr{max}}$.
 In cases of proton transfer between two species, this is typically not an issue as the location of the indicator will be very similar in both cases.
 This is because the normalized weight of the donor will be equal to one, and the weight of the acceptor is approximately equal to 1 around that time.
 Unfortunately there is a nightmare scenario which occurs in situations with concerted proton transfer.
@@ -206,7 +215,7 @@ This can cause discontinuities if used with the original indicator and any indic
 In Indicator1 however, this is no issue as all protons are considered bonded to the center of geometry of the donor group.
 
 \subsection{Indicator A (1)}\label{ss:ind_a}
-This extension to the original indicator equation considers each donor or acceptor group as a singular unit with its location determed by its center of geometry.
+This extension to the original indicator equation considers each donor or acceptor group as a singular unit with its location determined by its center of geometry.
 For a donor group, all protons bonded to the individual protonation sites are considered to be bonded to the COG of the group instead.
 The projection vectors between the donor and acceptors are calculated from the COG of the donor group to the COG of an acceptor group.
 Therefore the location of the donor group becomes:
@@ -248,20 +257,20 @@ Arginine & 1.0 & 2.1 & 1.0 \\
 
 
 \subsection{Indicator B (4)}\label{ss:ind_b}
-Indicator4, or IndicatorB in the publication, considers the side chain as a whole, but it recognizes that the multiple protonation sites may be situated in different local environments and thus participate differently.
+Indicator4, or Indicator B in the publication, considers the side chain as a whole, but it recognizes that the multiple protonation sites may be situated in different local environments and thus participate differently.
 Therefore, when all protonation sites of the side chain act collectively as donors, they are treated independently in the search of possible acceptors and the subsequent calculations of weights for these acceptors (Fig. 2c).
 However, the center of mass of the group is used in the final linear combination for the position (equation \ref{eq:ind_b}, which allows the charge to be delocalized over a group of protonatable sites.
 More specifically, a local search of possible acceptors is carried out for each protonation site $\mr{D}_k$, and the indicator position $\mb{X}_\mr{I}$ is computed by:
 \begin{equation}\label{eq:ind_b}
 \mathbf{X}_\mr{I} = \frac{1}{g_I} \left( \mathbf{X}_\mr{D} + \sum^K_{k=1} \sum^J_{j=1}   \sum^M_{m-1} g(\rho_{mjk}) \mathbf{X}_{\mr{A}_{\mr{COG}}}  \right) 
 \end{equation}
-Here, $k$ is the index for the protonation sites of the side chain, $\mathbf{X}_{\mr{D}_k}$ is the position of the $k$-th protonation site $\mr{D}_k$, $M_k$ is the number of covalently bonded H atoms to the atom at $\mr{D}_k$, $\mathbf{X}_{\mr{A}_{\mr{COG}}}$ is the center of geometry of the protonatable sites in the group that contains the $j$-th acceptorc  and $\rho_{mkj}$ and $g_{mkj}$ are the generalized projection and normalized weights for $\mr{D}_k$ respectively. 
-The donor center of geometry $\mathbf{X}_\mr{D}$ is calculated using Equation \ref{eq:donor_cog}.
+Here, $k$ is the index for the protonation sites of the side chain, $\mathbf{X}_{\mr{D}_k}$ is the position of the $k$-th protonation site $\mr{D}_k$, $M_k$ is the number of covalently bonded H atoms to the atom at $\mr{D}_k$, $\mathbf{X}_{\mr{A}_{\mr{COG}}}$ is the center of geometry of the protonatable sites in the group that contains the $j$-th acceptor  and $\rho_{mkj}$ and $g_{mkj}$ are the generalized projection and normalized weights for $\mr{D}_k$ respectively. 
+The donor center of geometry $\mathbf{X}_\mr{D}$ is calculated using equation \ref{eq:donor_cog}.
 However, the location of the individual protonation site $\mr{D}_k$ is used as the reference point for enlisting possible acceptors and calculating the projection ratio.
 The $r_\mathrm{\textsc{list}}$ and $r^0_{DH}$ parameters should use the same values as they would with the original algorithm (see column 4 of Table \ref{tab:indparams}).
 The entire sidechain is represented by the geometric center so that when there are no acceptors, the center of geometry is the location of the proton indicator.
 
-The normalization constant is adjusted to accomidate the extra projection vectors and is calculated by:
+The normalization constant is adjusted to accommodate the extra projection vectors and is calculated by:
 \begin{equation}\label{eq:ind_b-normalization}
 g_i = 1 + \sum_k^K \sum_j^J \sum_m^{M_k} g_{kjm}(\rho_{kjm})
 \end{equation}
@@ -275,18 +284,18 @@ The equation becomes:
 \begin{equation}\label{eq:ind_b_with_correction}
 \mathbf{X}_\mr{I} = \frac{1}{g_I} \left( \mathbf{X}_\mr{D} + \sum^K_{k=1} \sum^J_{j=1}   \sum^M_{m-1} g(\rho_{mjk}) \left(\mathbf{X}_{\mr{A}_j} + \mathbf{X}_{\mr{D}_k} - \mathbf{X}_\mr{D}  \right) \right) 
 \end{equation}
-Consider the situation of a proton being transfered from a group with one protonation site (i.e. a water) to a group with multiple protonation sites (i.e. a histadine)
+Consider the situation of a proton being transferred from a group with one protonation site (i.e. a water) to a group with multiple protonation sites (i.e. a histidine)
 Also assume the group with multiple protonation sites is not poised to donate a proton to any other group.
 In this case, the indicator will be superimposed on the proton between the donor (water) and acceptor (N atom of histidine) as $\rho_{mkj} = 0.5$.
 
 However, after transfer and if there was no correction, the proton would not be in the same location even though the $\rho_{mkj}$ of the donor group would still equal $0.5$.
-Because when $\rho_{mkj}$, $g_{mkj} = 1$ and expanding the expression for the donor COG, Equation \ref{eq:ind_b} would reduce to:
+Because when $\rho_{mkj}$, $g_{mkj} = 1$ and expanding the expression for the donor COG, equation \ref{eq:ind_b} would reduce to:
 \begin{equation}
 \frac{\mb{X}_{\mr{A}_j} + \mb{X}_D}{2}
 \end{equation}
 This would place the proton halfway between the COG of the donor group and the acceptor.
-However, when we transfered the proton, we were halfway between the protonatable site of the group and the other molecule!
-Thus adding this correction term adds the difference from the COG to the protonable site of the group and prevents this jump.
+However, when we transferred the proton, we were halfway between the protonatable site of the group and the other molecule!
+Thus adding this correction term adds the difference from the COG to the protonatable site of the group and prevents this jump.
 
 \subsection{Indicator B Variations}
 \subsubsection{Increase Weighting of the Likely Acceptors (Indicator 6)}\label{ss:indicator6}
@@ -305,7 +314,7 @@ equation \ref{eq:ind_b-normalization} with $g_i = e + \sum^K_{k=1} \sum^J_{j=1} 
 \end{center}
 
 \paragraph{Brief Description of Performance}
-It almost universally improved the performance of Indicator B or had no real deleterious performace.
+It almost universally improved the performance of Indicator B or had no real deleterious performance.
 
 \subsubsection{Change $\mb{X}_{\mr{D}}$ to a Weighted Coordinate}\label{ss:indicator9}
 This method also tried to solve the same problem as the first but with a different approach.
@@ -316,7 +325,7 @@ Here the coordinate $\mb{X}_{\mr{D}}$ in equation \ref{eq:ind_b} was changed fro
 \begin{equation}
 w_k = \frac{\sum_{m \in M_k} r_{km} - r^0_{DH} }{\sum_k^K r_{km} - r^0_{DH}}
 \end{equation}
-The idea was that the location of the indicator should be weighted further towards donor groups that had bonds hthat were further from equilibrium.
+The idea was that the location of the indicator should be weighted further towards donor groups that had bonds that were further from equilibrium.
 In practice, it seems theoretically very unsatisfactory as it just makes everything more complicated and invalidates the correction in the original equation.
 This should not be used.
 
@@ -334,21 +343,44 @@ The equation becomes:
 \begin{equation}\label{eq:ind_b_with_correction}
 \mathbf{X}_\mr{I} = \frac{1}{g_I} \left( \mathbf{X}_\mr{D} + \sum^K_{k=1} \sum^J_{j=1}   \sum^M_{m-1} g(\rho_{mjk}) \left(\mathbf{X}_{\mr{A}_j} + \mathbf{X}_{\mr{D}_k} - \mathbf{X}_\mr{D}  \right) \right) 
 \end{equation}
-Consider the situation of a proton being transfered from a group with one protonation site (i.e. a water) to a group with multiple protonation sites (i.e. a histadine)
+Consider the situation of a proton being transferred from a group with one protonation site (i.e. a water) to a group with multiple protonation sites (i.e. a histidine)
 Also assume the group with multiple protonation sites is not poised to donate a proton to any other group.
 In this case, the indicator will be superimposed on the proton between the donor (water) and acceptor (N atom of histidine) as $\rho_{mkj} = 0.5$.
 
 However, after transfer and if there was no correction, the proton would not be in the same location even though the $\rho_{mkj}$ of the donor group would still equal $0.5$.
-Because when $\rho_{mkj}$, $g_{mkj} = 1$ and expanding the expression for the donor COG, Equation \ref{eq:ind_b} would reduce to:
+Because when $\rho_{mkj}$, $g_{mkj} = 1$ and expanding the expression for the donor COG, equation \ref{eq:ind_b} would reduce to:
 \begin{equation}
 \frac{\mb{X}_{\mr{A}_j} + \mb{X}_D}{2}
 \end{equation}
 This would place the proton halfway between the COG of the donor group and the acceptor.
-However, when we transfered the proton, we were halfway between the protonatable site of the group and the other molecule!
-Thus adding this correction term adds the difference from the COG to the protonable site of the group and prevents this jump.
+However, when we transferred the proton, we were halfway between the protonatable site of the group and the other molecule!
+Thus adding this correction term adds the difference from the COG to the protonatable site of the group and prevents this jump.
 
 This method
 
+\subsection{mCEC}
+Proposed by K\"onig et al.,\cite{Konig2006}, the location of the mCEC $\zeta$ can be expressed as the sum of the positions of the protons $\mb{r}^{H_i}$ and the coordinates of each acceptor $\mb{r}^{X_j}$ multiplied by the amount of protons the acceptor is coordinated to in in its reference state.
+\begin{equation}\label{eq:mcec}
+\mb{\zeta} = \sum_{i=1}^{N_H} \mb{r}^{H_i} - \sum_{j=1}^{N_X} w^{X_j} \mb{r}^{X_j} + \sum_{i=1}^{N_H} \sum_{j=1}^{N_X} w^{X_j} f_{sw}(d_{H_i,X_j}) + \zeta`
+\end{equation}
+The term $f_{sw}$ is a switching function probosed by Chakrabarti al.\cite{Chakrabarti2004} that is applied to the distance between the $i$-th hydrogen and the $j$-th acceptor.
+\begin{equation}\label{eq:chakra}
+f_{sw}(d) = \frac{1}{1 + \exp[(d-r_{sw})/d_{sw}]}
+\end{equation}
+where $r_{sw}$ and $d_{sw}$ are adjustable parameters that correspond to the distance where the smoothing function is equal to 0.5 and the slope of the smoothing function respectively.
+Here, $\zeta`$ is a correction term that accounts for groups of atoms with multiple protonatable sites. It can be expressed as:
+\begin{equation}
+\mb{zeta}` = \sum_{g \in G} \sum_{X_i\in g}\sum_{X_j \in g} \frac{N_p}{N_g} (\mb{r}^{H_i} - \mb{r}^{X_j})
+\end{equation}
+where $g$ is a residue with multiple protonation sites in the set of all such residues $G$, $X_i$ and $X_j$ are protonatable sites within the $g$-th residue, $N_p$ is the number of protons bound to the group at the reference state and where $N_g$ is the total number of these sites in the $g$-th residue. 
+The multiplier $m$ is a differentiable maximum function times a constant related to the number of protons in the residue:
+\begin{equation}
+m = \frac{\sum_{i=1}^{N_H} f_{sw}(d_{H_i,X_j})^{16}}{\sum_{i=1}^{N_H}  f_{sw}(d_{H_i,X_j})^{15}}
+\end{equation}
+For acceptor atoms that are also members of groups with multiple protonation sites, it is required that:
+\begin{equation}
+w^{X_j} = \frac{N_p}{N_g}
+\end{equation}
 \subsection{mCEC}
 The mCEC is implemented as such:
 \begin{equation}
@@ -359,7 +391,7 @@ Here, $\zeta`$ is a correction term to account for groups of atoms with multiple
 \begin{equation}
 \sum_{g \in G} \sum_{k\in g}\sum_{j \in g}m_k (\mathbf{r}_j - \mathbf{r}_k)
 \end{equation}
-where $g$ is a residue with multiple protonation sites in the collection of all residues $G$, and $j$ and $k$ are acecptor molecules within the same protonation site. 
+where $g$ is a residue with multiple protonation sites in the collection of all residues $G$, and $j$ and $k$ are acceptor molecules within the same protonation site. 
 The multiplier $m$ is a differentiable maximum function times a constant related to the number of protons in the residue:
 \begin{equation}
 m = \frac{P}/{N} * \sum_h f_{sw}(r_{hj})^{16} / \sum_h f_{sw}(r_{hj})^{15}
@@ -438,8 +470,8 @@ Each atom type that is to be included as an acceptor should be specified here fo
 All atom types must also have an associated 
 
 \item[mcec\_g  (1-based index),(1-based index),(...),(int reference state) ...]
-This keyword turn on the mCEC correction for groups with multiple protonationable sites.
-Each group is represented by a string with atom indicies separated by commas followed finally by the reference protonation state for the group.
+This keyword turn on the mCEC correction for groups with multiple protonatable sites.
+Each group is represented by a string with atom indices separated by commas followed finally by the reference protonation state for the group.
 For example, the entry:
 
 \texttt{mcec\_g\ \ \ 5,8,7,4\ \ \ 18,19,0\ \ \ 35,36,1}
@@ -469,25 +501,25 @@ An example of using this code is:
 This sets the $r_\mathrm{\textsc{list}}$ parameter.
 
 \item[structure (path to structure file) (structure type)]
-This keyword allows the user to specify the topology of the system. When doing indicator calculations with proton transfers, only .mol2 topology files can be used. Otherwise, any filetype MDAnalysis accepts is fine.
+This keyword allows the user to specify the topology of the system. When doing indicator calculations with proton transfers, only .mol2 topology files can be used. Otherwise, any file type MDAnalysis accepts is fine.
 
 \item[verbose 1]
 Turn on the verbose flag. Currently it must be set to 1.
 
 \item[write\_partitions (path to folder to write partitions) (file type)]
-Write the AP partitions that would be in the trajectory to the specifed folder. The files will have the extension given by the file type argument to the keyword. Note that \texttt{xyz} is the most tested format, but any format supported by MDAnalysis should work if the required info is there.
+Write the AP partitions that would be in the trajectory to the specified folder. The files will have the extension given by the file type argument to the keyword. Note that \texttt{xyz} is the most tested format, but any format supported by MDAnalysis should work if the required info is there.
 
 \item[write\_n\_steps (int)]
 Write the partitions every $n$ steps.
 
 \item[write\_prefix (desired prefix)]
 Prefix files created by the program with some output prefix to tidy up the mess that this program creates.
+\end{description}
 
 \section{Developers Notes}
-See the pdoc folder in the root directory for a complete list of all submodules and subroutines.
+Open the website in the folder \texttt{./api\_doc} for the developer notes.
+To regenerate the documentation, run the script \texttt{./make\_pdoc.sh} .
 
-
-
-\end{description}
+\bibliography{manual}
 \end{document}
 

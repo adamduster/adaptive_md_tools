@@ -1,0 +1,4289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.6.2" />
+<title>adaptive_md_tools.indicator API documentation</title>
+<meta name="description" content="This file contains classes for calculating the position of the indicator
+with Numpy" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>adaptive_md_tools.indicator</code></h1>
+</header>
+<section id="section-intro">
+<p>This file contains classes for calculating the position of the indicator
+with Numpy</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">#!/usr/bin/env python3
+&#34;&#34;&#34;
+This file contains classes for calculating the position of the indicator
+with Numpy
+&#34;&#34;&#34;
+import sys
+import numpy as np
+from itertools import permutations
+from numba import jit
+
+
+class Indicator:
+    &#34;&#34;&#34;
+    This is the implementation of the indicator as detailed in our 2019
+    paper on EcCLC
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        # Dictionary (atom_type: rdh) These are used to calculate
+        # rdh0 and pmax
+        self.rxh = {&#39;OT&#39;: 1.0, &#39;SOT&#39;: 1.0, &#39;CLA&#39;: 1.4, &#39;OC&#39;: 1.0}
+        # self.num_rdh0 = 0
+        self.rlist = 3.5
+        # The coordinates of the donor
+        self.x_d = np.zeros(3, dtype=float)
+        # Number of acceptors within rlist of donor
+        self.num_acceptors = 0
+        # Number of protons bound to donor
+        self.num_h = 0
+        # Location of the indicator
+        self.x_i = np.zeros(3, dtype=float)
+        # Identity of the donor
+        self.donor = 0
+        # Describes a proton hop
+        # elements are: [[int:ind of proton, which acceptor hop to, pmj], ...]
+        self.hop = []
+        # Location of the acceptors
+        self.x_as = []
+        # Print flag
+        self.print_all = False
+        # Output reaction coordinates?
+        self.output_freq = 0
+        # Where to print indicator reaction coordinate information?
+        self.log_path = &#39;indicator.log&#39;
+        self.xyz_path = &#39;indicator.xyz&#39;
+        # Where to print debug information?
+        self.ofi = sys.stdout
+        # Log file object
+        self._lfi = None
+        self._xyz = None
+        self.max_xyz_atoms = 5
+        # This step
+        self.step = 0
+
+    def set_output_freq(self, freq, prefix=&#39;&#39;):
+        &#34;&#34;&#34;
+        Initialize variables for writing the xyz and the log file
+
+        Parameters
+        ----------
+        freq: int
+            output frequency
+        prefix: str
+            file prefix
+        &#34;&#34;&#34;
+        try:
+            int(freq)
+        except TypeError:
+            sys.exit(&#34;Error: indicator output frequency must be an integer&#34;)
+        if freq &gt; 0:
+            self.output_freq = freq
+            if prefix != &#39;&#39;:
+                self.log_path = prefix + &#39;-&#39; + self.log_path
+                self.xyz_path = prefix + &#39;-&#39; + self.xyz_path
+            self._lfi = open(self.log_path, &#39;w&#39;)
+            self._lfi.write(&#34;# Step           rho             dr\n&#34;)
+            self._xyz = open(self.xyz_path, &#39;w&#39;)
+
+    def reset_hop(self):
+        &#34;&#34;&#34;
+        After proton hop, clear the list of hops
+        &#34;&#34;&#34;
+        self.hop = []
+
+    def _write_log(self, p, dr, coords=None):
+        &#34;&#34;&#34;
+        Write the results of a step
+        Write the rho and dr coordinates
+        If a matrix of coordinates is present, write them to the xyz file
+
+        Parameters
+        ----------
+        :param p:
+        :param dr:
+        :param coords:
+        :return:
+        &#34;&#34;&#34;
+        self._lfi.write(&#39;{0:10d}  {1:10.6f}   {2:10.6f}\n&#39;.format(
+            self.step, p, dr))
+
+        if coords is None:
+            return
+        #if not coords.any():
+        #    return
+
+        natoms = coords.shape[0]
+
+        try:
+            self._xyz.write(&#39;%d\n&#39; % self.max_xyz_atoms)
+        except:
+            sys.exit(&#34;Error writing number of atoms&#34;)
+        self._xyz.write(&#39;\n&#39;)
+
+        xyz_str = &#34;{3}     {0:12.6}     {1:12.6f}     {2:12.6f}\n&#34;
+        els = [&#34;Ti&#34;, &#34;V &#34;, &#34;Cr&#34;, &#34;Mn&#34;, &#34;Fe&#34;, &#34;Co&#34;, &#34;Ni&#34;, &#34;Cu&#34;, &#34;Zn&#34;, &#34;Ga&#34;, &#34;Ge&#34;]
+        try:
+            for i in range(natoms):
+                self._xyz.write(xyz_str.format(*coords[i], els[i]))
+            for j in range(i + 1, self.max_xyz_atoms):
+                self._xyz.write(xyz_str.format(0., 0., 0., els[j]))
+        except IOError:
+            print(&#34;Error writing coords&#34;)
+            raise
+        return
+
+    def add_rdh0(self, rdh, atom_type: str):
+        &#34;&#34;&#34;
+        Add a rho parameter and atom type to the dict of parameters
+
+        Parameters
+        ----------
+        rdh: float
+            equilibrium dh distance in angstrom
+        atom_type: str
+            atom type to associate with rdh value
+
+        &#34;&#34;&#34;
+        try:
+            if rdh &lt; 0:
+                print(&#34;Error, rdh must be greater than 0.&#34;)
+                raise ValueError(&#39;add_rdh 1&#39;)
+        except TypeError(&#39;add_rdh 2&#39;):
+            print(&#34;Error, excpected a number for rdh &#34;)
+            sys.exit()
+
+        try:
+            atom_upper = atom_type.upper()
+        except TypeError(&#39;add_rdh3&#39;):
+            print(&#34;Error parsing atom type {0}&#34;.format(atom_type))
+            sys.exit()
+
+        try:
+            self.rxh[atom_type] = rdh
+        except TypeError(&#34;add rdh 4&#34;):
+            print(&#34;Error adding atom {0} and rdh parameter {1} to &#34;
+                  &#34;rdh&#34;.format(atom_type, rdh))
+        return
+
+    def print_rdh0(self, ofi=None):
+        &#34;&#34;&#34;
+        Output data for double checking
+
+        Parameters
+        ----------
+        ofi: file object with write permissions
+            The output file object. If None, then this will print to stdout
+        &#34;&#34;&#34;
+        print(&#34;Atom_Type  rDH&#34;, file=ofi)
+        for key, rdh in self.rxh:
+            print(&#34;{0:8}    {0:5.3f}&#34;.format(key, rdh), file=ofi)
+        return
+
+    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, ofi=None):
+        &#34;&#34;&#34;
+        This is the main subroutine for calculating the indicator
+
+        Parameters
+        ----------
+        x_d: ndarray of float
+            coordinates with shape [3]
+        x_as: ndarray of float
+            acceptor coordinates each with shape [j,3]
+        x_hms: ndarray of float
+            hydrogen coordinates each with shape [m,3]
+        type_d: str
+            donor type to link with rho parameters
+        type_as: list of str
+            acceptor types to link with rho parameters
+        ofi: file object
+            where to print stuff
+        &#34;&#34;&#34;
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        # Set donor coordinates
+        try:
+            self.x_d[:] = x_d[:]
+        except RuntimeError(&#34;calc_indicator 1&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;Warning: NO ACCEPTOR&#34;)
+                print(&#34;Setting indicator location to donor coordinates&#34;)
+                self.x_i[:] = self.x_d[:]
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        # Set hydrogen coordinates
+        self.num_h = x_hms.shape[0]
+        if self.num_h &lt;= 0:
+            print(&#34;Error, no protons for indicator&#34;)
+            raise RuntimeError(&#34;calc_indicator 4&#34;)
+        try:
+            self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+            self.x_hs = x_hms[:, :]
+        except RuntimeError(&#34;Calc indicator 3&#34;):
+            print(&#34;Error setting Hydrogen coordinates&#34;)
+            sys.exit()
+
+        # Initialize the rho parameters
+        try:
+            rdh0 = self.rxh[type_d]
+        except RuntimeError:
+            print(&#34;Error hashing donor. Is donor in rdh0 list? is only one&#34;
+                  &#34; donor passed to subroutine?&#34;)
+            raise
+        pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+        pmj0 = rdh0 / self.rlist
+
+        # Initialize the other arrays
+        dims = (self.num_h, self.num_acceptors)
+        pmjs = np.zeros(dims, dtype=float)
+        xmjs = np.zeros(dims, dtype=float)
+        gmjs = np.zeros(dims, dtype=float)
+        self.hop = []
+
+        #Begin the calculations
+        largest_p = 0
+        dr = 0
+        for m in range(self.num_h):
+            for j in range(self.num_acceptors):
+                pmjs[m, j] = self.calc_pmj(self.x_d, self.x_as[j], self.x_hs[m])
+                if pmjs[m, j] &gt; pmaxs[j]:
+                    self.hop.append((m, j, pmjs[m, j]))
+                if pmjs[m, j] &gt; largest_p:
+                    largest_p = pmjs[m, j]
+                    dr = np.linalg.norm(self.x_d - self.x_hs[m]) - \
+                         np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+
+        gI = self.calc_gI(gmjs)
+        self.x_i[:] = self.x_d[:]
+        for j in range(self.num_acceptors):
+            for m in range(self.num_h):
+                self.x_i[:] += gmjs[m, j] * x_as[j]
+        self.x_i *= 1. / gI
+
+        if self.print_all:
+            self.ofi.write(&#34;Detailed Stats\n&#34;)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            self.ofi.write(cstr.format(*self.x_d))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            for m in range(self.num_h):
+                self.ofi.write(icstr.format(m, *self.x_hs[m]))
+            self.ofi.write(&#34;pmjs\n&#34;)
+            print(pmjs, file=ofi)
+            self.ofi.write(&#34;xmjs\n&#34;)
+            print(xmjs, file=ofi)
+            self.ofi.write(&#34;gmjs\n&#34;)
+            print(gmjs, file=ofi)
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            self.ofi.write(&#34;Hops:\n&#34;)
+            print(self.hop, file=ofi)
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, coords=self.x_d.reshape(-1, 3))
+        self.step += 1
+        return 0
+
+    @staticmethod
+    @jit
+    def calc_pmj(x_d, x_aj, x_hm):
+        &#34;&#34;&#34;
+        calculate the variable p_mj [ rho_mj ]
+        this is the projection of the D-H vec onto the D-A vec
+
+        Parameters
+        ----------
+        x_d: ndarray of float with shape(3)
+            coordinates of donor (np.float array [3] )
+        x_aj: ndarray of float with shape(3)
+            coordinates of acceptor j (np.float array [3] )
+        x_hm: ndarray of float with shape(3)
+            coordinates of hydrogen m (np.float array [3] )
+
+        Returns
+        -------
+        float
+        &#34;&#34;&#34;
+        r_dhm = x_hm - x_d
+        r_daj = x_aj - x_d
+        return np.dot(r_dhm, r_daj) / np.linalg.norm(r_daj)**2
+
+    @staticmethod
+    @jit(nopython=True)
+    def calc_xmj(pmj, pmj0, pmax):
+        &#34;&#34;&#34;
+        calculate the variable x(p_mj) [ x(rho_mj) ]. This is the ratio
+        that deals with how far we are away from equilibrium.
+
+        Parameters
+        ----------
+        pmj:  float
+            projection scalar
+        pmj0: float
+            scaling parameter parameter
+        pmax: float
+            equilibrium bond constant ratio
+
+        Returns
+        -------
+        x_pmj: float
+        &#34;&#34;&#34;
+        return 1 - (pmj - pmj0) / (pmax - pmj0)
+
+    @staticmethod
+    @jit(nopython=True)
+    def calc_gmj(xmj):
+
+        if 1 &lt;= xmj:
+            gmj = 0.
+        elif xmj &lt; 0:
+            gmj = 1
+        else:
+            gmj = -6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1
+        return gmj
+
+    @staticmethod
+    @jit
+    def calc_gI(gmjs):
+        &#34;&#34;&#34;
+        Calculate the normalization constant gI
+
+        Parameters
+        ----------
+        :param gmjs: the splined projection vectors
+        :type gmjs: np.ndarray
+        :return: the normalization constant
+        :rtype: np.float
+        &#34;&#34;&#34;
+        return 1 + np.sum(gmjs)
+
+
+# class Indicator2(Indicator):
+#     &#34;&#34;&#34;
+#     This implementation of the indicator is the one where the projection
+#     vectors between donors in a group and other acceptors are calcualted.
+#     The results from each donor are then added back to calculate the final
+#     location for the indicator.
+#
+#     X_I = 1./g_I * [ X_D_com + \sum_k \sum_j \sum_m { rho_kmj * X_A_j } ] s
+#
+#     &#34;&#34;&#34;
+#     def __init__(self):
+#         Indicator.__init__(self)
+#
+#     def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, intrap, xk, ofi=None):
+#         &#34;&#34;&#34;
+#         This is the main subroutine for calculating the indicator
+#         :param x_d: ndarray float coordinates with shape [3]
+#         :param x_as: ndarray of acceptor coordinates each with shape [j,3]
+#         :param x_hms: ndarray of hydrogen coordiantes each with shape [m,3]
+#         :param type_d: string of donor types to link with rho parameters
+#         :param type_as: list of strings of acceptor types to link with rho parameters
+#         :param ofi: where to print stuff
+#         :return:
+#         &#34;&#34;&#34;
+#         cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+#         icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+#
+#         # Set donor coordinates
+#         try:
+#             self.x_d[:] = x_d[:]
+#         except RuntimeError(&#34;calc_indicator 1&#34;):
+#             print(&#34;Error setting donor coordinates&#34;)
+#             sys.exit()
+#
+#         # Set acceptor coordinates
+#         try:
+#             self.num_acceptors = x_as.shape[0]
+#             if self.num_acceptors == 0:
+#                 print(&#34;WARNING: NO ACCEPTOR&#34;)
+#                 return 1
+#             self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+#             self.x_as[:, :] = x_as[:, :]
+#         except RuntimeError(&#34;calc_indicator 2&#34;):
+#             print(&#34;Error setting acceptor coordinates&#34;)
+#             sys.exit()
+#
+#         # Set hydrogen coordinates
+#         self.num_h = x_hms.shape[0]
+#         if self.num_h &lt;= 0:
+#             print(&#34;Error, no protons for indicator&#34;)
+#             raise RuntimeError(&#34;calc_indicator 4&#34;)
+#         try:
+#             self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+#             self.x_hs = x_hms[:, :]
+#         except RuntimeError(&#34;Calc indicator 3&#34;):
+#             print(&#34;Error setting Hydrogen coordinates&#34;)
+#             sys.exit()
+#
+#         # Initialize the rho parameters
+#         try:
+#             rdh0 = self.rxh[type_d]
+#         except RuntimeError:
+#             &#34;Error hashing donor. Is donor in rdh0 list? is only one donor &#34; \
+#             &#34;passed to subroutine?&#34;
+#         pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+#         pmj0 = rdh0 / self.rlist
+#
+#         # Initialize the other arrays
+#         dims = (self.num_h, self.num_acceptors)
+#         pmjs = np.zeros(dims, dtype=float)
+#         xmjs = np.zeros(dims, dtype=float)
+#         gmjs = np.zeros(dims, dtype=float)
+#         self.hop = []
+#
+#         #Begin the calculations
+#         largest_p = 0
+#         dr = 0
+#         for m in range(self.num_h):
+#             for j in range(self.num_acceptors):
+#                 pmjs[m,j] = self.calc_pmj(self.x_d, self.x_as[j], self.x_hs[m])
+#                 if pmjs[m, j] &gt; pmaxs[j]:
+#                     self.hop.append((m, j, pmjs[m, j]))
+#                 if pmjs[m, j] &gt; largest_p:
+#                     largest_p = pmjs[m, j]
+#                     dr = np.linalg.norm(self.x_d - self.x_hs[m]) - \
+#                          np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+#                 xmjs[m,j] = self.calc_xmj(pmjs[m,j], pmj0, pmaxs[j])
+#                 gmjs[m,j] = self.calc_gmj(xmjs[m,j])
+#
+#         self.x_i[:] = self.x_d[:]
+#
+#         found_intra_hop = False
+#         intrag = 0
+#         for pp in range(len(intrap)):
+#             if intrap[pp] &gt; 0.5:
+#                 if not found_intra_hop:
+#                     self.hop = []
+#                     found_intra_hop = True
+#                 self.hop.append((m, j, intrap[pp], k, True))
+#             xmk = self.calc_xmj( pmj0, pmaxs[j])
+#             gmk = self.calc_gmj(xmjs[m, j])
+#             my_g = self.calc_gmj(my_p_don)
+#             self.x_i += my_g * self.x_d[k]
+#             sum_gs += my_g
+#
+#         gI = self.calc_gI(gmjs)
+#         for j in range(self.num_acceptors):
+#             for m in range(self.num_h):
+#                 self.x_i[:] += gmjs[m,j] * x_as[j]
+#         self.x_i *= 1. / gI
+#
+#         if self.print_all:
+#             self.ofi.write(&#34;Detailed Stats\n&#34;)
+#             self.ofi.write(&#34;Donor Coords:\n&#34;)
+#             for k in len(self.x_d):
+#                 self.ofi.write(cstr.format(*self.x_d[k]))
+#             self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+#             for j in range(self.num_acceptors):
+#                 self.ofi.write(icstr.format(j, *self.x_as[j]))
+#             self.ofi.write(&#34;Proton Coords\n&#34;)
+#             for m in range(self.num_h):
+#                 self.ofi.write(icstr.format(m, *self.x_hs[m]))
+#             self.ofi.write(&#34;pmjs\n&#34;)
+#             print(pmjs, file=ofi)
+#             self.ofi.write(&#34;xmjs\n&#34;)
+#             print(xmjs, file=ofi)
+#             self.ofi.write(&#34;gmjs\n&#34;)
+#             print(gmjs, file=ofi)
+#             self.ofi.write(&#34;gI\n&#34;)
+#             print(gI, file=ofi)
+#             self.ofi.write(&#34;Hops:\n&#34;)
+#             print(self.hop, file=ofi)
+#         if self.output_freq:
+#             if self.step % self.output_freq == 0:
+#                 self._write_log(largest_p, dr, coords=self.x_d.reshape(-1, 3))
+#         self.step += 1
+#         return 0
+
+
+class Indicator4(Indicator):
+    &#34;&#34;&#34;
+    This implementation of the indicator is the one where the projection
+    vectors between donors in a group and other acceptors are calcualted.
+    The results from each donor are then added back to calculate the final
+    location for the indicator.
+
+    X_I = 1./g_I * [ X_D_com + \sum_k \sum_j \sum_m { rho_kmj * X_A_j } ] s
+
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        Indicator.__init__(self)
+        self.donor_com = []
+        self.acceptor_com = []
+
+    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,
+                       ofi=None):
+        &#34;&#34;&#34;
+
+        Parameters
+        ----------
+        :param x_d:  ndarray of donor coordinates with shape [k,3]
+        :param x_as: ndarray of acc coordinates with shape [j,3]
+        :param x_hms: ndarra of hyd coordinates with shape [m,3]
+        :param type_d: list of strings with length k
+        :param type_as: list of strings with length j
+        :param d_com: list of length 1 with [3] array !TODO make this less wacky
+        :param as_com: list of acceptor centers of mass
+        :param ofi: where to print stuff
+        :return:
+        &#34;&#34;&#34;
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        num_d = len(x_d)
+        # Set donor coordinates
+        try:
+            self.x_d = x_d.copy()
+            self.d_com = d_com.copy()[0]
+        except RuntimeError(&#34;calc_indicator 1&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;Warning: NO ACCEPTOR&#34;)
+                print(&#34;Setting indicator location to donor com&#34;)
+                self.x_i[:] = self.d_com[:]
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        if self.print_all:
+            self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            for k in range(len(x_d)):
+                self.ofi.write(cstr.format(*self.x_d[k]))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            self.ofi.write(&#34;Donor COM\n&#34;)
+            print(d_com, file=ofi)
+            print(&#34;Acceptor COMs&#34;, file=ofi)
+            print(as_com)
+
+        gI = 0
+        self.x_i = np.zeros(3)
+        largest_p = 0
+        dr = 0
+        self.hop = []
+        sum_gs = 0.0
+        found_proton = False
+
+        for k in range(num_d):
+
+            # Set hydrogen coordinates
+            self.num_h = np.shape(x_hms[k])[0]
+            if self.num_h &lt;= 0:
+                continue
+            found_proton = True
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 3&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+
+            # Initialize the rho parameters
+            try:
+                rdh0 = self.rxh[type_d[k]]
+            except RuntimeError:
+                print(&#34;Error hashing donor. Is donor in rdh0 list? is only&#34;
+                      &#34; one donor passed to subroutine?&#34;)
+                raise
+            pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+            pmj0 = rdh0 / self.rlist
+
+            # Initialize the other arrays
+            dims = (self.num_h, self.num_acceptors)
+            pmjs = np.zeros(dims, dtype=float)
+            xmjs = np.zeros(dims, dtype=float)
+            gmjs = np.zeros(dims, dtype=float)
+
+            #Begin the calculations
+            for m in range(self.num_h):
+                for j in range(self.num_acceptors):
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
+                    if pmjs[m, j] &gt; pmaxs[j]:
+                        self.hop.append((m, j, pmjs[m, j], k))
+                    if pmjs[m, j] &gt; largest_p:
+                        largest_p = pmjs[m, j]
+                        dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                             np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                    print(&#34;Correction:  &#34;, x_d[k] - d_com[0])
+                    # Add the weighted Acceptor cog coordinate
+                    self.x_i[:] += gmjs[m, j] * as_com[j]
+            sum_gs += np.sum(gmjs[:])
+
+            if self.print_all:
+                print(&#34;For donor %d&#34; % k)
+                print(&#34;Hydrogen coordinates:&#34;)
+                for m in range(self.num_h):
+                    self.ofi.write(icstr.format(m, *self.x_hs[m]))
+                self.ofi.write(&#34;pmjs\n&#34;)
+                print(pmjs, file=ofi)
+                self.ofi.write(&#34;xmjs\n&#34;)
+                print(xmjs, file=ofi)
+                self.ofi.write(&#34;gmjs\n&#34;)
+                print(gmjs, file=ofi)
+                self.ofi.write(&#34;pmaxs\n&#34;)
+                print(pmaxs, file=ofi)
+                self.ofi.write(&#34;Hops:\n&#34;)
+                print(self.hop, file=ofi)
+                print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+        if not found_proton:
+            print(&#34;Error, no protons for indicator&#34;)
+            raise RuntimeError(&#34;calc_indicator 4&#34;)
+
+        gI = self.calc_gI(sum_gs)
+
+        self.calc_ind(d_com, gI)
+
+        if self.print_all:
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            print(&#34;Final location&#34;, file=ofi)
+            print(self.x_i)
+
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, d_com[0][np.newaxis, :])
+        self.step += 1
+        return 0
+
+    def calc_ind(self, d_com, gI):
+        self.x_i += d_com[0][:]
+        self.x_i /= gI
+
+
+class Indicator6(Indicator4):
+    &#34;&#34;&#34;
+    Modify indicator 4 by exponentiating the gmj terms
+
+    g(pmj) -&gt; exp[g(pmj)]
+    gI -&gt; e + sum{exp[g(pmj)]}
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        Indicator4.__init__(self)
+
+    def calc_gmj(self, xmj):
+        if 1 &lt;= xmj:
+            gmj = 0.
+        elif xmj &lt; 0:
+            gmj = 1
+        else:
+            gmj = -6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1
+        return gmj * np.exp(gmj)
+
+    def calc_ind(self, d_com, gI):
+        self.x_i += d_com[0][:] * np.e
+        self.x_i /= gI
+
+    @staticmethod
+    @jit(nopython=True)
+    def calc_gI(gmjs):
+        &#34;&#34;&#34;
+        Calculate the normalization constant gI
+
+        Parameters
+        ----------
+        :param gmjs: the splined projection vectors
+        :type gmjs: np.ndarray
+        :return: the normalization constant
+        :rtype: np.float
+        &#34;&#34;&#34;
+        return np.e + np.sum(gmjs)
+
+
+class Indicator7(Indicator4):
+    &#34;&#34;&#34;
+    This is indicator 4 with the intramolecular rho&#39;s added to the location
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        Indicator4.__init__(self)
+
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
+                       ofi=None):
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        num_d = len(x_d)
+        self.num_d = num_d
+        # Set donor coordinates
+        try:
+            self.x_d = x_d.copy()
+        except RuntimeError(&#34;calc_indicator 1&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;WARNING: NO ACCEPTOR&#34;)
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        if self.print_all:
+            self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            for k in range(len(x_d)):
+                self.ofi.write(cstr.format(*self.x_d[k]))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            self.ofi.write(&#34;Donor COM\n&#34;)
+            print(d_com, file=ofi)
+            print(&#34;Acceptor COMs&#34;, file=ofi)
+            print(as_com)
+
+        gI = 0
+        self.x_i = np.zeros(3)
+        largest_p = 0
+        dr = 0
+        self.hop = []
+        sum_gs = 0.0
+        intra_p = False
+        p_don = 0
+
+        # Calculate the intramolecular rhos
+        for k in range(num_d):
+
+            # Set hydrogen coordinates
+            self.num_h = x_hms[k].shape[0]
+            # if self.num_h &lt;= 0:
+            #     print(&#34;Error, no protons for indicator&#34;)
+            #     raise RuntimeError(&#34;calc_indicator 4&#34;)
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 3&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+
+            # Initialize the rho parameters
+            try:
+                rdh0 = self.rxh[type_d[k]]
+            except RuntimeError:
+                print(
+                &#34;Error hashing donor. Is donor in rdh0 list? is only one donor &#34;
+                &#34;passed to subroutine?&#34;)
+                raise
+            pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+            pmj0 = rdh0 / self.rlist
+
+            # Initialize the other arrays
+            dims = (self.num_h, self.num_acceptors)
+            pmjs = np.zeros(dims, dtype=float)
+            xmjs = np.zeros(dims, dtype=float)
+            gmjs = np.zeros(dims, dtype=float)
+
+            #Begin the calculations
+            for m in range(self.num_h):
+                for j in range(self.num_acceptors):
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
+                    if pmjs[m, j] &gt; pmaxs[j] and not intra_p:
+                        self.hop.append((m, j, pmjs[m, j], k, False))
+                    if pmjs[m, j] &gt; largest_p:
+                        largest_p = pmjs[m, j]
+                        dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                             np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                    # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
+                    # self.x_i[:] += gmjs[m, j] * (x_as[j])
+                    self.x_i[:] += gmjs[m, j] * (as_com[j])
+            sum_gs += np.sum(gmjs[:])
+
+            if self.print_all:
+                print(&#34;For donor %d&#34; % k)
+                for m in range(self.num_h):
+                    self.ofi.write(icstr.format(m, *self.x_hs[m]))
+                self.ofi.write(&#34;pmjs\n&#34;)
+                print(pmjs, file=ofi)
+                self.ofi.write(&#34;xmjs\n&#34;)
+                print(xmjs, file=ofi)
+                self.ofi.write(&#34;gmjs\n&#34;)
+                print(gmjs, file=ofi)
+                self.ofi.write(&#34;pmaxs\n&#34;)
+                print(pmaxs, file=ofi)
+                self.ofi.write(&#34;Hops:\n&#34;)
+                print(self.hop, file=ofi)
+                print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+        found_intra_hop = False
+        for k in range(num_d):
+            self.num_h = x_hms[k].shape[0]
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 9&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+            for j in range(self.num_d):
+                if j == k:
+                    continue
+                for m in range(self.num_h):
+                    rah = np.linalg.norm(self.x_hs[m] - self.x_d[j])
+                    my_p_don = rah / (
+                        rah + np.linalg.norm(self.x_hs[m] - self.x_d[k]))
+                    if my_p_don &lt; 0.5:
+                        if not found_intra_hop:
+                            self.hop = []
+                            found_intra_hop = True
+                        self.hop.append((m, j, my_p_don, k, True))
+                    my_g = self.calc_gmj(my_p_don)
+                    self.x_i += my_g * self.x_d[k]
+                    sum_gs += my_g
+
+        gI = self.calc_gI(sum_gs)
+
+        self.calc_ind(d_com, gI)
+
+        if self.print_all:
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            print(&#34;Final location&#34;, file=ofi)
+            print(self.x_i)
+
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr)
+        self.step += 1
+
+        return 0
+
+
+class Indicator9(Indicator4):
+    &#34;&#34;&#34;
+    Indicator 4 with weighting of the donor coordinate by the following formula
+
+    X_k_w = [r_km - rDH^0] / [\sum_k (\sum_m_k r_km - rDH^0)]
+
+    It worked slightly better in some cases than 4 but was
+    very sensitive to vibrations of molecular bonds at equilbirium
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        Indicator4.__init__(self)
+
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
+                       ofi=None):
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        num_d = len(x_d)
+        # Set donor coordinates
+        try:
+            self.x_d = x_d.copy()
+            self.d_com = d_com.copy()[0]
+        except RuntimeError(&#34;calc_indicator 1&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;WARNING: NO ACCEPTOR&#34;)
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        if self.print_all:
+            self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            for k in range(len(x_d)):
+                self.ofi.write(cstr.format(*self.x_d[k]))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            self.ofi.write(&#34;Donor COM\n&#34;)
+            print(d_com, file=ofi)
+            print(&#34;Acceptor COMs&#34;, file=ofi)
+            print(as_com)
+
+        gI = 0
+        self.x_i = np.zeros(3)
+        largest_p = 0
+        dr = 0
+        self.hop = []
+        sum_gs = 0.0
+        found_proton = False
+
+        # Calculate the new weighting
+        my_dcom = d_com
+        if num_d &gt; 1:
+            my_dcom = self.calc_d_weights(type_d, x_hms)
+
+        for k in range(num_d):
+
+            # Set hydrogen coordinates
+            self.num_h = x_hms[k].shape[0]
+            if self.num_h &lt;= 0:
+                continue
+            found_proton = True
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 3&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+
+            # Initialize the rho parameters
+            try:
+                rdh0 = self.rxh[type_d[k]]
+            except RuntimeError:
+                &#34;Error hashing donor. Is donor in rdh0 list? is only one donor &#34; \
+                &#34;passed to subroutine?&#34;
+            pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+            pmj0 = rdh0 / self.rlist
+
+            # Initialize the other arrays
+            dims = (self.num_h, self.num_acceptors)
+            pmjs = np.zeros(dims, dtype=float)
+            xmjs = np.zeros(dims, dtype=float)
+            gmjs = np.zeros(dims, dtype=float)
+
+            #Begin the calculations
+            for m in range(self.num_h):
+                for j in range(self.num_acceptors):
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
+                    if pmjs[m, j] &gt; pmaxs[j]:
+                        self.hop.append((m, j, pmjs[m, j], k))
+                    if pmjs[m, j] &gt; largest_p:
+                        largest_p = pmjs[m, j]
+                        dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                             np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                    # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
+                    # self.x_i[:] += gmjs[m, j] * (x_as[j])
+                    self.x_i[:] += gmjs[m, j] * (as_com[j])
+            sum_gs += np.sum(gmjs[:])
+
+            if self.print_all:
+                print(&#34;For donor %d&#34; % k)
+                for m in range(self.num_h):
+                    self.ofi.write(icstr.format(m, *self.x_hs[m]))
+                self.ofi.write(&#34;pmjs\n&#34;)
+                print(pmjs, file=ofi)
+                self.ofi.write(&#34;xmjs\n&#34;)
+                print(xmjs, file=ofi)
+                self.ofi.write(&#34;gmjs\n&#34;)
+                print(gmjs, file=ofi)
+                self.ofi.write(&#34;pmaxs\n&#34;)
+                print(pmaxs, file=ofi)
+                self.ofi.write(&#34;Hops:\n&#34;)
+                print(self.hop, file=ofi)
+                print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+        if not found_proton:
+            print(&#34;Error, no protons for indicator&#34;)
+            raise RuntimeError(&#34;calc_indicator 4&#34;)
+
+        gI = self.calc_gI(sum_gs)
+
+        self.calc_ind(my_dcom, gI)
+
+        if self.print_all:
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            print(&#34;Final location&#34;, file=ofi)
+            print(self.x_i)
+
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, my_dcom[0][np.newaxis, :])
+        self.step += 1
+        return 0
+
+    def calc_d_weights(self, type_d, x_hms):
+        num_d = self.x_d.shape[0]
+        w = np.zeros(num_d)
+        sum_r = 0
+        d_com = np.zeros(3)
+        for k in range(num_d):
+            rdh0 = self.rxh[type_d[k]]
+            for m in range(x_hms[k].shape[0]):
+                rdh = np.linalg.norm(self.x_d[k] - x_hms[k][m, :3])
+                rdh -= rdh0
+                rdh *= rdh
+                w[k] += rdh
+                sum_r += rdh
+        if sum_r &gt; 1e-5:
+            w /= sum_r
+        else:
+            w[:] = 0
+            has_h = 0
+            for k in range(num_d):
+                if x_hms[k].shape[0] &gt; 0:
+                    has_h += 1
+                    w[k] = 1
+            if has_h &gt; 0:
+                w[:] /= has_h
+            else:
+                w[:] = 1 / num_d
+        for k in range(num_d):
+            d_com += w[k] * self.x_d[k]
+        return [d_com]
+
+
+class Indicator11(Indicator):
+    &#34;&#34;&#34;
+    This implementation of the indicator is the one I developed but
+    the distance between the donor center of mass and the kth donor
+    are added to the final result.
+
+    This accounts for the distance between each of the k-th donors and the
+    center of mass.
+    &#34;&#34;&#34;
+
+    # TODO: Finish this documentation
+    def __init__(self):
+        Indicator.__init__(self)
+        self.donor_com = []
+        self.acceptor_com = []
+
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
+                       ofi=None):
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        num_d = len(x_d)
+        # Set donor coordinates
+        try:
+            self.x_d = x_d.copy()
+            self.d_com = d_com.copy()[0]
+        except RuntimeError(&#34;calc_indicator 11&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;Warning: NO ACCEPTOR&#34;)
+                print(&#34;Setting indicator location to donor com&#34;)
+                self.x_i[:] = self.x_d[:]
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        if self.print_all:
+            self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            for k in range(len(x_d)):
+                self.ofi.write(cstr.format(*self.x_d[k]))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            self.ofi.write(&#34;Donor COM\n&#34;)
+            print(d_com, file=ofi)
+            print(&#34;Acceptor COMs&#34;, file=ofi)
+            print(as_com)
+
+        gI = 0
+        self.x_i = np.zeros(3)
+        largest_p = 0
+        dr = 0
+        self.hop = []
+        sum_gs = 0.0
+        found_proton = False
+
+        for k in range(num_d):
+
+            # Set hydrogen coordinates
+            self.num_h = x_hms[k].shape[0]
+            if self.num_h &lt;= 0:
+                continue
+            found_proton = True
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 3&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+
+            # Initialize the rho parameters
+            try:
+                rdh0 = self.rxh[type_d[k]]
+            except RuntimeError:
+                print(
+                &#34;Error hashing donor. Is donor in rdh0 list? is only one donor &#34; \
+                &#34;passed to subroutine?&#34;
+                )
+                raise
+            pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+            pmj0 = rdh0 / self.rlist
+
+            # Initialize the other arrays
+            dims = (self.num_h, self.num_acceptors)
+            pmjs = np.zeros(dims, dtype=float)
+            xmjs = np.zeros(dims, dtype=float)
+            gmjs = np.zeros(dims, dtype=float)
+
+            #Begin the calculations
+            for m in range(self.num_h):
+                for j in range(self.num_acceptors):
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
+                    if pmjs[m, j] &gt; pmaxs[j]:
+                        self.hop.append((m, j, pmjs[m, j], k))
+                    if pmjs[m, j] &gt; largest_p:
+                        largest_p = pmjs[m, j]
+                        dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                             np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                    # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
+                    # self.x_i[:] += gmjs[m, j] * (x_as[j])
+                    self.x_i[:] += gmjs[m, j] * (x_as[j] + self.x_d[k] -
+                                                 d_com[0].reshape(3))
+            sum_gs += np.sum(gmjs[:])
+
+            if self.print_all:
+                print(&#34;For donor %d&#34; % k)
+                for m in range(self.num_h):
+                    self.ofi.write(icstr.format(m, *self.x_hs[m]))
+                self.ofi.write(&#34;pmjs\n&#34;)
+                print(pmjs, file=ofi)
+                self.ofi.write(&#34;xmjs\n&#34;)
+                print(xmjs, file=ofi)
+                self.ofi.write(&#34;gmjs\n&#34;)
+                print(gmjs, file=ofi)
+                self.ofi.write(&#34;pmaxs\n&#34;)
+                print(pmaxs, file=ofi)
+                self.ofi.write(&#34;Hops:\n&#34;)
+                print(self.hop, file=ofi)
+                print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+        if not found_proton:
+            print(&#34;Error, no protons for indicator&#34;)
+            raise RuntimeError(&#34;calc_indicator 4&#34;)
+
+        gI = self.calc_gI(sum_gs)
+
+        self.calc_ind(d_com, gI)
+
+        if self.print_all:
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            print(&#34;Final location&#34;, file=ofi)
+            print(self.x_i)
+
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, d_com[0][np.newaxis, :])
+        self.step += 1
+        return 0
+
+    def calc_ind(self, d_com, gI):
+        self.x_i += d_com[0][:]
+        self.x_i /= gI
+
+
+class MCEC(Indicator4):
+    &#34;&#34;&#34;
+    Implementation of the mCEC.
+    This implementation of mCEC has indicator 4 as base class for switching
+    topology. Then the mCEC stuff sits right on top of it.
+    &#34;&#34;&#34;
+
+    def __init__(self, switching=&#39;chakrabarti&#39;):
+        Indicator4.__init__(self)
+        if switching == &#39;chakrabarti&#39;:
+            self.switch = chakrabarti_switching
+        elif switching == &#39;fos&#39;:
+            self.switch = self.fos
+            print(&#34;Error, not implemented&#34;)
+            sys.exit()
+        else:
+            print(&#34;Improper value for switching function. Should be &#34;
+                  &#34;&#39;chakrabarti&#39; or &#39;fos&#39;&#34;)
+            sys.exit()
+
+        self.switch = np.vectorize(self.switch)
+        self.m_acc_weight = {&#39;OT&#39;: 2, &#39;SOT&#39;: 2, &#39;CLA&#39;: 0, &#39;OC&#39;: 0}
+        self.rsw = 1.40
+        self.dsw = 0.04
+        self.x_mcec = np.asarray([0.00, 0.00, 0.00])
+        self.correction_groups = []
+        self.correction_weights = []
+
+    def calc_mcec(self, rH, rXj, acc_types, correction_groups=None):
+        &#34;&#34;&#34;
+        Main loop for calculating the mCEC location.
+
+        The result is stored in self.x_mcec.
+
+        Parameters
+        ----------
+        rH: ndarray with shape(m,3)
+            The positions of the hydrogens
+        rXj: ndarray of float with shape (j,3)
+            The locations of the acceptors
+        acc_types: list of str with len (j)
+            The atom type corresponding to an the Jth acceptor
+        correction_groups: list of lr
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        if len(acc_types) != rXj.shape[0]:
+            print(&#34;Error, number of acceptor types does not equal&#34;
+                  &#34;the number of acceptor coordinates&#34;)
+        if rH.size == 0:
+            print(&#34;Error, no hydrogen coordinates found&#34;)
+            raise IndexError
+        if rXj.size == 0:
+            print(&#34;Error, no acceptor coordinates found&#34;)
+            raise IndexError
+        self.get_weight_vector(acc_types)
+        self.x_mcec[:] = calc_mcec_location(rH, rXj, self.acc_weights, self.rsw,
+                                            self.dsw)
+        # self.x_mcec[:] = self.calc_mcec_location(rH, rXj, self.acc_weights,
+        #                                          self.switch, self.rsw, self.dsw)
+        print(&#34;MCEC before correction&#34;, self.x_mcec)
+        if correction_groups:
+            self.x_mcec[:] += self.calc_mcec_correction(rH, correction_groups)
+        print(&#34;Final mCEC&#34;, self.x_mcec)
+
+    def calc_mcec_correction(self, rH, rGroups, verbose=True):
+        &#34;&#34;&#34;
+        Calculate the correction term for the mCEC.
+
+        Currently the max function is used instead of the nondifferentiable
+        max function due to numerical issues.
+
+        Parameters
+        ----------
+        rH: ndarray of float with shape(m,3)
+            The positions of the hydrogens
+        rGroups: list of ndarrays with shape(m,3)
+            The position of the groups.
+            Example:
+            ([[1.1 1.1 1.1],
+              [1.2 1.2 1.2]],
+             [[2.1 2.1 2.1],
+              [2.2 2.2 2.2],
+              [2.3 2.3 2.3]])
+
+        Returns
+        -------
+        ndarray of float with shape(3)
+
+        &#34;&#34;&#34;
+        num_groups = len(self.correction_groups)
+        correction = np.asarray([0., 0., 0.])
+        my_correction = np.asarray([0., 0., 0.])
+        if num_groups != len(rGroups):
+            print(
+                &#34;Error, the number of groups found does not equal the number of groups parsed&#34;
+            )
+            raise LookupError
+        for g in range(num_groups):
+            my_correction[:] = 0.
+            group_length = len(self.correction_groups[g])
+            group_diff_max = np.empty(group_length)
+            # Calculate the array of switching functions
+            for x in range(group_length):
+                dists = rH - rGroups[g][x]
+                dists = np.linalg.norm(dists, axis=1)
+                dists = chakrabarti_switching(dists, self.rsw, self.dsw)
+                # The differentiable maximum function is disabled.
+                # group_diff_max[x] = self.diff_max(dists)
+                group_diff_max[x] = dists.max()
+            print(group_diff_max)
+            for l, k in permutations(range(group_length), 2):
+                my_correction += group_diff_max[k] * (rGroups[g][l] -
+                                                      rGroups[g][k])
+            my_correction *= self.correction_weights[g]
+            correction += my_correction
+        if verbose:
+            print(&#39;Correciton amount&#39;, correction)
+        return correction
+
+    def get_weight_vector(self, types):
+        &#34;&#34;&#34;
+        Return an array of weights for each exceptor in list &#39;types&#39;
+
+        Parameters
+        ----------
+        types: list of str
+            list of atom types to lookup weights for
+
+        Returns
+        -------
+        ndarray of floats
+
+        Exceptions
+        ----------
+        LookupError: Could not find the type in the acceptor type dictionary
+        &#34;&#34;&#34;
+        num_acc = len(types)
+        self.acc_weights = np.zeros(num_acc, dtype=float)
+
+        for i in range(num_acc):
+            try:
+                self.acc_weights[i] = self.m_acc_weight[types[i]]
+            except LookupError:
+                print(&#34;Error looking up acceptor %d, type not found&#34; % i)
+                raise
+
+    @staticmethod
+    @jit(nopython=True)
+    def diff_max(results, power=15):
+        &#34;&#34;&#34;
+        Differentiable maximum function. Given a list of floats,
+        calculate the differentiable maximum function
+
+        Parameters
+        ----------
+        results: ndarray of floats
+            array of floats to exponentiate and sum
+
+        Returns
+        -------
+        float
+        &#34;&#34;&#34;
+        a = results**power
+        b = a * results
+        if (a[:] == np.nan).any():
+            a[a == np.nan] == 0.0
+        if (b[:] == np.nan).any():
+            b[b == np.nan] == 0.0
+        return b.sum() / a.sum()
+
+    # @staticmethod
+    # def calc_mcec_location(rH, rXj, w, switch, rsw, dsw):
+    #     &#34;&#34;&#34;
+    #     Returns the mcec location from equation 6 of
+    #     J. Phys. Chem. A, Vol. 110, 2006
+    #
+    #     This is the mCEC location without the correction term
+    #
+    #     :param rH: np.ndarray of floats with size (n,3) where n is
+    #     number of hydrogens. hydrogen locations
+    #     :param rXj: np.ndarray of floats with size (J,3) where J is
+    #     number of acceptors. acceptor locations
+    #     :param w: np.ndarray of integers with size J representing
+    #     the minimum protonatied state of the acceptor
+    #     :param switch: vectorized switching function that takes a scalar
+    #      distance. Must accept numpy arrays.
+    #     :return: zeta: The mcec without the correction term
+    #     &#34;&#34;&#34;
+    #
+    #     # hydrogen and weighted acceptors
+    #     zeta = np.sum(rH, axis=0)
+    #     zeta -= np.dot(w, rXj)
+    #
+    #     num_m = rH.shape[0]
+    #     num_j = rXj.shape[0]
+    #     slow = False # Is 2 seconds slower for 25 second job...
+    #     #_Slow way to calculate zeta
+    #     if slow:
+    #         for m in range(num_m):
+    #             for j in range(num_j):
+    #                 displacement = rH[m] - rXj[j]
+    #                 distance = np.linalg.norm(displacement)
+    #                 factor = switch(distance, rsw, dsw)
+    #                 zeta -= factor * displacement
+    #     else:
+    #         # pairwise distances and switching functions
+    #         rHXj = np.zeros((rXj.shape[0], rH.shape[0], 3))
+    #         rHXj[:] = rH[:]
+    #         rHXj = np.transpose(rHXj, (1, 0, 2)) - rXj
+    #         zeta -= np.tensordot(rHXj, switch(np.linalg.norm(rHXj, axis=2), rsw, dsw), [(0,1),(0,1)])
+    #     return zeta
+
+    # @staticmethod
+    # def chakrabarti_switching(d, rsw, dsw):
+    #     &#34;&#34;&#34;
+    #     Chakrabarti switching function from
+    #     Konig et all
+    #     J. Phys. Chem. A. Vol 110, No.2
+    #     :param d: real distance
+    #     :param rsw: real midpoint of switching function
+    #     :param dsw: real slope of switching function
+    #     :return:
+    #     &#34;&#34;&#34;
+    #     return (1+np.exp((d-rsw)/dsw))**-1
+
+    @staticmethod
+    @jit(nopython=True)
+    def fos(x):
+        &#34;&#34;&#34;
+        Our fifth order spline
+
+        Parameters
+        ----------
+        :param x:
+        :return:
+        &#34;&#34;&#34;
+        return -6 * x**5 + 15 * x**4 - 10 * x**3 + 1
+
+
+@jit(nopython=True, parallel=True)
+def chakrabarti_switching(d, rsw, dsw):
+    &#34;&#34;&#34;
+    Chakrabarti switching function from
+    Konig et all
+    J. Phys. Chem. A. Vol 110, No.2
+
+    Parameters
+    ----------
+    d: real
+       distance
+    rsw: real
+        midpoint of switching function
+    dsw: real
+        slope of switching function
+
+    Returns
+    -------
+    float
+    &#34;&#34;&#34;
+    return (1 + np.exp((d - rsw) / dsw))**-1
+
+
+@jit
+def calc_mcec_location(rH, rXj, w, rsw, dsw, verbose=False):
+    &#34;&#34;&#34;
+    Returns the mcec location from equation 6 of
+    J. Phys. Chem. A, Vol. 110, 2006
+
+    This is the mCEC location without the correction term
+
+    Parameters
+    ----------
+    rH: np.ndarray of floats with size (n,3) where n is
+    number of hydrogens.
+         hydrogen locations
+    rXj: np.ndarray of floats w ith size (J,3) where J is
+    number of acceptors.
+        acceptor locations
+    w: np.ndarray of int with size J
+        The reference protonation state of each acceptor
+
+    Returns
+    -------
+    zeta: The mcec without the correction term
+    &#34;&#34;&#34;
+
+    # hydrogen and weighted acceptors
+    zeta = np.sum(rH, axis=0)
+    if verbose:
+        print(&#39;sum_hydrogen&#39;, zeta)
+    zeta -= np.dot(w, rXj)
+    print(&#39;after subtracting acc&#39;, zeta)
+    num_m = rH.shape[0]
+    num_j = rXj.shape[0]
+    slow = False  # Is 2 seconds slower for 25 second job...
+    #_Slow way to calculate zeta
+    if slow:
+        for m in range(num_m):
+            for j in range(num_j):
+                displacement = rH[m] - rXj[j]
+                distance = np.linalg.norm(displacement)
+                factor = chakrabarti_switching(distance, rsw, dsw)
+                zeta -= factor * displacement
+    else:
+        # pairwise distances and switching functions
+        rHXj = np.zeros((rXj.shape[0], rH.shape[0], 3))
+        rHXj[:] = rH[:]
+        rHXj = np.transpose(rHXj, (1, 0, 2)) - rXj
+        zeta -= np.tensordot(
+            rHXj, chakrabarti_switching(np.linalg.norm(rHXj, axis=2), rsw, dsw),
+            [(0, 1), (0, 1)])
+    return zeta</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="adaptive_md_tools.indicator.calc_mcec_location"><code class="name flex">
+<span>def <span class="ident">calc_mcec_location</span></span>(<span>rH, rXj, w, rsw, dsw, verbose=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the mcec location from equation 6 of
+J. Phys. Chem. A, Vol. 110, 2006</p>
+<p>This is the mCEC location without the correction term</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>rH</code></strong> :&ensp;<code>np.ndarray</code> of <code>floats</code> <code>with</code> <code>size</code> (<code>n</code>,<code>3</code>) <code>where</code> <code>n</code> <code>is</code></dt>
+<dd>&nbsp;</dd>
+<dt>number of hydrogens.</dt>
+<dt>hydrogen locations</dt>
+<dt><strong><code>rXj</code></strong> :&ensp;<code>np.ndarray</code> of <code>floats</code> <code>w</code> <code>ith</code> <code>size</code> (<code>J</code>,<code>3</code>) <code>where</code> <code>J</code> <code>is</code></dt>
+<dd>&nbsp;</dd>
+<dt>number of acceptors.</dt>
+<dt>acceptor locations</dt>
+<dt><strong><code>w</code></strong> :&ensp;<code>np.ndarray</code> of <code>int</code> <code>with</code> <code>size</code> <code>J</code></dt>
+<dd>The reference protonation state of each acceptor</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>zeta</code></strong> :&ensp;<code>The</code> <code>mcec</code> <code>without</code> <code>the</code> <code>correction</code> <code>term</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@jit
+def calc_mcec_location(rH, rXj, w, rsw, dsw, verbose=False):
+    &#34;&#34;&#34;
+    Returns the mcec location from equation 6 of
+    J. Phys. Chem. A, Vol. 110, 2006
+
+    This is the mCEC location without the correction term
+
+    Parameters
+    ----------
+    rH: np.ndarray of floats with size (n,3) where n is
+    number of hydrogens.
+         hydrogen locations
+    rXj: np.ndarray of floats w ith size (J,3) where J is
+    number of acceptors.
+        acceptor locations
+    w: np.ndarray of int with size J
+        The reference protonation state of each acceptor
+
+    Returns
+    -------
+    zeta: The mcec without the correction term
+    &#34;&#34;&#34;
+
+    # hydrogen and weighted acceptors
+    zeta = np.sum(rH, axis=0)
+    if verbose:
+        print(&#39;sum_hydrogen&#39;, zeta)
+    zeta -= np.dot(w, rXj)
+    print(&#39;after subtracting acc&#39;, zeta)
+    num_m = rH.shape[0]
+    num_j = rXj.shape[0]
+    slow = False  # Is 2 seconds slower for 25 second job...
+    #_Slow way to calculate zeta
+    if slow:
+        for m in range(num_m):
+            for j in range(num_j):
+                displacement = rH[m] - rXj[j]
+                distance = np.linalg.norm(displacement)
+                factor = chakrabarti_switching(distance, rsw, dsw)
+                zeta -= factor * displacement
+    else:
+        # pairwise distances and switching functions
+        rHXj = np.zeros((rXj.shape[0], rH.shape[0], 3))
+        rHXj[:] = rH[:]
+        rHXj = np.transpose(rHXj, (1, 0, 2)) - rXj
+        zeta -= np.tensordot(
+            rHXj, chakrabarti_switching(np.linalg.norm(rHXj, axis=2), rsw, dsw),
+            [(0, 1), (0, 1)])
+    return zeta</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.chakrabarti_switching"><code class="name flex">
+<span>def <span class="ident">chakrabarti_switching</span></span>(<span>d, rsw, dsw)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Chakrabarti switching function from
+Konig et all
+J. Phys. Chem. A. Vol 110, No.2</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>d</code></strong> :&ensp;<code>real</code></dt>
+<dd>&nbsp;</dd>
+<dt>distance</dt>
+<dt><strong><code>rsw</code></strong> :&ensp;<code>real</code></dt>
+<dd>midpoint of switching function</dd>
+<dt><strong><code>dsw</code></strong> :&ensp;<code>real</code></dt>
+<dd>slope of switching function</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@jit(nopython=True, parallel=True)
+def chakrabarti_switching(d, rsw, dsw):
+    &#34;&#34;&#34;
+    Chakrabarti switching function from
+    Konig et all
+    J. Phys. Chem. A. Vol 110, No.2
+
+    Parameters
+    ----------
+    d: real
+       distance
+    rsw: real
+        midpoint of switching function
+    dsw: real
+        slope of switching function
+
+    Returns
+    -------
+    float
+    &#34;&#34;&#34;
+    return (1 + np.exp((d - rsw) / dsw))**-1</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="adaptive_md_tools.indicator.Indicator"><code class="flex name class">
+<span>class <span class="ident">Indicator</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>This is the implementation of the indicator as detailed in our 2019
+paper on EcCLC</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class Indicator:
+    &#34;&#34;&#34;
+    This is the implementation of the indicator as detailed in our 2019
+    paper on EcCLC
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        # Dictionary (atom_type: rdh) These are used to calculate
+        # rdh0 and pmax
+        self.rxh = {&#39;OT&#39;: 1.0, &#39;SOT&#39;: 1.0, &#39;CLA&#39;: 1.4, &#39;OC&#39;: 1.0}
+        # self.num_rdh0 = 0
+        self.rlist = 3.5
+        # The coordinates of the donor
+        self.x_d = np.zeros(3, dtype=float)
+        # Number of acceptors within rlist of donor
+        self.num_acceptors = 0
+        # Number of protons bound to donor
+        self.num_h = 0
+        # Location of the indicator
+        self.x_i = np.zeros(3, dtype=float)
+        # Identity of the donor
+        self.donor = 0
+        # Describes a proton hop
+        # elements are: [[int:ind of proton, which acceptor hop to, pmj], ...]
+        self.hop = []
+        # Location of the acceptors
+        self.x_as = []
+        # Print flag
+        self.print_all = False
+        # Output reaction coordinates?
+        self.output_freq = 0
+        # Where to print indicator reaction coordinate information?
+        self.log_path = &#39;indicator.log&#39;
+        self.xyz_path = &#39;indicator.xyz&#39;
+        # Where to print debug information?
+        self.ofi = sys.stdout
+        # Log file object
+        self._lfi = None
+        self._xyz = None
+        self.max_xyz_atoms = 5
+        # This step
+        self.step = 0
+
+    def set_output_freq(self, freq, prefix=&#39;&#39;):
+        &#34;&#34;&#34;
+        Initialize variables for writing the xyz and the log file
+
+        Parameters
+        ----------
+        freq: int
+            output frequency
+        prefix: str
+            file prefix
+        &#34;&#34;&#34;
+        try:
+            int(freq)
+        except TypeError:
+            sys.exit(&#34;Error: indicator output frequency must be an integer&#34;)
+        if freq &gt; 0:
+            self.output_freq = freq
+            if prefix != &#39;&#39;:
+                self.log_path = prefix + &#39;-&#39; + self.log_path
+                self.xyz_path = prefix + &#39;-&#39; + self.xyz_path
+            self._lfi = open(self.log_path, &#39;w&#39;)
+            self._lfi.write(&#34;# Step           rho             dr\n&#34;)
+            self._xyz = open(self.xyz_path, &#39;w&#39;)
+
+    def reset_hop(self):
+        &#34;&#34;&#34;
+        After proton hop, clear the list of hops
+        &#34;&#34;&#34;
+        self.hop = []
+
+    def _write_log(self, p, dr, coords=None):
+        &#34;&#34;&#34;
+        Write the results of a step
+        Write the rho and dr coordinates
+        If a matrix of coordinates is present, write them to the xyz file
+
+        Parameters
+        ----------
+        :param p:
+        :param dr:
+        :param coords:
+        :return:
+        &#34;&#34;&#34;
+        self._lfi.write(&#39;{0:10d}  {1:10.6f}   {2:10.6f}\n&#39;.format(
+            self.step, p, dr))
+
+        if coords is None:
+            return
+        #if not coords.any():
+        #    return
+
+        natoms = coords.shape[0]
+
+        try:
+            self._xyz.write(&#39;%d\n&#39; % self.max_xyz_atoms)
+        except:
+            sys.exit(&#34;Error writing number of atoms&#34;)
+        self._xyz.write(&#39;\n&#39;)
+
+        xyz_str = &#34;{3}     {0:12.6}     {1:12.6f}     {2:12.6f}\n&#34;
+        els = [&#34;Ti&#34;, &#34;V &#34;, &#34;Cr&#34;, &#34;Mn&#34;, &#34;Fe&#34;, &#34;Co&#34;, &#34;Ni&#34;, &#34;Cu&#34;, &#34;Zn&#34;, &#34;Ga&#34;, &#34;Ge&#34;]
+        try:
+            for i in range(natoms):
+                self._xyz.write(xyz_str.format(*coords[i], els[i]))
+            for j in range(i + 1, self.max_xyz_atoms):
+                self._xyz.write(xyz_str.format(0., 0., 0., els[j]))
+        except IOError:
+            print(&#34;Error writing coords&#34;)
+            raise
+        return
+
+    def add_rdh0(self, rdh, atom_type: str):
+        &#34;&#34;&#34;
+        Add a rho parameter and atom type to the dict of parameters
+
+        Parameters
+        ----------
+        rdh: float
+            equilibrium dh distance in angstrom
+        atom_type: str
+            atom type to associate with rdh value
+
+        &#34;&#34;&#34;
+        try:
+            if rdh &lt; 0:
+                print(&#34;Error, rdh must be greater than 0.&#34;)
+                raise ValueError(&#39;add_rdh 1&#39;)
+        except TypeError(&#39;add_rdh 2&#39;):
+            print(&#34;Error, excpected a number for rdh &#34;)
+            sys.exit()
+
+        try:
+            atom_upper = atom_type.upper()
+        except TypeError(&#39;add_rdh3&#39;):
+            print(&#34;Error parsing atom type {0}&#34;.format(atom_type))
+            sys.exit()
+
+        try:
+            self.rxh[atom_type] = rdh
+        except TypeError(&#34;add rdh 4&#34;):
+            print(&#34;Error adding atom {0} and rdh parameter {1} to &#34;
+                  &#34;rdh&#34;.format(atom_type, rdh))
+        return
+
+    def print_rdh0(self, ofi=None):
+        &#34;&#34;&#34;
+        Output data for double checking
+
+        Parameters
+        ----------
+        ofi: file object with write permissions
+            The output file object. If None, then this will print to stdout
+        &#34;&#34;&#34;
+        print(&#34;Atom_Type  rDH&#34;, file=ofi)
+        for key, rdh in self.rxh:
+            print(&#34;{0:8}    {0:5.3f}&#34;.format(key, rdh), file=ofi)
+        return
+
+    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, ofi=None):
+        &#34;&#34;&#34;
+        This is the main subroutine for calculating the indicator
+
+        Parameters
+        ----------
+        x_d: ndarray of float
+            coordinates with shape [3]
+        x_as: ndarray of float
+            acceptor coordinates each with shape [j,3]
+        x_hms: ndarray of float
+            hydrogen coordinates each with shape [m,3]
+        type_d: str
+            donor type to link with rho parameters
+        type_as: list of str
+            acceptor types to link with rho parameters
+        ofi: file object
+            where to print stuff
+        &#34;&#34;&#34;
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        # Set donor coordinates
+        try:
+            self.x_d[:] = x_d[:]
+        except RuntimeError(&#34;calc_indicator 1&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;Warning: NO ACCEPTOR&#34;)
+                print(&#34;Setting indicator location to donor coordinates&#34;)
+                self.x_i[:] = self.x_d[:]
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        # Set hydrogen coordinates
+        self.num_h = x_hms.shape[0]
+        if self.num_h &lt;= 0:
+            print(&#34;Error, no protons for indicator&#34;)
+            raise RuntimeError(&#34;calc_indicator 4&#34;)
+        try:
+            self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+            self.x_hs = x_hms[:, :]
+        except RuntimeError(&#34;Calc indicator 3&#34;):
+            print(&#34;Error setting Hydrogen coordinates&#34;)
+            sys.exit()
+
+        # Initialize the rho parameters
+        try:
+            rdh0 = self.rxh[type_d]
+        except RuntimeError:
+            print(&#34;Error hashing donor. Is donor in rdh0 list? is only one&#34;
+                  &#34; donor passed to subroutine?&#34;)
+            raise
+        pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+        pmj0 = rdh0 / self.rlist
+
+        # Initialize the other arrays
+        dims = (self.num_h, self.num_acceptors)
+        pmjs = np.zeros(dims, dtype=float)
+        xmjs = np.zeros(dims, dtype=float)
+        gmjs = np.zeros(dims, dtype=float)
+        self.hop = []
+
+        #Begin the calculations
+        largest_p = 0
+        dr = 0
+        for m in range(self.num_h):
+            for j in range(self.num_acceptors):
+                pmjs[m, j] = self.calc_pmj(self.x_d, self.x_as[j], self.x_hs[m])
+                if pmjs[m, j] &gt; pmaxs[j]:
+                    self.hop.append((m, j, pmjs[m, j]))
+                if pmjs[m, j] &gt; largest_p:
+                    largest_p = pmjs[m, j]
+                    dr = np.linalg.norm(self.x_d - self.x_hs[m]) - \
+                         np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+
+        gI = self.calc_gI(gmjs)
+        self.x_i[:] = self.x_d[:]
+        for j in range(self.num_acceptors):
+            for m in range(self.num_h):
+                self.x_i[:] += gmjs[m, j] * x_as[j]
+        self.x_i *= 1. / gI
+
+        if self.print_all:
+            self.ofi.write(&#34;Detailed Stats\n&#34;)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            self.ofi.write(cstr.format(*self.x_d))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            for m in range(self.num_h):
+                self.ofi.write(icstr.format(m, *self.x_hs[m]))
+            self.ofi.write(&#34;pmjs\n&#34;)
+            print(pmjs, file=ofi)
+            self.ofi.write(&#34;xmjs\n&#34;)
+            print(xmjs, file=ofi)
+            self.ofi.write(&#34;gmjs\n&#34;)
+            print(gmjs, file=ofi)
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            self.ofi.write(&#34;Hops:\n&#34;)
+            print(self.hop, file=ofi)
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, coords=self.x_d.reshape(-1, 3))
+        self.step += 1
+        return 0
+
+    @staticmethod
+    @jit
+    def calc_pmj(x_d, x_aj, x_hm):
+        &#34;&#34;&#34;
+        calculate the variable p_mj [ rho_mj ]
+        this is the projection of the D-H vec onto the D-A vec
+
+        Parameters
+        ----------
+        x_d: ndarray of float with shape(3)
+            coordinates of donor (np.float array [3] )
+        x_aj: ndarray of float with shape(3)
+            coordinates of acceptor j (np.float array [3] )
+        x_hm: ndarray of float with shape(3)
+            coordinates of hydrogen m (np.float array [3] )
+
+        Returns
+        -------
+        float
+        &#34;&#34;&#34;
+        r_dhm = x_hm - x_d
+        r_daj = x_aj - x_d
+        return np.dot(r_dhm, r_daj) / np.linalg.norm(r_daj)**2
+
+    @staticmethod
+    @jit(nopython=True)
+    def calc_xmj(pmj, pmj0, pmax):
+        &#34;&#34;&#34;
+        calculate the variable x(p_mj) [ x(rho_mj) ]. This is the ratio
+        that deals with how far we are away from equilibrium.
+
+        Parameters
+        ----------
+        pmj:  float
+            projection scalar
+        pmj0: float
+            scaling parameter parameter
+        pmax: float
+            equilibrium bond constant ratio
+
+        Returns
+        -------
+        x_pmj: float
+        &#34;&#34;&#34;
+        return 1 - (pmj - pmj0) / (pmax - pmj0)
+
+    @staticmethod
+    @jit(nopython=True)
+    def calc_gmj(xmj):
+
+        if 1 &lt;= xmj:
+            gmj = 0.
+        elif xmj &lt; 0:
+            gmj = 1
+        else:
+            gmj = -6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1
+        return gmj
+
+    @staticmethod
+    @jit
+    def calc_gI(gmjs):
+        &#34;&#34;&#34;
+        Calculate the normalization constant gI
+
+        Parameters
+        ----------
+        :param gmjs: the splined projection vectors
+        :type gmjs: np.ndarray
+        :return: the normalization constant
+        :rtype: np.float
+        &#34;&#34;&#34;
+        return 1 + np.sum(gmjs)</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></li>
+<li><a title="adaptive_md_tools.indicator.Indicator11" href="#adaptive_md_tools.indicator.Indicator11">Indicator11</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="adaptive_md_tools.indicator.Indicator.calc_gI"><code class="name flex">
+<span>def <span class="ident">calc_gI</span></span>(<span>gmjs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculate the normalization constant gI</p>
+<h2 id="parameters">Parameters</h2>
+<p>:param gmjs: the splined projection vectors
+:type gmjs: np.ndarray
+:return: the normalization constant
+:rtype: np.float</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@staticmethod
+@jit
+def calc_gI(gmjs):
+    &#34;&#34;&#34;
+    Calculate the normalization constant gI
+
+    Parameters
+    ----------
+    :param gmjs: the splined projection vectors
+    :type gmjs: np.ndarray
+    :return: the normalization constant
+    :rtype: np.float
+    &#34;&#34;&#34;
+    return 1 + np.sum(gmjs)</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator.calc_gmj"><code class="name flex">
+<span>def <span class="ident">calc_gmj</span></span>(<span>xmj)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@staticmethod
+@jit(nopython=True)
+def calc_gmj(xmj):
+
+    if 1 &lt;= xmj:
+        gmj = 0.
+    elif xmj &lt; 0:
+        gmj = 1
+    else:
+        gmj = -6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1
+    return gmj</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator.calc_pmj"><code class="name flex">
+<span>def <span class="ident">calc_pmj</span></span>(<span>x_d, x_aj, x_hm)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>calculate the variable p_mj [ rho_mj ]
+this is the projection of the D-H vec onto the D-A vec</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x_d</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>3</code>)</dt>
+<dd>coordinates of donor (np.float array [3] )</dd>
+<dt><strong><code>x_aj</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>3</code>)</dt>
+<dd>coordinates of acceptor j (np.float array [3] )</dd>
+<dt><strong><code>x_hm</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>3</code>)</dt>
+<dd>coordinates of hydrogen m (np.float array [3] )</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@staticmethod
+@jit
+def calc_pmj(x_d, x_aj, x_hm):
+    &#34;&#34;&#34;
+    calculate the variable p_mj [ rho_mj ]
+    this is the projection of the D-H vec onto the D-A vec
+
+    Parameters
+    ----------
+    x_d: ndarray of float with shape(3)
+        coordinates of donor (np.float array [3] )
+    x_aj: ndarray of float with shape(3)
+        coordinates of acceptor j (np.float array [3] )
+    x_hm: ndarray of float with shape(3)
+        coordinates of hydrogen m (np.float array [3] )
+
+    Returns
+    -------
+    float
+    &#34;&#34;&#34;
+    r_dhm = x_hm - x_d
+    r_daj = x_aj - x_d
+    return np.dot(r_dhm, r_daj) / np.linalg.norm(r_daj)**2</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator.calc_xmj"><code class="name flex">
+<span>def <span class="ident">calc_xmj</span></span>(<span>pmj, pmj0, pmax)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>calculate the variable x(p_mj) [ x(rho_mj) ]. This is the ratio
+that deals with how far we are away from equilibrium.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>pmj</code></strong> :&ensp; <code>float</code></dt>
+<dd>projection scalar</dd>
+<dt><strong><code>pmj0</code></strong> :&ensp;<code>float</code></dt>
+<dd>scaling parameter parameter</dd>
+<dt><strong><code>pmax</code></strong> :&ensp;<code>float</code></dt>
+<dd>equilibrium bond constant ratio</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>x_pmj</code></strong> :&ensp;<code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@staticmethod
+@jit(nopython=True)
+def calc_xmj(pmj, pmj0, pmax):
+    &#34;&#34;&#34;
+    calculate the variable x(p_mj) [ x(rho_mj) ]. This is the ratio
+    that deals with how far we are away from equilibrium.
+
+    Parameters
+    ----------
+    pmj:  float
+        projection scalar
+    pmj0: float
+        scaling parameter parameter
+    pmax: float
+        equilibrium bond constant ratio
+
+    Returns
+    -------
+    x_pmj: float
+    &#34;&#34;&#34;
+    return 1 - (pmj - pmj0) / (pmax - pmj0)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="adaptive_md_tools.indicator.Indicator.add_rdh0"><code class="name flex">
+<span>def <span class="ident">add_rdh0</span></span>(<span>self, rdh, atom_type)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Add a rho parameter and atom type to the dict of parameters</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>rdh</code></strong> :&ensp;<code>float</code></dt>
+<dd>equilibrium dh distance in angstrom</dd>
+<dt><strong><code>atom_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>atom type to associate with rdh value</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def add_rdh0(self, rdh, atom_type: str):
+    &#34;&#34;&#34;
+    Add a rho parameter and atom type to the dict of parameters
+
+    Parameters
+    ----------
+    rdh: float
+        equilibrium dh distance in angstrom
+    atom_type: str
+        atom type to associate with rdh value
+
+    &#34;&#34;&#34;
+    try:
+        if rdh &lt; 0:
+            print(&#34;Error, rdh must be greater than 0.&#34;)
+            raise ValueError(&#39;add_rdh 1&#39;)
+    except TypeError(&#39;add_rdh 2&#39;):
+        print(&#34;Error, excpected a number for rdh &#34;)
+        sys.exit()
+
+    try:
+        atom_upper = atom_type.upper()
+    except TypeError(&#39;add_rdh3&#39;):
+        print(&#34;Error parsing atom type {0}&#34;.format(atom_type))
+        sys.exit()
+
+    try:
+        self.rxh[atom_type] = rdh
+    except TypeError(&#34;add rdh 4&#34;):
+        print(&#34;Error adding atom {0} and rdh parameter {1} to &#34;
+              &#34;rdh&#34;.format(atom_type, rdh))
+    return</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator.calc_indicator"><code class="name flex">
+<span>def <span class="ident">calc_indicator</span></span>(<span>self, x_d, x_as, x_hms, type_d, type_as, ofi=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>This is the main subroutine for calculating the indicator</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x_d</code></strong> :&ensp;<code>ndarray</code> of <code>float</code></dt>
+<dd>coordinates with shape [3]</dd>
+<dt><strong><code>x_as</code></strong> :&ensp;<code>ndarray</code> of <code>float</code></dt>
+<dd>acceptor coordinates each with shape [j,3]</dd>
+<dt><strong><code>x_hms</code></strong> :&ensp;<code>ndarray</code> of <code>float</code></dt>
+<dd>hydrogen coordinates each with shape [m,3]</dd>
+<dt><strong><code>type_d</code></strong> :&ensp;<code>str</code></dt>
+<dd>donor type to link with rho parameters</dd>
+<dt><strong><code>type_as</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>acceptor types to link with rho parameters</dd>
+<dt><strong><code>ofi</code></strong> :&ensp;<code>file</code> <code>object</code></dt>
+<dd>where to print stuff</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, ofi=None):
+    &#34;&#34;&#34;
+    This is the main subroutine for calculating the indicator
+
+    Parameters
+    ----------
+    x_d: ndarray of float
+        coordinates with shape [3]
+    x_as: ndarray of float
+        acceptor coordinates each with shape [j,3]
+    x_hms: ndarray of float
+        hydrogen coordinates each with shape [m,3]
+    type_d: str
+        donor type to link with rho parameters
+    type_as: list of str
+        acceptor types to link with rho parameters
+    ofi: file object
+        where to print stuff
+    &#34;&#34;&#34;
+    cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+    icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+    # Set donor coordinates
+    try:
+        self.x_d[:] = x_d[:]
+    except RuntimeError(&#34;calc_indicator 1&#34;):
+        print(&#34;Error setting donor coordinates&#34;)
+        sys.exit()
+
+    # Set acceptor coordinates
+    try:
+        self.num_acceptors = x_as.shape[0]
+        if self.num_acceptors == 0:
+            print(&#34;Warning: NO ACCEPTOR&#34;)
+            print(&#34;Setting indicator location to donor coordinates&#34;)
+            self.x_i[:] = self.x_d[:]
+            return 1
+        self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+        self.x_as[:, :] = x_as[:, :]
+    except RuntimeError(&#34;calc_indicator 2&#34;):
+        print(&#34;Error setting acceptor coordinates&#34;)
+        sys.exit()
+
+    # Set hydrogen coordinates
+    self.num_h = x_hms.shape[0]
+    if self.num_h &lt;= 0:
+        print(&#34;Error, no protons for indicator&#34;)
+        raise RuntimeError(&#34;calc_indicator 4&#34;)
+    try:
+        self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+        self.x_hs = x_hms[:, :]
+    except RuntimeError(&#34;Calc indicator 3&#34;):
+        print(&#34;Error setting Hydrogen coordinates&#34;)
+        sys.exit()
+
+    # Initialize the rho parameters
+    try:
+        rdh0 = self.rxh[type_d]
+    except RuntimeError:
+        print(&#34;Error hashing donor. Is donor in rdh0 list? is only one&#34;
+              &#34; donor passed to subroutine?&#34;)
+        raise
+    pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+    pmj0 = rdh0 / self.rlist
+
+    # Initialize the other arrays
+    dims = (self.num_h, self.num_acceptors)
+    pmjs = np.zeros(dims, dtype=float)
+    xmjs = np.zeros(dims, dtype=float)
+    gmjs = np.zeros(dims, dtype=float)
+    self.hop = []
+
+    #Begin the calculations
+    largest_p = 0
+    dr = 0
+    for m in range(self.num_h):
+        for j in range(self.num_acceptors):
+            pmjs[m, j] = self.calc_pmj(self.x_d, self.x_as[j], self.x_hs[m])
+            if pmjs[m, j] &gt; pmaxs[j]:
+                self.hop.append((m, j, pmjs[m, j]))
+            if pmjs[m, j] &gt; largest_p:
+                largest_p = pmjs[m, j]
+                dr = np.linalg.norm(self.x_d - self.x_hs[m]) - \
+                     np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+            xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+            gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+
+    gI = self.calc_gI(gmjs)
+    self.x_i[:] = self.x_d[:]
+    for j in range(self.num_acceptors):
+        for m in range(self.num_h):
+            self.x_i[:] += gmjs[m, j] * x_as[j]
+    self.x_i *= 1. / gI
+
+    if self.print_all:
+        self.ofi.write(&#34;Detailed Stats\n&#34;)
+        self.ofi.write(&#34;Donor Coords:\n&#34;)
+        self.ofi.write(cstr.format(*self.x_d))
+        self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+        for j in range(self.num_acceptors):
+            self.ofi.write(icstr.format(j, *self.x_as[j]))
+        self.ofi.write(&#34;Proton Coords\n&#34;)
+        for m in range(self.num_h):
+            self.ofi.write(icstr.format(m, *self.x_hs[m]))
+        self.ofi.write(&#34;pmjs\n&#34;)
+        print(pmjs, file=ofi)
+        self.ofi.write(&#34;xmjs\n&#34;)
+        print(xmjs, file=ofi)
+        self.ofi.write(&#34;gmjs\n&#34;)
+        print(gmjs, file=ofi)
+        self.ofi.write(&#34;gI\n&#34;)
+        print(gI, file=ofi)
+        self.ofi.write(&#34;Hops:\n&#34;)
+        print(self.hop, file=ofi)
+    if self.output_freq:
+        if self.step % self.output_freq == 0:
+            self._write_log(largest_p, dr, coords=self.x_d.reshape(-1, 3))
+    self.step += 1
+    return 0</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator.print_rdh0"><code class="name flex">
+<span>def <span class="ident">print_rdh0</span></span>(<span>self, ofi=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Output data for double checking</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ofi</code></strong> :&ensp;<code>file</code> <code>object</code> <code>with</code> <code>write</code> <code>permissions</code></dt>
+<dd>The output file object. If None, then this will print to stdout</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def print_rdh0(self, ofi=None):
+    &#34;&#34;&#34;
+    Output data for double checking
+
+    Parameters
+    ----------
+    ofi: file object with write permissions
+        The output file object. If None, then this will print to stdout
+    &#34;&#34;&#34;
+    print(&#34;Atom_Type  rDH&#34;, file=ofi)
+    for key, rdh in self.rxh:
+        print(&#34;{0:8}    {0:5.3f}&#34;.format(key, rdh), file=ofi)
+    return</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator.reset_hop"><code class="name flex">
+<span>def <span class="ident">reset_hop</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>After proton hop, clear the list of hops</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def reset_hop(self):
+    &#34;&#34;&#34;
+    After proton hop, clear the list of hops
+    &#34;&#34;&#34;
+    self.hop = []</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator.set_output_freq"><code class="name flex">
+<span>def <span class="ident">set_output_freq</span></span>(<span>self, freq, prefix='')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Initialize variables for writing the xyz and the log file</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>freq</code></strong> :&ensp;<code>int</code></dt>
+<dd>output frequency</dd>
+<dt><strong><code>prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>file prefix</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def set_output_freq(self, freq, prefix=&#39;&#39;):
+    &#34;&#34;&#34;
+    Initialize variables for writing the xyz and the log file
+
+    Parameters
+    ----------
+    freq: int
+        output frequency
+    prefix: str
+        file prefix
+    &#34;&#34;&#34;
+    try:
+        int(freq)
+    except TypeError:
+        sys.exit(&#34;Error: indicator output frequency must be an integer&#34;)
+    if freq &gt; 0:
+        self.output_freq = freq
+        if prefix != &#39;&#39;:
+            self.log_path = prefix + &#39;-&#39; + self.log_path
+            self.xyz_path = prefix + &#39;-&#39; + self.xyz_path
+        self._lfi = open(self.log_path, &#39;w&#39;)
+        self._lfi.write(&#34;# Step           rho             dr\n&#34;)
+        self._xyz = open(self.xyz_path, &#39;w&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator11"><code class="flex name class">
+<span>class <span class="ident">Indicator11</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>This implementation of the indicator is the one I developed but
+the distance between the donor center of mass and the kth donor
+are added to the final result.</p>
+<p>This accounts for the distance between each of the k-th donors and the
+center of mass.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class Indicator11(Indicator):
+    &#34;&#34;&#34;
+    This implementation of the indicator is the one I developed but
+    the distance between the donor center of mass and the kth donor
+    are added to the final result.
+
+    This accounts for the distance between each of the k-th donors and the
+    center of mass.
+    &#34;&#34;&#34;
+
+    # TODO: Finish this documentation
+    def __init__(self):
+        Indicator.__init__(self)
+        self.donor_com = []
+        self.acceptor_com = []
+
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
+                       ofi=None):
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        num_d = len(x_d)
+        # Set donor coordinates
+        try:
+            self.x_d = x_d.copy()
+            self.d_com = d_com.copy()[0]
+        except RuntimeError(&#34;calc_indicator 11&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;Warning: NO ACCEPTOR&#34;)
+                print(&#34;Setting indicator location to donor com&#34;)
+                self.x_i[:] = self.x_d[:]
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        if self.print_all:
+            self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            for k in range(len(x_d)):
+                self.ofi.write(cstr.format(*self.x_d[k]))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            self.ofi.write(&#34;Donor COM\n&#34;)
+            print(d_com, file=ofi)
+            print(&#34;Acceptor COMs&#34;, file=ofi)
+            print(as_com)
+
+        gI = 0
+        self.x_i = np.zeros(3)
+        largest_p = 0
+        dr = 0
+        self.hop = []
+        sum_gs = 0.0
+        found_proton = False
+
+        for k in range(num_d):
+
+            # Set hydrogen coordinates
+            self.num_h = x_hms[k].shape[0]
+            if self.num_h &lt;= 0:
+                continue
+            found_proton = True
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 3&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+
+            # Initialize the rho parameters
+            try:
+                rdh0 = self.rxh[type_d[k]]
+            except RuntimeError:
+                print(
+                &#34;Error hashing donor. Is donor in rdh0 list? is only one donor &#34; \
+                &#34;passed to subroutine?&#34;
+                )
+                raise
+            pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+            pmj0 = rdh0 / self.rlist
+
+            # Initialize the other arrays
+            dims = (self.num_h, self.num_acceptors)
+            pmjs = np.zeros(dims, dtype=float)
+            xmjs = np.zeros(dims, dtype=float)
+            gmjs = np.zeros(dims, dtype=float)
+
+            #Begin the calculations
+            for m in range(self.num_h):
+                for j in range(self.num_acceptors):
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
+                    if pmjs[m, j] &gt; pmaxs[j]:
+                        self.hop.append((m, j, pmjs[m, j], k))
+                    if pmjs[m, j] &gt; largest_p:
+                        largest_p = pmjs[m, j]
+                        dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                             np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                    # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
+                    # self.x_i[:] += gmjs[m, j] * (x_as[j])
+                    self.x_i[:] += gmjs[m, j] * (x_as[j] + self.x_d[k] -
+                                                 d_com[0].reshape(3))
+            sum_gs += np.sum(gmjs[:])
+
+            if self.print_all:
+                print(&#34;For donor %d&#34; % k)
+                for m in range(self.num_h):
+                    self.ofi.write(icstr.format(m, *self.x_hs[m]))
+                self.ofi.write(&#34;pmjs\n&#34;)
+                print(pmjs, file=ofi)
+                self.ofi.write(&#34;xmjs\n&#34;)
+                print(xmjs, file=ofi)
+                self.ofi.write(&#34;gmjs\n&#34;)
+                print(gmjs, file=ofi)
+                self.ofi.write(&#34;pmaxs\n&#34;)
+                print(pmaxs, file=ofi)
+                self.ofi.write(&#34;Hops:\n&#34;)
+                print(self.hop, file=ofi)
+                print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+        if not found_proton:
+            print(&#34;Error, no protons for indicator&#34;)
+            raise RuntimeError(&#34;calc_indicator 4&#34;)
+
+        gI = self.calc_gI(sum_gs)
+
+        self.calc_ind(d_com, gI)
+
+        if self.print_all:
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            print(&#34;Final location&#34;, file=ofi)
+            print(self.x_i)
+
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, d_com[0][np.newaxis, :])
+        self.step += 1
+        return 0
+
+    def calc_ind(self, d_com, gI):
+        self.x_i += d_com[0][:]
+        self.x_i /= gI</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="adaptive_md_tools.indicator.Indicator11.calc_ind"><code class="name flex">
+<span>def <span class="ident">calc_ind</span></span>(<span>self, d_com, gI)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_ind(self, d_com, gI):
+    self.x_i += d_com[0][:]
+    self.x_i /= gI</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></b></code>:
+<ul class="hlist">
+<li><code><a title="adaptive_md_tools.indicator.Indicator.add_rdh0" href="#adaptive_md_tools.indicator.Indicator.add_rdh0">add_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_gI" href="#adaptive_md_tools.indicator.Indicator.calc_gI">calc_gI</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_indicator" href="#adaptive_md_tools.indicator.Indicator.calc_indicator">calc_indicator</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_pmj" href="#adaptive_md_tools.indicator.Indicator.calc_pmj">calc_pmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_xmj" href="#adaptive_md_tools.indicator.Indicator.calc_xmj">calc_xmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.print_rdh0" href="#adaptive_md_tools.indicator.Indicator.print_rdh0">print_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.reset_hop" href="#adaptive_md_tools.indicator.Indicator.reset_hop">reset_hop</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.set_output_freq" href="#adaptive_md_tools.indicator.Indicator.set_output_freq">set_output_freq</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator4"><code class="flex name class">
+<span>class <span class="ident">Indicator4</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>This implementation of the indicator is the one where the projection
+vectors between donors in a group and other acceptors are calcualted.
+The results from each donor are then added back to calculate the final
+location for the indicator.</p>
+<p>X_I = 1./g_I * [ X_D_com + \sum_k \sum_j \sum_m { rho_kmj * X_A_j } ] s</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class Indicator4(Indicator):
+    &#34;&#34;&#34;
+    This implementation of the indicator is the one where the projection
+    vectors between donors in a group and other acceptors are calcualted.
+    The results from each donor are then added back to calculate the final
+    location for the indicator.
+
+    X_I = 1./g_I * [ X_D_com + \sum_k \sum_j \sum_m { rho_kmj * X_A_j } ] s
+
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        Indicator.__init__(self)
+        self.donor_com = []
+        self.acceptor_com = []
+
+    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,
+                       ofi=None):
+        &#34;&#34;&#34;
+
+        Parameters
+        ----------
+        :param x_d:  ndarray of donor coordinates with shape [k,3]
+        :param x_as: ndarray of acc coordinates with shape [j,3]
+        :param x_hms: ndarra of hyd coordinates with shape [m,3]
+        :param type_d: list of strings with length k
+        :param type_as: list of strings with length j
+        :param d_com: list of length 1 with [3] array !TODO make this less wacky
+        :param as_com: list of acceptor centers of mass
+        :param ofi: where to print stuff
+        :return:
+        &#34;&#34;&#34;
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        num_d = len(x_d)
+        # Set donor coordinates
+        try:
+            self.x_d = x_d.copy()
+            self.d_com = d_com.copy()[0]
+        except RuntimeError(&#34;calc_indicator 1&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;Warning: NO ACCEPTOR&#34;)
+                print(&#34;Setting indicator location to donor com&#34;)
+                self.x_i[:] = self.d_com[:]
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        if self.print_all:
+            self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            for k in range(len(x_d)):
+                self.ofi.write(cstr.format(*self.x_d[k]))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            self.ofi.write(&#34;Donor COM\n&#34;)
+            print(d_com, file=ofi)
+            print(&#34;Acceptor COMs&#34;, file=ofi)
+            print(as_com)
+
+        gI = 0
+        self.x_i = np.zeros(3)
+        largest_p = 0
+        dr = 0
+        self.hop = []
+        sum_gs = 0.0
+        found_proton = False
+
+        for k in range(num_d):
+
+            # Set hydrogen coordinates
+            self.num_h = np.shape(x_hms[k])[0]
+            if self.num_h &lt;= 0:
+                continue
+            found_proton = True
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 3&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+
+            # Initialize the rho parameters
+            try:
+                rdh0 = self.rxh[type_d[k]]
+            except RuntimeError:
+                print(&#34;Error hashing donor. Is donor in rdh0 list? is only&#34;
+                      &#34; one donor passed to subroutine?&#34;)
+                raise
+            pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+            pmj0 = rdh0 / self.rlist
+
+            # Initialize the other arrays
+            dims = (self.num_h, self.num_acceptors)
+            pmjs = np.zeros(dims, dtype=float)
+            xmjs = np.zeros(dims, dtype=float)
+            gmjs = np.zeros(dims, dtype=float)
+
+            #Begin the calculations
+            for m in range(self.num_h):
+                for j in range(self.num_acceptors):
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
+                    if pmjs[m, j] &gt; pmaxs[j]:
+                        self.hop.append((m, j, pmjs[m, j], k))
+                    if pmjs[m, j] &gt; largest_p:
+                        largest_p = pmjs[m, j]
+                        dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                             np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                    print(&#34;Correction:  &#34;, x_d[k] - d_com[0])
+                    # Add the weighted Acceptor cog coordinate
+                    self.x_i[:] += gmjs[m, j] * as_com[j]
+            sum_gs += np.sum(gmjs[:])
+
+            if self.print_all:
+                print(&#34;For donor %d&#34; % k)
+                print(&#34;Hydrogen coordinates:&#34;)
+                for m in range(self.num_h):
+                    self.ofi.write(icstr.format(m, *self.x_hs[m]))
+                self.ofi.write(&#34;pmjs\n&#34;)
+                print(pmjs, file=ofi)
+                self.ofi.write(&#34;xmjs\n&#34;)
+                print(xmjs, file=ofi)
+                self.ofi.write(&#34;gmjs\n&#34;)
+                print(gmjs, file=ofi)
+                self.ofi.write(&#34;pmaxs\n&#34;)
+                print(pmaxs, file=ofi)
+                self.ofi.write(&#34;Hops:\n&#34;)
+                print(self.hop, file=ofi)
+                print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+        if not found_proton:
+            print(&#34;Error, no protons for indicator&#34;)
+            raise RuntimeError(&#34;calc_indicator 4&#34;)
+
+        gI = self.calc_gI(sum_gs)
+
+        self.calc_ind(d_com, gI)
+
+        if self.print_all:
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            print(&#34;Final location&#34;, file=ofi)
+            print(self.x_i)
+
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, d_com[0][np.newaxis, :])
+        self.step += 1
+        return 0
+
+    def calc_ind(self, d_com, gI):
+        self.x_i += d_com[0][:]
+        self.x_i /= gI</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="adaptive_md_tools.indicator.Indicator6" href="#adaptive_md_tools.indicator.Indicator6">Indicator6</a></li>
+<li><a title="adaptive_md_tools.indicator.Indicator7" href="#adaptive_md_tools.indicator.Indicator7">Indicator7</a></li>
+<li><a title="adaptive_md_tools.indicator.Indicator9" href="#adaptive_md_tools.indicator.Indicator9">Indicator9</a></li>
+<li><a title="adaptive_md_tools.indicator.MCEC" href="#adaptive_md_tools.indicator.MCEC">MCEC</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="adaptive_md_tools.indicator.Indicator4.calc_ind"><code class="name flex">
+<span>def <span class="ident">calc_ind</span></span>(<span>self, d_com, gI)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_ind(self, d_com, gI):
+    self.x_i += d_com[0][:]
+    self.x_i /= gI</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator4.calc_indicator"><code class="name flex">
+<span>def <span class="ident">calc_indicator</span></span>(<span>self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com, ofi=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><h2 id="parameters">Parameters</h2>
+<p>:param x_d:
+ndarray of donor coordinates with shape [k,3]
+:param x_as: ndarray of acc coordinates with shape [j,3]
+:param x_hms: ndarra of hyd coordinates with shape [m,3]
+:param type_d: list of strings with length k
+:param type_as: list of strings with length j
+:param d_com: list of length 1 with [3] array !TODO make this less wacky
+:param as_com: list of acceptor centers of mass
+:param ofi: where to print stuff
+:return:</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,
+                   ofi=None):
+    &#34;&#34;&#34;
+
+    Parameters
+    ----------
+    :param x_d:  ndarray of donor coordinates with shape [k,3]
+    :param x_as: ndarray of acc coordinates with shape [j,3]
+    :param x_hms: ndarra of hyd coordinates with shape [m,3]
+    :param type_d: list of strings with length k
+    :param type_as: list of strings with length j
+    :param d_com: list of length 1 with [3] array !TODO make this less wacky
+    :param as_com: list of acceptor centers of mass
+    :param ofi: where to print stuff
+    :return:
+    &#34;&#34;&#34;
+    cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+    icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+    num_d = len(x_d)
+    # Set donor coordinates
+    try:
+        self.x_d = x_d.copy()
+        self.d_com = d_com.copy()[0]
+    except RuntimeError(&#34;calc_indicator 1&#34;):
+        print(&#34;Error setting donor coordinates&#34;)
+        sys.exit()
+
+    # Set acceptor coordinates
+    try:
+        self.num_acceptors = x_as.shape[0]
+        if self.num_acceptors == 0:
+            print(&#34;Warning: NO ACCEPTOR&#34;)
+            print(&#34;Setting indicator location to donor com&#34;)
+            self.x_i[:] = self.d_com[:]
+            return 1
+        self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+        self.x_as[:, :] = x_as[:, :]
+    except RuntimeError(&#34;calc_indicator 2&#34;):
+        print(&#34;Error setting acceptor coordinates&#34;)
+        sys.exit()
+
+    if self.print_all:
+        self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+        self.ofi.write(&#34;Donor Coords:\n&#34;)
+        for k in range(len(x_d)):
+            self.ofi.write(cstr.format(*self.x_d[k]))
+        self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+        for j in range(self.num_acceptors):
+            self.ofi.write(icstr.format(j, *self.x_as[j]))
+        self.ofi.write(&#34;Proton Coords\n&#34;)
+        self.ofi.write(&#34;Donor COM\n&#34;)
+        print(d_com, file=ofi)
+        print(&#34;Acceptor COMs&#34;, file=ofi)
+        print(as_com)
+
+    gI = 0
+    self.x_i = np.zeros(3)
+    largest_p = 0
+    dr = 0
+    self.hop = []
+    sum_gs = 0.0
+    found_proton = False
+
+    for k in range(num_d):
+
+        # Set hydrogen coordinates
+        self.num_h = np.shape(x_hms[k])[0]
+        if self.num_h &lt;= 0:
+            continue
+        found_proton = True
+        try:
+            self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+            self.x_hs = x_hms[k][:, :]
+        except RuntimeError(&#34;Calc indicator 3&#34;):
+            print(&#34;Error setting Hydrogen coordinates&#34;)
+            sys.exit()
+
+        # Initialize the rho parameters
+        try:
+            rdh0 = self.rxh[type_d[k]]
+        except RuntimeError:
+            print(&#34;Error hashing donor. Is donor in rdh0 list? is only&#34;
+                  &#34; one donor passed to subroutine?&#34;)
+            raise
+        pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+        pmj0 = rdh0 / self.rlist
+
+        # Initialize the other arrays
+        dims = (self.num_h, self.num_acceptors)
+        pmjs = np.zeros(dims, dtype=float)
+        xmjs = np.zeros(dims, dtype=float)
+        gmjs = np.zeros(dims, dtype=float)
+
+        #Begin the calculations
+        for m in range(self.num_h):
+            for j in range(self.num_acceptors):
+                pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                           self.x_hs[m])
+                if pmjs[m, j] &gt; pmaxs[j]:
+                    self.hop.append((m, j, pmjs[m, j], k))
+                if pmjs[m, j] &gt; largest_p:
+                    largest_p = pmjs[m, j]
+                    dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                         np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                print(&#34;Correction:  &#34;, x_d[k] - d_com[0])
+                # Add the weighted Acceptor cog coordinate
+                self.x_i[:] += gmjs[m, j] * as_com[j]
+        sum_gs += np.sum(gmjs[:])
+
+        if self.print_all:
+            print(&#34;For donor %d&#34; % k)
+            print(&#34;Hydrogen coordinates:&#34;)
+            for m in range(self.num_h):
+                self.ofi.write(icstr.format(m, *self.x_hs[m]))
+            self.ofi.write(&#34;pmjs\n&#34;)
+            print(pmjs, file=ofi)
+            self.ofi.write(&#34;xmjs\n&#34;)
+            print(xmjs, file=ofi)
+            self.ofi.write(&#34;gmjs\n&#34;)
+            print(gmjs, file=ofi)
+            self.ofi.write(&#34;pmaxs\n&#34;)
+            print(pmaxs, file=ofi)
+            self.ofi.write(&#34;Hops:\n&#34;)
+            print(self.hop, file=ofi)
+            print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+    if not found_proton:
+        print(&#34;Error, no protons for indicator&#34;)
+        raise RuntimeError(&#34;calc_indicator 4&#34;)
+
+    gI = self.calc_gI(sum_gs)
+
+    self.calc_ind(d_com, gI)
+
+    if self.print_all:
+        self.ofi.write(&#34;gI\n&#34;)
+        print(gI, file=ofi)
+        print(&#34;Final location&#34;, file=ofi)
+        print(self.x_i)
+
+    if self.output_freq:
+        if self.step % self.output_freq == 0:
+            self._write_log(largest_p, dr, d_com[0][np.newaxis, :])
+    self.step += 1
+    return 0</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></b></code>:
+<ul class="hlist">
+<li><code><a title="adaptive_md_tools.indicator.Indicator.add_rdh0" href="#adaptive_md_tools.indicator.Indicator.add_rdh0">add_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_gI" href="#adaptive_md_tools.indicator.Indicator.calc_gI">calc_gI</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_pmj" href="#adaptive_md_tools.indicator.Indicator.calc_pmj">calc_pmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_xmj" href="#adaptive_md_tools.indicator.Indicator.calc_xmj">calc_xmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.print_rdh0" href="#adaptive_md_tools.indicator.Indicator.print_rdh0">print_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.reset_hop" href="#adaptive_md_tools.indicator.Indicator.reset_hop">reset_hop</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.set_output_freq" href="#adaptive_md_tools.indicator.Indicator.set_output_freq">set_output_freq</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator6"><code class="flex name class">
+<span>class <span class="ident">Indicator6</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>Modify indicator 4 by exponentiating the gmj terms</p>
+<p>g(pmj) -&gt; exp[g(pmj)]
+gI -&gt; e + sum{exp[g(pmj)]}</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class Indicator6(Indicator4):
+    &#34;&#34;&#34;
+    Modify indicator 4 by exponentiating the gmj terms
+
+    g(pmj) -&gt; exp[g(pmj)]
+    gI -&gt; e + sum{exp[g(pmj)]}
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        Indicator4.__init__(self)
+
+    def calc_gmj(self, xmj):
+        if 1 &lt;= xmj:
+            gmj = 0.
+        elif xmj &lt; 0:
+            gmj = 1
+        else:
+            gmj = -6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1
+        return gmj * np.exp(gmj)
+
+    def calc_ind(self, d_com, gI):
+        self.x_i += d_com[0][:] * np.e
+        self.x_i /= gI
+
+    @staticmethod
+    @jit(nopython=True)
+    def calc_gI(gmjs):
+        &#34;&#34;&#34;
+        Calculate the normalization constant gI
+
+        Parameters
+        ----------
+        :param gmjs: the splined projection vectors
+        :type gmjs: np.ndarray
+        :return: the normalization constant
+        :rtype: np.float
+        &#34;&#34;&#34;
+        return np.e + np.sum(gmjs)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></li>
+<li><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="adaptive_md_tools.indicator.Indicator6.calc_gmj"><code class="name flex">
+<span>def <span class="ident">calc_gmj</span></span>(<span>self, xmj)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_gmj(self, xmj):
+    if 1 &lt;= xmj:
+        gmj = 0.
+    elif xmj &lt; 0:
+        gmj = 1
+    else:
+        gmj = -6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1
+    return gmj * np.exp(gmj)</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator6.calc_ind"><code class="name flex">
+<span>def <span class="ident">calc_ind</span></span>(<span>self, d_com, gI)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_ind(self, d_com, gI):
+    self.x_i += d_com[0][:] * np.e
+    self.x_i /= gI</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></b></code>:
+<ul class="hlist">
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.add_rdh0" href="#adaptive_md_tools.indicator.Indicator.add_rdh0">add_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_gI" href="#adaptive_md_tools.indicator.Indicator.calc_gI">calc_gI</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_indicator" href="#adaptive_md_tools.indicator.Indicator4.calc_indicator">calc_indicator</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_pmj" href="#adaptive_md_tools.indicator.Indicator.calc_pmj">calc_pmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_xmj" href="#adaptive_md_tools.indicator.Indicator.calc_xmj">calc_xmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.print_rdh0" href="#adaptive_md_tools.indicator.Indicator.print_rdh0">print_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.reset_hop" href="#adaptive_md_tools.indicator.Indicator.reset_hop">reset_hop</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.set_output_freq" href="#adaptive_md_tools.indicator.Indicator.set_output_freq">set_output_freq</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator7"><code class="flex name class">
+<span>class <span class="ident">Indicator7</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>This is indicator 4 with the intramolecular rho's added to the location</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class Indicator7(Indicator4):
+    &#34;&#34;&#34;
+    This is indicator 4 with the intramolecular rho&#39;s added to the location
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        Indicator4.__init__(self)
+
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
+                       ofi=None):
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        num_d = len(x_d)
+        self.num_d = num_d
+        # Set donor coordinates
+        try:
+            self.x_d = x_d.copy()
+        except RuntimeError(&#34;calc_indicator 1&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;WARNING: NO ACCEPTOR&#34;)
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        if self.print_all:
+            self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            for k in range(len(x_d)):
+                self.ofi.write(cstr.format(*self.x_d[k]))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            self.ofi.write(&#34;Donor COM\n&#34;)
+            print(d_com, file=ofi)
+            print(&#34;Acceptor COMs&#34;, file=ofi)
+            print(as_com)
+
+        gI = 0
+        self.x_i = np.zeros(3)
+        largest_p = 0
+        dr = 0
+        self.hop = []
+        sum_gs = 0.0
+        intra_p = False
+        p_don = 0
+
+        # Calculate the intramolecular rhos
+        for k in range(num_d):
+
+            # Set hydrogen coordinates
+            self.num_h = x_hms[k].shape[0]
+            # if self.num_h &lt;= 0:
+            #     print(&#34;Error, no protons for indicator&#34;)
+            #     raise RuntimeError(&#34;calc_indicator 4&#34;)
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 3&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+
+            # Initialize the rho parameters
+            try:
+                rdh0 = self.rxh[type_d[k]]
+            except RuntimeError:
+                print(
+                &#34;Error hashing donor. Is donor in rdh0 list? is only one donor &#34;
+                &#34;passed to subroutine?&#34;)
+                raise
+            pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+            pmj0 = rdh0 / self.rlist
+
+            # Initialize the other arrays
+            dims = (self.num_h, self.num_acceptors)
+            pmjs = np.zeros(dims, dtype=float)
+            xmjs = np.zeros(dims, dtype=float)
+            gmjs = np.zeros(dims, dtype=float)
+
+            #Begin the calculations
+            for m in range(self.num_h):
+                for j in range(self.num_acceptors):
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
+                    if pmjs[m, j] &gt; pmaxs[j] and not intra_p:
+                        self.hop.append((m, j, pmjs[m, j], k, False))
+                    if pmjs[m, j] &gt; largest_p:
+                        largest_p = pmjs[m, j]
+                        dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                             np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                    # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
+                    # self.x_i[:] += gmjs[m, j] * (x_as[j])
+                    self.x_i[:] += gmjs[m, j] * (as_com[j])
+            sum_gs += np.sum(gmjs[:])
+
+            if self.print_all:
+                print(&#34;For donor %d&#34; % k)
+                for m in range(self.num_h):
+                    self.ofi.write(icstr.format(m, *self.x_hs[m]))
+                self.ofi.write(&#34;pmjs\n&#34;)
+                print(pmjs, file=ofi)
+                self.ofi.write(&#34;xmjs\n&#34;)
+                print(xmjs, file=ofi)
+                self.ofi.write(&#34;gmjs\n&#34;)
+                print(gmjs, file=ofi)
+                self.ofi.write(&#34;pmaxs\n&#34;)
+                print(pmaxs, file=ofi)
+                self.ofi.write(&#34;Hops:\n&#34;)
+                print(self.hop, file=ofi)
+                print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+        found_intra_hop = False
+        for k in range(num_d):
+            self.num_h = x_hms[k].shape[0]
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 9&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+            for j in range(self.num_d):
+                if j == k:
+                    continue
+                for m in range(self.num_h):
+                    rah = np.linalg.norm(self.x_hs[m] - self.x_d[j])
+                    my_p_don = rah / (
+                        rah + np.linalg.norm(self.x_hs[m] - self.x_d[k]))
+                    if my_p_don &lt; 0.5:
+                        if not found_intra_hop:
+                            self.hop = []
+                            found_intra_hop = True
+                        self.hop.append((m, j, my_p_don, k, True))
+                    my_g = self.calc_gmj(my_p_don)
+                    self.x_i += my_g * self.x_d[k]
+                    sum_gs += my_g
+
+        gI = self.calc_gI(sum_gs)
+
+        self.calc_ind(d_com, gI)
+
+        if self.print_all:
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            print(&#34;Final location&#34;, file=ofi)
+            print(self.x_i)
+
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr)
+        self.step += 1
+
+        return 0</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></li>
+<li><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></b></code>:
+<ul class="hlist">
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.add_rdh0" href="#adaptive_md_tools.indicator.Indicator.add_rdh0">add_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_gI" href="#adaptive_md_tools.indicator.Indicator.calc_gI">calc_gI</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_indicator" href="#adaptive_md_tools.indicator.Indicator4.calc_indicator">calc_indicator</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_pmj" href="#adaptive_md_tools.indicator.Indicator.calc_pmj">calc_pmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_xmj" href="#adaptive_md_tools.indicator.Indicator.calc_xmj">calc_xmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.print_rdh0" href="#adaptive_md_tools.indicator.Indicator.print_rdh0">print_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.reset_hop" href="#adaptive_md_tools.indicator.Indicator.reset_hop">reset_hop</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.set_output_freq" href="#adaptive_md_tools.indicator.Indicator.set_output_freq">set_output_freq</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="adaptive_md_tools.indicator.Indicator9"><code class="flex name class">
+<span>class <span class="ident">Indicator9</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>Indicator 4 with weighting of the donor coordinate by the following formula</p>
+<p>X_k_w = [r_km - rDH^0] / [\sum_k (\sum_m_k r_km - rDH^0)]</p>
+<p>It worked slightly better in some cases than 4 but was
+very sensitive to vibrations of molecular bonds at equilbirium</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class Indicator9(Indicator4):
+    &#34;&#34;&#34;
+    Indicator 4 with weighting of the donor coordinate by the following formula
+
+    X_k_w = [r_km - rDH^0] / [\sum_k (\sum_m_k r_km - rDH^0)]
+
+    It worked slightly better in some cases than 4 but was
+    very sensitive to vibrations of molecular bonds at equilbirium
+    &#34;&#34;&#34;
+
+    def __init__(self):
+        Indicator4.__init__(self)
+
+    def calc_indicator(self,
+                       x_d,
+                       x_as,
+                       x_hms,
+                       type_d,
+                       type_as,
+                       d_com,
+                       as_com,
+                       ofi=None):
+        cstr = &#34;{0:0.5f}   {1:0.5f}   {2:0.5f}\n&#34;
+        icstr = &#34;{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n&#34;
+
+        num_d = len(x_d)
+        # Set donor coordinates
+        try:
+            self.x_d = x_d.copy()
+            self.d_com = d_com.copy()[0]
+        except RuntimeError(&#34;calc_indicator 1&#34;):
+            print(&#34;Error setting donor coordinates&#34;)
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print(&#34;WARNING: NO ACCEPTOR&#34;)
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError(&#34;calc_indicator 2&#34;):
+            print(&#34;Error setting acceptor coordinates&#34;)
+            sys.exit()
+
+        if self.print_all:
+            self.ofi.write(&#34;*****STEP %d\n&#34; % self.step)
+            self.ofi.write(&#34;Donor Coords:\n&#34;)
+            for k in range(len(x_d)):
+                self.ofi.write(cstr.format(*self.x_d[k]))
+            self.ofi.write(&#34;Acceptor Coords:\n&#34;)
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write(&#34;Proton Coords\n&#34;)
+            self.ofi.write(&#34;Donor COM\n&#34;)
+            print(d_com, file=ofi)
+            print(&#34;Acceptor COMs&#34;, file=ofi)
+            print(as_com)
+
+        gI = 0
+        self.x_i = np.zeros(3)
+        largest_p = 0
+        dr = 0
+        self.hop = []
+        sum_gs = 0.0
+        found_proton = False
+
+        # Calculate the new weighting
+        my_dcom = d_com
+        if num_d &gt; 1:
+            my_dcom = self.calc_d_weights(type_d, x_hms)
+
+        for k in range(num_d):
+
+            # Set hydrogen coordinates
+            self.num_h = x_hms[k].shape[0]
+            if self.num_h &lt;= 0:
+                continue
+            found_proton = True
+            try:
+                self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+                self.x_hs = x_hms[k][:, :]
+            except RuntimeError(&#34;Calc indicator 3&#34;):
+                print(&#34;Error setting Hydrogen coordinates&#34;)
+                sys.exit()
+
+            # Initialize the rho parameters
+            try:
+                rdh0 = self.rxh[type_d[k]]
+            except RuntimeError:
+                &#34;Error hashing donor. Is donor in rdh0 list? is only one donor &#34; \
+                &#34;passed to subroutine?&#34;
+            pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+            pmj0 = rdh0 / self.rlist
+
+            # Initialize the other arrays
+            dims = (self.num_h, self.num_acceptors)
+            pmjs = np.zeros(dims, dtype=float)
+            xmjs = np.zeros(dims, dtype=float)
+            gmjs = np.zeros(dims, dtype=float)
+
+            #Begin the calculations
+            for m in range(self.num_h):
+                for j in range(self.num_acceptors):
+                    pmjs[m, j] = self.calc_pmj(self.x_d[k], self.x_as[j],
+                                               self.x_hs[m])
+                    if pmjs[m, j] &gt; pmaxs[j]:
+                        self.hop.append((m, j, pmjs[m, j], k))
+                    if pmjs[m, j] &gt; largest_p:
+                        largest_p = pmjs[m, j]
+                        dr = np.linalg.norm(self.x_d[k] - self.x_hs[m]) - \
+                             np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                    xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                    gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+                    # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
+                    # self.x_i[:] += gmjs[m, j] * (x_as[j])
+                    self.x_i[:] += gmjs[m, j] * (as_com[j])
+            sum_gs += np.sum(gmjs[:])
+
+            if self.print_all:
+                print(&#34;For donor %d&#34; % k)
+                for m in range(self.num_h):
+                    self.ofi.write(icstr.format(m, *self.x_hs[m]))
+                self.ofi.write(&#34;pmjs\n&#34;)
+                print(pmjs, file=ofi)
+                self.ofi.write(&#34;xmjs\n&#34;)
+                print(xmjs, file=ofi)
+                self.ofi.write(&#34;gmjs\n&#34;)
+                print(gmjs, file=ofi)
+                self.ofi.write(&#34;pmaxs\n&#34;)
+                print(pmaxs, file=ofi)
+                self.ofi.write(&#34;Hops:\n&#34;)
+                print(self.hop, file=ofi)
+                print(&#34;cumulative_sum_of_gI&#34;, sum_gs, file=ofi)
+
+        if not found_proton:
+            print(&#34;Error, no protons for indicator&#34;)
+            raise RuntimeError(&#34;calc_indicator 4&#34;)
+
+        gI = self.calc_gI(sum_gs)
+
+        self.calc_ind(my_dcom, gI)
+
+        if self.print_all:
+            self.ofi.write(&#34;gI\n&#34;)
+            print(gI, file=ofi)
+            print(&#34;Final location&#34;, file=ofi)
+            print(self.x_i)
+
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, my_dcom[0][np.newaxis, :])
+        self.step += 1
+        return 0
+
+    def calc_d_weights(self, type_d, x_hms):
+        num_d = self.x_d.shape[0]
+        w = np.zeros(num_d)
+        sum_r = 0
+        d_com = np.zeros(3)
+        for k in range(num_d):
+            rdh0 = self.rxh[type_d[k]]
+            for m in range(x_hms[k].shape[0]):
+                rdh = np.linalg.norm(self.x_d[k] - x_hms[k][m, :3])
+                rdh -= rdh0
+                rdh *= rdh
+                w[k] += rdh
+                sum_r += rdh
+        if sum_r &gt; 1e-5:
+            w /= sum_r
+        else:
+            w[:] = 0
+            has_h = 0
+            for k in range(num_d):
+                if x_hms[k].shape[0] &gt; 0:
+                    has_h += 1
+                    w[k] = 1
+            if has_h &gt; 0:
+                w[:] /= has_h
+            else:
+                w[:] = 1 / num_d
+        for k in range(num_d):
+            d_com += w[k] * self.x_d[k]
+        return [d_com]</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></li>
+<li><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="adaptive_md_tools.indicator.Indicator9.calc_d_weights"><code class="name flex">
+<span>def <span class="ident">calc_d_weights</span></span>(<span>self, type_d, x_hms)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_d_weights(self, type_d, x_hms):
+    num_d = self.x_d.shape[0]
+    w = np.zeros(num_d)
+    sum_r = 0
+    d_com = np.zeros(3)
+    for k in range(num_d):
+        rdh0 = self.rxh[type_d[k]]
+        for m in range(x_hms[k].shape[0]):
+            rdh = np.linalg.norm(self.x_d[k] - x_hms[k][m, :3])
+            rdh -= rdh0
+            rdh *= rdh
+            w[k] += rdh
+            sum_r += rdh
+    if sum_r &gt; 1e-5:
+        w /= sum_r
+    else:
+        w[:] = 0
+        has_h = 0
+        for k in range(num_d):
+            if x_hms[k].shape[0] &gt; 0:
+                has_h += 1
+                w[k] = 1
+        if has_h &gt; 0:
+            w[:] /= has_h
+        else:
+            w[:] = 1 / num_d
+    for k in range(num_d):
+        d_com += w[k] * self.x_d[k]
+    return [d_com]</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></b></code>:
+<ul class="hlist">
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.add_rdh0" href="#adaptive_md_tools.indicator.Indicator.add_rdh0">add_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_gI" href="#adaptive_md_tools.indicator.Indicator.calc_gI">calc_gI</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_indicator" href="#adaptive_md_tools.indicator.Indicator4.calc_indicator">calc_indicator</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_pmj" href="#adaptive_md_tools.indicator.Indicator.calc_pmj">calc_pmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_xmj" href="#adaptive_md_tools.indicator.Indicator.calc_xmj">calc_xmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.print_rdh0" href="#adaptive_md_tools.indicator.Indicator.print_rdh0">print_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.reset_hop" href="#adaptive_md_tools.indicator.Indicator.reset_hop">reset_hop</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.set_output_freq" href="#adaptive_md_tools.indicator.Indicator.set_output_freq">set_output_freq</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="adaptive_md_tools.indicator.MCEC"><code class="flex name class">
+<span>class <span class="ident">MCEC</span></span>
+<span>(</span><span>switching='chakrabarti')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Implementation of the mCEC.
+This implementation of mCEC has indicator 4 as base class for switching
+topology. Then the mCEC stuff sits right on top of it.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class MCEC(Indicator4):
+    &#34;&#34;&#34;
+    Implementation of the mCEC.
+    This implementation of mCEC has indicator 4 as base class for switching
+    topology. Then the mCEC stuff sits right on top of it.
+    &#34;&#34;&#34;
+
+    def __init__(self, switching=&#39;chakrabarti&#39;):
+        Indicator4.__init__(self)
+        if switching == &#39;chakrabarti&#39;:
+            self.switch = chakrabarti_switching
+        elif switching == &#39;fos&#39;:
+            self.switch = self.fos
+            print(&#34;Error, not implemented&#34;)
+            sys.exit()
+        else:
+            print(&#34;Improper value for switching function. Should be &#34;
+                  &#34;&#39;chakrabarti&#39; or &#39;fos&#39;&#34;)
+            sys.exit()
+
+        self.switch = np.vectorize(self.switch)
+        self.m_acc_weight = {&#39;OT&#39;: 2, &#39;SOT&#39;: 2, &#39;CLA&#39;: 0, &#39;OC&#39;: 0}
+        self.rsw = 1.40
+        self.dsw = 0.04
+        self.x_mcec = np.asarray([0.00, 0.00, 0.00])
+        self.correction_groups = []
+        self.correction_weights = []
+
+    def calc_mcec(self, rH, rXj, acc_types, correction_groups=None):
+        &#34;&#34;&#34;
+        Main loop for calculating the mCEC location.
+
+        The result is stored in self.x_mcec.
+
+        Parameters
+        ----------
+        rH: ndarray with shape(m,3)
+            The positions of the hydrogens
+        rXj: ndarray of float with shape (j,3)
+            The locations of the acceptors
+        acc_types: list of str with len (j)
+            The atom type corresponding to an the Jth acceptor
+        correction_groups: list of lr
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        if len(acc_types) != rXj.shape[0]:
+            print(&#34;Error, number of acceptor types does not equal&#34;
+                  &#34;the number of acceptor coordinates&#34;)
+        if rH.size == 0:
+            print(&#34;Error, no hydrogen coordinates found&#34;)
+            raise IndexError
+        if rXj.size == 0:
+            print(&#34;Error, no acceptor coordinates found&#34;)
+            raise IndexError
+        self.get_weight_vector(acc_types)
+        self.x_mcec[:] = calc_mcec_location(rH, rXj, self.acc_weights, self.rsw,
+                                            self.dsw)
+        # self.x_mcec[:] = self.calc_mcec_location(rH, rXj, self.acc_weights,
+        #                                          self.switch, self.rsw, self.dsw)
+        print(&#34;MCEC before correction&#34;, self.x_mcec)
+        if correction_groups:
+            self.x_mcec[:] += self.calc_mcec_correction(rH, correction_groups)
+        print(&#34;Final mCEC&#34;, self.x_mcec)
+
+    def calc_mcec_correction(self, rH, rGroups, verbose=True):
+        &#34;&#34;&#34;
+        Calculate the correction term for the mCEC.
+
+        Currently the max function is used instead of the nondifferentiable
+        max function due to numerical issues.
+
+        Parameters
+        ----------
+        rH: ndarray of float with shape(m,3)
+            The positions of the hydrogens
+        rGroups: list of ndarrays with shape(m,3)
+            The position of the groups.
+            Example:
+            ([[1.1 1.1 1.1],
+              [1.2 1.2 1.2]],
+             [[2.1 2.1 2.1],
+              [2.2 2.2 2.2],
+              [2.3 2.3 2.3]])
+
+        Returns
+        -------
+        ndarray of float with shape(3)
+
+        &#34;&#34;&#34;
+        num_groups = len(self.correction_groups)
+        correction = np.asarray([0., 0., 0.])
+        my_correction = np.asarray([0., 0., 0.])
+        if num_groups != len(rGroups):
+            print(
+                &#34;Error, the number of groups found does not equal the number of groups parsed&#34;
+            )
+            raise LookupError
+        for g in range(num_groups):
+            my_correction[:] = 0.
+            group_length = len(self.correction_groups[g])
+            group_diff_max = np.empty(group_length)
+            # Calculate the array of switching functions
+            for x in range(group_length):
+                dists = rH - rGroups[g][x]
+                dists = np.linalg.norm(dists, axis=1)
+                dists = chakrabarti_switching(dists, self.rsw, self.dsw)
+                # The differentiable maximum function is disabled.
+                # group_diff_max[x] = self.diff_max(dists)
+                group_diff_max[x] = dists.max()
+            print(group_diff_max)
+            for l, k in permutations(range(group_length), 2):
+                my_correction += group_diff_max[k] * (rGroups[g][l] -
+                                                      rGroups[g][k])
+            my_correction *= self.correction_weights[g]
+            correction += my_correction
+        if verbose:
+            print(&#39;Correciton amount&#39;, correction)
+        return correction
+
+    def get_weight_vector(self, types):
+        &#34;&#34;&#34;
+        Return an array of weights for each exceptor in list &#39;types&#39;
+
+        Parameters
+        ----------
+        types: list of str
+            list of atom types to lookup weights for
+
+        Returns
+        -------
+        ndarray of floats
+
+        Exceptions
+        ----------
+        LookupError: Could not find the type in the acceptor type dictionary
+        &#34;&#34;&#34;
+        num_acc = len(types)
+        self.acc_weights = np.zeros(num_acc, dtype=float)
+
+        for i in range(num_acc):
+            try:
+                self.acc_weights[i] = self.m_acc_weight[types[i]]
+            except LookupError:
+                print(&#34;Error looking up acceptor %d, type not found&#34; % i)
+                raise
+
+    @staticmethod
+    @jit(nopython=True)
+    def diff_max(results, power=15):
+        &#34;&#34;&#34;
+        Differentiable maximum function. Given a list of floats,
+        calculate the differentiable maximum function
+
+        Parameters
+        ----------
+        results: ndarray of floats
+            array of floats to exponentiate and sum
+
+        Returns
+        -------
+        float
+        &#34;&#34;&#34;
+        a = results**power
+        b = a * results
+        if (a[:] == np.nan).any():
+            a[a == np.nan] == 0.0
+        if (b[:] == np.nan).any():
+            b[b == np.nan] == 0.0
+        return b.sum() / a.sum()
+
+    # @staticmethod
+    # def calc_mcec_location(rH, rXj, w, switch, rsw, dsw):
+    #     &#34;&#34;&#34;
+    #     Returns the mcec location from equation 6 of
+    #     J. Phys. Chem. A, Vol. 110, 2006
+    #
+    #     This is the mCEC location without the correction term
+    #
+    #     :param rH: np.ndarray of floats with size (n,3) where n is
+    #     number of hydrogens. hydrogen locations
+    #     :param rXj: np.ndarray of floats with size (J,3) where J is
+    #     number of acceptors. acceptor locations
+    #     :param w: np.ndarray of integers with size J representing
+    #     the minimum protonatied state of the acceptor
+    #     :param switch: vectorized switching function that takes a scalar
+    #      distance. Must accept numpy arrays.
+    #     :return: zeta: The mcec without the correction term
+    #     &#34;&#34;&#34;
+    #
+    #     # hydrogen and weighted acceptors
+    #     zeta = np.sum(rH, axis=0)
+    #     zeta -= np.dot(w, rXj)
+    #
+    #     num_m = rH.shape[0]
+    #     num_j = rXj.shape[0]
+    #     slow = False # Is 2 seconds slower for 25 second job...
+    #     #_Slow way to calculate zeta
+    #     if slow:
+    #         for m in range(num_m):
+    #             for j in range(num_j):
+    #                 displacement = rH[m] - rXj[j]
+    #                 distance = np.linalg.norm(displacement)
+    #                 factor = switch(distance, rsw, dsw)
+    #                 zeta -= factor * displacement
+    #     else:
+    #         # pairwise distances and switching functions
+    #         rHXj = np.zeros((rXj.shape[0], rH.shape[0], 3))
+    #         rHXj[:] = rH[:]
+    #         rHXj = np.transpose(rHXj, (1, 0, 2)) - rXj
+    #         zeta -= np.tensordot(rHXj, switch(np.linalg.norm(rHXj, axis=2), rsw, dsw), [(0,1),(0,1)])
+    #     return zeta
+
+    # @staticmethod
+    # def chakrabarti_switching(d, rsw, dsw):
+    #     &#34;&#34;&#34;
+    #     Chakrabarti switching function from
+    #     Konig et all
+    #     J. Phys. Chem. A. Vol 110, No.2
+    #     :param d: real distance
+    #     :param rsw: real midpoint of switching function
+    #     :param dsw: real slope of switching function
+    #     :return:
+    #     &#34;&#34;&#34;
+    #     return (1+np.exp((d-rsw)/dsw))**-1
+
+    @staticmethod
+    @jit(nopython=True)
+    def fos(x):
+        &#34;&#34;&#34;
+        Our fifth order spline
+
+        Parameters
+        ----------
+        :param x:
+        :return:
+        &#34;&#34;&#34;
+        return -6 * x**5 + 15 * x**4 - 10 * x**3 + 1</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></li>
+<li><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="adaptive_md_tools.indicator.MCEC.diff_max"><code class="name flex">
+<span>def <span class="ident">diff_max</span></span>(<span>results, power=15)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Differentiable maximum function. Given a list of floats,
+calculate the differentiable maximum function</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>results</code></strong> :&ensp;<code>ndarray</code> of <code>floats</code></dt>
+<dd>array of floats to exponentiate and sum</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@staticmethod
+@jit(nopython=True)
+def diff_max(results, power=15):
+    &#34;&#34;&#34;
+    Differentiable maximum function. Given a list of floats,
+    calculate the differentiable maximum function
+
+    Parameters
+    ----------
+    results: ndarray of floats
+        array of floats to exponentiate and sum
+
+    Returns
+    -------
+    float
+    &#34;&#34;&#34;
+    a = results**power
+    b = a * results
+    if (a[:] == np.nan).any():
+        a[a == np.nan] == 0.0
+    if (b[:] == np.nan).any():
+        b[b == np.nan] == 0.0
+    return b.sum() / a.sum()</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.MCEC.fos"><code class="name flex">
+<span>def <span class="ident">fos</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Our fifth order spline</p>
+<h2 id="parameters">Parameters</h2>
+<p>:param x:
+:return:</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@staticmethod
+@jit(nopython=True)
+def fos(x):
+    &#34;&#34;&#34;
+    Our fifth order spline
+
+    Parameters
+    ----------
+    :param x:
+    :return:
+    &#34;&#34;&#34;
+    return -6 * x**5 + 15 * x**4 - 10 * x**3 + 1</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="adaptive_md_tools.indicator.MCEC.calc_mcec"><code class="name flex">
+<span>def <span class="ident">calc_mcec</span></span>(<span>self, rH, rXj, acc_types, correction_groups=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Main loop for calculating the mCEC location.</p>
+<p>The result is stored in self.x_mcec.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>rH</code></strong> :&ensp;<code>ndarray</code> <code>with</code> <code>shape</code>(<code>m</code>,<code>3</code>)</dt>
+<dd>The positions of the hydrogens</dd>
+<dt><strong><code>rXj</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code> (<code>j</code>,<code>3</code>)</dt>
+<dd>The locations of the acceptors</dd>
+<dt><strong><code>acc_types</code></strong> :&ensp;<code>list</code> of <code>str</code> <code>with</code> <code>len</code> (<code>j</code>)</dt>
+<dd>The atom type corresponding to an the Jth acceptor</dd>
+<dt><strong><code>correction_groups</code></strong> :&ensp;<code>list</code> of <code>lr</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_mcec(self, rH, rXj, acc_types, correction_groups=None):
+    &#34;&#34;&#34;
+    Main loop for calculating the mCEC location.
+
+    The result is stored in self.x_mcec.
+
+    Parameters
+    ----------
+    rH: ndarray with shape(m,3)
+        The positions of the hydrogens
+    rXj: ndarray of float with shape (j,3)
+        The locations of the acceptors
+    acc_types: list of str with len (j)
+        The atom type corresponding to an the Jth acceptor
+    correction_groups: list of lr
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    if len(acc_types) != rXj.shape[0]:
+        print(&#34;Error, number of acceptor types does not equal&#34;
+              &#34;the number of acceptor coordinates&#34;)
+    if rH.size == 0:
+        print(&#34;Error, no hydrogen coordinates found&#34;)
+        raise IndexError
+    if rXj.size == 0:
+        print(&#34;Error, no acceptor coordinates found&#34;)
+        raise IndexError
+    self.get_weight_vector(acc_types)
+    self.x_mcec[:] = calc_mcec_location(rH, rXj, self.acc_weights, self.rsw,
+                                        self.dsw)
+    # self.x_mcec[:] = self.calc_mcec_location(rH, rXj, self.acc_weights,
+    #                                          self.switch, self.rsw, self.dsw)
+    print(&#34;MCEC before correction&#34;, self.x_mcec)
+    if correction_groups:
+        self.x_mcec[:] += self.calc_mcec_correction(rH, correction_groups)
+    print(&#34;Final mCEC&#34;, self.x_mcec)</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.MCEC.calc_mcec_correction"><code class="name flex">
+<span>def <span class="ident">calc_mcec_correction</span></span>(<span>self, rH, rGroups, verbose=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculate the correction term for the mCEC.</p>
+<p>Currently the max function is used instead of the nondifferentiable
+max function due to numerical issues.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>rH</code></strong> :&ensp;<code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>m</code>,<code>3</code>)</dt>
+<dd>The positions of the hydrogens</dd>
+<dt><strong><code>rGroups</code></strong> :&ensp;<code>list</code> of <code>ndarrays</code> <code>with</code> <code>shape</code>(<code>m</code>,<code>3</code>)</dt>
+<dd>The position of the groups.
+Example:
+([[1.1 1.1 1.1],
+[1.2 1.2 1.2]],
+[[2.1 2.1 2.1],
+[2.2 2.2 2.2],
+[2.3 2.3 2.3]])</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ndarray</code> of <code>float</code> <code>with</code> <code>shape</code>(<code>3</code>)</dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_mcec_correction(self, rH, rGroups, verbose=True):
+    &#34;&#34;&#34;
+    Calculate the correction term for the mCEC.
+
+    Currently the max function is used instead of the nondifferentiable
+    max function due to numerical issues.
+
+    Parameters
+    ----------
+    rH: ndarray of float with shape(m,3)
+        The positions of the hydrogens
+    rGroups: list of ndarrays with shape(m,3)
+        The position of the groups.
+        Example:
+        ([[1.1 1.1 1.1],
+          [1.2 1.2 1.2]],
+         [[2.1 2.1 2.1],
+          [2.2 2.2 2.2],
+          [2.3 2.3 2.3]])
+
+    Returns
+    -------
+    ndarray of float with shape(3)
+
+    &#34;&#34;&#34;
+    num_groups = len(self.correction_groups)
+    correction = np.asarray([0., 0., 0.])
+    my_correction = np.asarray([0., 0., 0.])
+    if num_groups != len(rGroups):
+        print(
+            &#34;Error, the number of groups found does not equal the number of groups parsed&#34;
+        )
+        raise LookupError
+    for g in range(num_groups):
+        my_correction[:] = 0.
+        group_length = len(self.correction_groups[g])
+        group_diff_max = np.empty(group_length)
+        # Calculate the array of switching functions
+        for x in range(group_length):
+            dists = rH - rGroups[g][x]
+            dists = np.linalg.norm(dists, axis=1)
+            dists = chakrabarti_switching(dists, self.rsw, self.dsw)
+            # The differentiable maximum function is disabled.
+            # group_diff_max[x] = self.diff_max(dists)
+            group_diff_max[x] = dists.max()
+        print(group_diff_max)
+        for l, k in permutations(range(group_length), 2):
+            my_correction += group_diff_max[k] * (rGroups[g][l] -
+                                                  rGroups[g][k])
+        my_correction *= self.correction_weights[g]
+        correction += my_correction
+    if verbose:
+        print(&#39;Correciton amount&#39;, correction)
+    return correction</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.indicator.MCEC.get_weight_vector"><code class="name flex">
+<span>def <span class="ident">get_weight_vector</span></span>(<span>self, types)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return an array of weights for each exceptor in list 'types'</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>list of atom types to lookup weights for</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ndarray</code> of <code>floats</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="exceptions">Exceptions</h2>
+<dl>
+<dt><strong><code>LookupError</code></strong> :&ensp;<code>Could</code> <code>not</code> <code>find</code> <code>the</code> <code>type</code> <code>in</code> <code>the</code> <code>acceptor</code> <code>type</code> <code>dictionary</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_weight_vector(self, types):
+    &#34;&#34;&#34;
+    Return an array of weights for each exceptor in list &#39;types&#39;
+
+    Parameters
+    ----------
+    types: list of str
+        list of atom types to lookup weights for
+
+    Returns
+    -------
+    ndarray of floats
+
+    Exceptions
+    ----------
+    LookupError: Could not find the type in the acceptor type dictionary
+    &#34;&#34;&#34;
+    num_acc = len(types)
+    self.acc_weights = np.zeros(num_acc, dtype=float)
+
+    for i in range(num_acc):
+        try:
+            self.acc_weights[i] = self.m_acc_weight[types[i]]
+        except LookupError:
+            print(&#34;Error looking up acceptor %d, type not found&#34; % i)
+            raise</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></b></code>:
+<ul class="hlist">
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.add_rdh0" href="#adaptive_md_tools.indicator.Indicator.add_rdh0">add_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_gI" href="#adaptive_md_tools.indicator.Indicator.calc_gI">calc_gI</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_indicator" href="#adaptive_md_tools.indicator.Indicator4.calc_indicator">calc_indicator</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_pmj" href="#adaptive_md_tools.indicator.Indicator.calc_pmj">calc_pmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_xmj" href="#adaptive_md_tools.indicator.Indicator.calc_xmj">calc_xmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.print_rdh0" href="#adaptive_md_tools.indicator.Indicator.print_rdh0">print_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.reset_hop" href="#adaptive_md_tools.indicator.Indicator.reset_hop">reset_hop</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.set_output_freq" href="#adaptive_md_tools.indicator.Indicator.set_output_freq">set_output_freq</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="adaptive_md_tools" href="index.html">adaptive_md_tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="adaptive_md_tools.indicator.calc_mcec_location" href="#adaptive_md_tools.indicator.calc_mcec_location">calc_mcec_location</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.chakrabarti_switching" href="#adaptive_md_tools.indicator.chakrabarti_switching">chakrabarti_switching</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="adaptive_md_tools.indicator.Indicator" href="#adaptive_md_tools.indicator.Indicator">Indicator</a></code></h4>
+<ul class="two-column">
+<li><code><a title="adaptive_md_tools.indicator.Indicator.add_rdh0" href="#adaptive_md_tools.indicator.Indicator.add_rdh0">add_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_gI" href="#adaptive_md_tools.indicator.Indicator.calc_gI">calc_gI</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_gmj" href="#adaptive_md_tools.indicator.Indicator.calc_gmj">calc_gmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_indicator" href="#adaptive_md_tools.indicator.Indicator.calc_indicator">calc_indicator</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_pmj" href="#adaptive_md_tools.indicator.Indicator.calc_pmj">calc_pmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.calc_xmj" href="#adaptive_md_tools.indicator.Indicator.calc_xmj">calc_xmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.print_rdh0" href="#adaptive_md_tools.indicator.Indicator.print_rdh0">print_rdh0</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.reset_hop" href="#adaptive_md_tools.indicator.Indicator.reset_hop">reset_hop</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator.set_output_freq" href="#adaptive_md_tools.indicator.Indicator.set_output_freq">set_output_freq</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="adaptive_md_tools.indicator.Indicator11" href="#adaptive_md_tools.indicator.Indicator11">Indicator11</a></code></h4>
+<ul class="">
+<li><code><a title="adaptive_md_tools.indicator.Indicator11.calc_ind" href="#adaptive_md_tools.indicator.Indicator11.calc_ind">calc_ind</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="adaptive_md_tools.indicator.Indicator4" href="#adaptive_md_tools.indicator.Indicator4">Indicator4</a></code></h4>
+<ul class="">
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_ind" href="#adaptive_md_tools.indicator.Indicator4.calc_ind">calc_ind</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator4.calc_indicator" href="#adaptive_md_tools.indicator.Indicator4.calc_indicator">calc_indicator</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="adaptive_md_tools.indicator.Indicator6" href="#adaptive_md_tools.indicator.Indicator6">Indicator6</a></code></h4>
+<ul class="">
+<li><code><a title="adaptive_md_tools.indicator.Indicator6.calc_gmj" href="#adaptive_md_tools.indicator.Indicator6.calc_gmj">calc_gmj</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.Indicator6.calc_ind" href="#adaptive_md_tools.indicator.Indicator6.calc_ind">calc_ind</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="adaptive_md_tools.indicator.Indicator7" href="#adaptive_md_tools.indicator.Indicator7">Indicator7</a></code></h4>
+</li>
+<li>
+<h4><code><a title="adaptive_md_tools.indicator.Indicator9" href="#adaptive_md_tools.indicator.Indicator9">Indicator9</a></code></h4>
+<ul class="">
+<li><code><a title="adaptive_md_tools.indicator.Indicator9.calc_d_weights" href="#adaptive_md_tools.indicator.Indicator9.calc_d_weights">calc_d_weights</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="adaptive_md_tools.indicator.MCEC" href="#adaptive_md_tools.indicator.MCEC">MCEC</a></code></h4>
+<ul class="">
+<li><code><a title="adaptive_md_tools.indicator.MCEC.calc_mcec" href="#adaptive_md_tools.indicator.MCEC.calc_mcec">calc_mcec</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.MCEC.calc_mcec_correction" href="#adaptive_md_tools.indicator.MCEC.calc_mcec_correction">calc_mcec_correction</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.MCEC.diff_max" href="#adaptive_md_tools.indicator.MCEC.diff_max">diff_max</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.MCEC.fos" href="#adaptive_md_tools.indicator.MCEC.fos">fos</a></code></li>
+<li><code><a title="adaptive_md_tools.indicator.MCEC.get_weight_vector" href="#adaptive_md_tools.indicator.MCEC.get_weight_vector">get_weight_vector</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.6.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.6.2" />
+<title>adaptive_md_tools.AdaptiveMD API documentation</title>
+<meta name="description" content="This is the file that contains the main program …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>adaptive_md_tools.AdaptiveMD</code></h1>
+</header>
+<section id="section-intro">
+<p>This is the file that contains the main program.</p>
+<p>This code offers many features that are useful for analyzing adaptive
+partitioning simulations.</p>
+<p>Translates the system such that the donor
+is in the center. Then calculates the indicator and retranslates the system
+such that the indicator is now in the center. Also keeps track of the
+topology and groups for the system.</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">#!/usr/bin/env python
+&#34;&#34;&#34;
+This is the file that contains the main program.
+
+This code offers many features that are useful for analyzing adaptive
+partitioning simulations.
+
+Translates the system such that the donor
+is in the center. Then calculates the indicator and retranslates the system
+such that the indicator is now in the center. Also keeps track of the
+topology and groups for the system.
+&#34;&#34;&#34;
+import os
+import argparse
+from adaptive_md_tools.indicator import *
+from adaptive_md_tools.core_loop import core_loop
+
+
+def get_args(args=None):
+    &#34;&#34;&#34; This is written as a default funtion to put at beginning of all Python
+    scripts which require command line arguments. This uses the argparse module
+    which must be declared in the main program to ensure that the object is able
+    to be used by the caller
+    --Adam Duster 21 June 2017
+    &#34;&#34;&#34;
+    parser = argparse.ArgumentParser(description=&#39;see header of python script&#39;)
+    parser.add_argument(
+        &#39;-i&#39;,
+        &#39;--input&#39;,
+        help=&#39;Input file name&#39;,
+        required=True)
+    parser.add_argument(
+        &#39;-v&#39;,
+        &#39;--verbose&#39;,
+        help=&#39;Controls the level of output, use multipe v for more output&#39;,
+        required=False,
+        action=&#39;count&#39;,
+        default=0)
+    parser.add_argument(
+        &#39;-d&#39;,
+        &#39;--debug&#39;,
+        help=&#39;Enter debug mode&#39;,
+        required=False,
+        action=&#39;store_true&#39;,
+        default=False)
+    return parser.parse_args(args)
+
+
+def read_input_file(ifpath):
+    &#34;&#34;&#34;
+    Read the input file and save the parameters
+
+    Parameters
+    ----------
+    ifpath: str
+        input file path
+
+    Returns
+    -------
+    keywords: dict
+        Dictionary of parameters
+    &#34;&#34;&#34;
+    try:
+        ifi = open(ifpath, &#39;r&#39;)
+    except FileNotFoundError:
+        print(&#34;Error opening input file: &#34; + ifpath)
+        sys.exit()
+    keywords = {&#34;groups_path&#34;: None,
+                &#34;rlist&#34;: 3.5,
+                &#34;indicator_verbose&#34;: False,
+                &#34;proton_types&#34;: [],
+                &#34;write_freq&#34;: 20,
+                &#34;write_folder&#34;: &#39;./&#39;,
+                &#34;write_partitions&#34;: False,
+                &#34;active_radius&#34;: 5.0,
+                &#34;buffer_radius&#34;: 0.6,
+                &#34;pap_order&#34;: 2,
+                &#34;write_prefix&#34;: &#39;&#39;,
+                &#34;allow_hop&#34;: True,
+                &#34;dcd_pbc&#34;: False,
+                &#34;verbose&#34;: False,
+                &#34;ind_output_freq&#34;: 0,
+                &#34;wrap&#34;: True,
+                &#34;dimensions&#34;: [0, 0, 0],
+                &#34;ind_method&#34;: 0,
+                &#34;topology&#34;: None,
+                &#34;topology_type&#34;: &#39;psf&#39;,
+                &#34;rdh0&#34;: [],
+                &#34;ratio_topology_change&#34;: True,
+                &#34;mcec&#34;: False,
+                &#34;rsw&#34;: 1.4,
+                &#34;dsw&#34;: 0.04,
+                &#39;mcec_g&#39;: []
+                }
+    print(&#34;*********************** INPUT FILE ***********************&#34;)
+    while True:
+        line = ifi.readline()
+        if not line:
+            break
+        print(line)
+        words = line.split()
+        if not words:
+            continue
+        if words[0][0] == &#34;#&#34;:
+            continue
+        words[0] = words[0].lower()
+        try:
+            if words[0] == &#34;coordinates&#34;:
+                keywords[&#39;in_coords&#39;] = words[1]
+                continue
+            if words[0] == &#34;structure&#34;:
+                keywords[&#39;topology&#39;] = words[1]
+                if len(words) &gt; 2:
+                    keywords[&#39;topology_type&#39;] = words[2].lower()
+                continue
+            if words[0] == &#34;groups_file&#34;:
+                keywords[&#39;groups_path&#39;] = words[1]
+                continue
+            if words[0] == &#34;elements_file&#34;:
+                keywords[&#39;elements_file_type&#39;] = words[1]
+                keywords[&#39;elements_file&#39;] = words[2]
+                continue
+            if words[0] == &#34;donor_index&#34;:
+                keywords[&#39;donor_index&#39;] = words[1]
+                continue
+            if words[0] == &#34;output_coords&#34;:
+                keywords[&#39;out_coords&#39;] = words[1]
+                continue
+            if words[0] == &#34;rlist&#34;:
+                keywords[&#39;rlist&#39;] = words[1]
+                continue
+            if words[0] == &#34;rdh0&#34;:
+                keywords[&#34;rdh0&#34;] = words[1:]
+                continue
+            if words[0] == &#34;indicator_verbose&#34;:
+                keywords[&#34;indicator_verbose&#34;] = True
+                continue
+            if words[0] == &#34;write_n_steps&#34;:
+                keywords[&#34;write_freq&#34;] = int(words[1])
+                continue
+            if words[0] == &#34;write_partitions&#34;:
+                keywords[&#34;write_partitions&#34;] = True
+                if words[1]:
+                    if words[1][-1] != &#39;/&#39;:
+                        words[1] += &#39;/&#39;
+                    keywords[&#34;write_folder&#34;] = words[1]
+                    keywords[&#34;write_type&#34;] = words[2]
+                continue
+            if words[0] == &#34;write_prefix&#34;:
+                keywords[&#34;write_prefix&#34;] = words[1]
+                continue
+            if words[0] == &#34;active_radius&#34;:
+                keywords[words[0]] = float(words[1])
+                continue
+            if words[0] == &#34;buffer_radius&#34;:
+                keywords[words[0]] = float(words[1])
+                continue
+            if words[0] == &#34;dimensions&#34;:
+                keywords[&#39;dimensions&#39;] = [float(words[1]), float(words[2]),
+                                          float(words[3])]
+                continue
+            if words[0] == &#34;pap_order&#34;:
+                keywords[&#39;pap_order&#39;] = int(words[1])
+                continue
+            if words[0] == &#34;allow_hop&#34;:
+                keywords[&#39;allow_hop&#39;] = bool(int(words[1]))
+                continue
+            if words[0] == &#34;dcd_pbc&#34;:
+                keywords[&#39;dcd_pbc&#39;] = bool(int(words[1]))
+                continue
+            if words[0] == &#34;verbose&#34;:
+                keywords[&#39;verbose&#39;] = bool(int(words[1]))
+                continue
+            if words[0] == &#34;ind_output_freq&#34;:
+                keywords[&#39;ind_output_freq&#39;] = int(words[1])
+                continue
+            if words[0] == &#34;nowrap&#34;:
+                keywords[&#39;wrap&#39;] = False
+                continue
+            if words[0] == &#34;ind_method&#34;:
+                keywords[&#39;ind_method&#39;] = int(words[1])
+                continue
+            if words[0] == &#34;proton_types&#34;:
+                keywords[&#39;proton_types&#39;] = words[1:]
+                continue
+            if words[0] == &#34;no_pre_topo_change&#34;:
+                keywords[&#39;ratio_topology_change&#39;] = False
+                continue
+            if words[0] == &#39;mcec&#39;:
+                keywords[&#39;mcec&#39;] = True
+                keywords[&#39;mcec_w&#39;] = words[:]
+                continue
+            if words[0] == &#39;rsw&#39;:
+                keywords[&#39;rsw&#39;] = float(words[1])
+                continue
+            if words[0] == &#39;dsw&#39;:
+                keywords[&#39;dsw&#39;] = float(words[1])
+                continue
+            if words[0] == &#39;mcec_g&#39;:
+                keywords[&#39;mcec_g&#39;] = words[1:]
+                continue
+            print(&#34;Could not find keyword: &#34; + words[0])
+            raise RuntimeError
+
+        except RuntimeError:
+            print(&#34;Error parsing keyword &#34; + words[0])
+            sys.exit()
+    ifi.close()
+    print(&#34;****************************************************&#34;)
+    return keywords
+
+
+def check_keywords(keywords, indi):
+    &#34;&#34;&#34;
+    Check and print out the keywords and initial variables
+    :param keywords: The parsed keywords
+    :type keywords: dict
+    :param indi: The indicator class used for the run
+    :type indi: Indicator
+    :return:
+    &#34;&#34;&#34;
+    # Print I/O variables
+    print(&#34;INPUT FILE VARIABLES&#34;)
+    if &#34;in_coords&#34; in keywords:
+        print(&#34;Reading coordinates from: &#34; + keywords[&#39;in_coords&#39;])
+    else:
+        print(&#34;Error, %s not found in keywords&#34; % &#34;&#39;coordinates&#39;&#34;)
+        raise ValueError
+
+    if keywords[&#34;topology&#34;]:
+        print(&#34;Reading topology from: &#34; + keywords[&#39;topology&#39;])
+    else:
+        print(&#34;Error, %s not found in keywords&#34; % &#34;&#39;structure&#39;&#34;)
+        raise ValueError
+
+    if &#34;out_coords&#34; in keywords:
+        print(&#34;Writing coordinates to: &#34; + keywords[&#39;out_coords&#39;])
+    else:
+        print(&#34;Error, %s not found in keywords&#34; % &#34;&#39;output_coords&#39;&#34;)
+        raise ValueError
+
+    if keywords[&#34;groups_path&#34;]:
+        print(&#34;Reading AP groups from: &#34; + keywords[&#39;groups_path&#39;])
+
+    if keywords[&#34;elements_file&#34;]:
+        print(&#34;Reading atomic elements from: &#34; + keywords[&#39;elements_file&#39;])
+
+    if keywords[&#34;write_partitions&#34;]:
+        if not keywords[&#34;groups_path&#34;]:
+            print(&#34;Error, you must specify groups_path with AP groups to write&#34;
+                  &#34; AP partitons&#34;)
+            sys.exit()
+        print(&#34;Writing partitions to folder: %s&#34; % keywords[&#34;write_folder&#34;])
+        print(&#34;Writing partitions every %d steps&#34; % keywords[&#34;write_freq&#34;])
+    if keywords[&#34;wrap&#34;] and not keywords[&#34;topology&#34;]:
+        sys.exit(&#34;Error, cannot wrap the system &#34;
+                 &#34;because there is no topology specified&#34;)
+
+    # Print all of the indicator variables
+    print(&#34;\nINDICATOR VARIABLES&#34;)
+    print(&#34;rlist: {0:0.3f}&#34;.format(indi.rlist))
+    print(&#34;rdh0 parameters:&#34;)
+    for key in indi.rxh:
+        print(&#34;    {0:8s}    {1:0.3f}&#34;.format(key, indi.rxh[key]))
+    print(&#34;Initial donor: {0:d}&#34;.format(indi.donor))
+    print(&#34;proton types:&#34;, keywords[&#34;proton_types&#34;])
+
+    # Print all of mCEC variables
+    if keywords[&#39;mcec&#39;]:
+        print(&#34;mCEC Variables&#34;)
+        print(&#34;rsw: %.3f&#34; % keywords[&#39;rsw&#39;])
+        print(&#34;dsw: %.3f&#34; % keywords[&#39;dsw&#39;])
+
+    # Print general things
+    print(&#34;SYSTEM VARIABLES&#34;)
+    try:
+        if &#39;dimensions&#39; in keywords:
+            print(&#34;Dimensions: {0:0.8f}   {1:0.8f}   {2:0.8f}&#34;.format(
+                *keywords[&#39;dimensions&#39;]))
+        elif keywords[&#39;wrap&#39;]:
+            print(&#34;\n\nERROR: Please supply system dimensions as three floats&#34;
+                  &#34; corresponding to x, y, z vectors&#34;)
+            sys.exit()
+        else:
+            print(&#34;No periodic boundaries specified&#34;)
+    except ValueError:
+        print(&#34;Please supply system dimensions as three floats corresponding &#34;
+              &#34;to x, y, z vectors&#34;)
+        sys.exit()
+    try:
+        if keywords[&#39;write_partitions&#39;]:
+            print(&#34;AP SETTINGS&#34;)
+            print(&#34;Active radius: {0:0.8f}&#34;.format(keywords[&#34;active_radius&#34;]))
+            print(&#34;Buffer radius: {0:0.8f}&#34;.format(keywords[&#34;active_radius&#34;]))
+            print(&#34;Permute order: {0:1d}&#34;.format(keywords[&#34;pap_order&#34;]))
+    except ValueError:
+        print(&#34;Error printing AP keywords&#34;)
+        sys.exit()
+    return
+
+
+def set_indicator(keywords):
+    &#34;&#34;&#34;
+    Initialize the indicator
+    :param keywords: input keywords
+    :type keywords: dict
+    :return: indicator
+    :rtype: Indicator
+    &#34;&#34;&#34;
+    if keywords[&#34;mcec&#34;]:
+        if keywords[&#34;ind_method&#34;] in [4, 11]:
+            indi = MCEC()
+        else:
+            print(&#34;Currently, you must only use mcec with indicator 4&#34;)
+            raise NotImplementedError
+    elif keywords[&#34;ind_method&#34;] in [0, 1, 2, 8]:
+        indi = Indicator()
+    elif keywords[&#34;ind_method&#34;] in [3, 4]:
+        indi = Indicator4()
+    elif keywords[&#34;ind_method&#34;] in [6]:
+        indi = Indicator6()
+    elif keywords[&#34;ind_method&#34;] in [7]:
+        indi = Indicator7()
+    elif keywords[&#34;ind_method&#34;] in [9]:
+        indi = Indicator9()
+    elif keywords[&#34;ind_method&#34;] in [11]:
+        indi = Indicator11()
+    else:
+        print(&#34;Error, could not recognize indicator type&#34;)
+        raise TypeError
+    if keywords[&#34;ind_method&#34;] in [2, 3]:
+        print(&#34;Unfortunately the requested indicator type is not implemented&#34;)
+        raise NotImplementedError
+
+    if &#34;rlist&#34; in keywords:
+        try:
+            indi.rlist = float(keywords[&#34;rlist&#34;])
+        except ValueError:
+            print(&#34;Error parsing rlist variable. It must be a float&#34;)
+    if keywords[&#34;rdh0&#34;]:
+        vals = keywords[&#34;rdh0&#34;]
+        if len(vals) % 2 != 0:
+            print(&#34;Error parsing rdh0 parameters, there should be an even &#34;
+                  &#34;number of them&#34;)
+            raise ValueError
+        for i in range(len(vals) // 2):
+            try:
+                indi.rxh[vals[2*i]] = float(vals[2*i + 1])
+            except ValueError:
+                print(&#34;Error parsing rdh0 variables: &#34;, vals[2*i:2*i+1])
+    else:
+        print(&#34;Error, did you specify the rdh0 keyword?&#34;)
+        raise NameError
+
+    try:
+        indi.donor = int(keywords[&#34;donor_index&#34;])
+    except ValueError:
+        print(&#34;Error, please supply the initial donor index as an integer&#34;)
+
+    try:
+        indi.print_all = keywords[&#34;indicator_verbose&#34;]
+    except ValueError:
+        print(&#34;Error setting indicator.printall flag&#34;)
+    indi.set_output_freq(keywords[&#34;ind_output_freq&#34;], keywords[&#39;write_prefix&#39;])
+
+    if keywords[&#39;mcec&#39;]:
+        initialize_mcec(keywords, indi)
+    return indi
+
+
+def initialize_mcec(keywords, indi):
+    &#34;&#34;&#34;
+    Initialize the mCEC variables for the mCEC indicator. Note that currently
+    you must have initialized Indicator4 variables previously to initializing
+    the mCEC.
+    :param keywords: dict user input
+    :param indi:
+    :return:
+    &#34;&#34;&#34;
+    # Parse the acceptor type keywords. Make sure they are also acceptors for
+    # Indicator 4
+    vals = keywords[&#34;mcec_w&#34;][:]
+    if len(vals) == 1:
+        print(&#34;Error, no acceptor types found after keyword &#39;mcec&#39;&#34;)
+        raise NameError
+    vals = vals[1:]
+    if len(vals) % 2 != 0:
+        print(&#34;Error, each acceptor type for keyword &#39;mcec&#39; must be followed by&#34;
+              &#34; integer&#34;)
+        print(&#34;The integer is the reference state for the least protonated&#34;
+              &#34; state of the atom&#34;)
+        raise NameError
+    for i in range(len(vals) // 2):
+        acc = vals[2*i]
+        w = vals[2*i+1]
+        if acc not in indi.rxh.keys():
+            print()
+            print(&#34;Error, mCEC type found but does not correspond with &#34;
+                  &#34; the acceptors in the rdh0 list&#34;)
+            raise
+        try:
+            indi.m_acc_weight[acc] = float(w)
+        except TypeError:
+            print(&#34;Error, weight is not float for acceptor %s&#34; % acc)
+            print(&#34;Error keyword mcec&#34;)
+            raise
+
+    for key in list(indi.rxh.keys()):
+        if key not in indi.m_acc_weight.keys():
+            print(&#34;Error, acceptor %s is not in mcec list but is in rxh list&#34;
+                  % key)
+            raise KeyError
+    indi.rsw = keywords[&#39;rsw&#39;]
+    indi.dsw = keywords[&#39;dsw&#39;]
+    vals = keywords[&#39;mcec_g&#39;]
+    if vals:
+        for val in vals:
+            words = val.split(&#39;,&#39;)
+            if len(words) &lt;= 2:
+                print(&#34;For keyword mcec_g&#34;)
+                print(&#34;Error parsing mcec_g keyword, there are not enough&#34;
+                      &#34; integers for the group&#34;)
+                raise TypeError
+            group_ids = []
+            for w in words[:-1]:
+                if not w.isdigit():
+                    print(&#34;For keyword mcec_g&#34;)
+                    print(&#34;Error parsing integer for group id&#34;)
+                    raise TypeError
+                group_ids.append(int(w))
+            if not words[-1].isdigit():
+                print(&#34;For keyword mcec_g&#34;)
+                print(&#34;Error, group weight must be an integer corresponding to&#34;
+                      &#34; the reference state&#34;)
+                raise TypeError
+            indi.correction_groups.append(group_ids)
+            indi.correction_weights.append(int(words[-1])/float(len(group_ids)))
+    return
+
+
+def cleanup():
+    &#34;&#34;&#34;
+    This subroutine deletes any temporary files which have been created during
+    program execution.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    if os.path.isfile(&#39;tmp.mol2&#39;):
+        os.remove(&#39;tmp.mol2&#39;)
+
+
+def main():
+    &#34;&#34;&#34;
+    This is the main hook. Here we parse the input, initialize data structures,
+    and call the main loop over the trajectory.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    debug = False
+    arg_vals = None
+    if debug:
+        arg_vals = [&#39;-i&#39;, &#39;ind_tools.inp&#39;]
+    command_line_args = get_args(arg_vals)
+
+    ifpath = command_line_args.input
+    keywords = read_input_file(ifpath)
+
+    indi = set_indicator(keywords)
+    check_keywords(keywords, indi)
+    core_loop(keywords, indi)
+    cleanup()
+
+
+if __name__ == &#34;__main__&#34;:
+    main()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="adaptive_md_tools.AdaptiveMD.check_keywords"><code class="name flex">
+<span>def <span class="ident">check_keywords</span></span>(<span>keywords, indi)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Check and print out the keywords and initial variables
+:param keywords: The parsed keywords
+:type keywords: dict
+:param indi: The indicator class used for the run
+:type indi: Indicator
+:return:</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def check_keywords(keywords, indi):
+    &#34;&#34;&#34;
+    Check and print out the keywords and initial variables
+    :param keywords: The parsed keywords
+    :type keywords: dict
+    :param indi: The indicator class used for the run
+    :type indi: Indicator
+    :return:
+    &#34;&#34;&#34;
+    # Print I/O variables
+    print(&#34;INPUT FILE VARIABLES&#34;)
+    if &#34;in_coords&#34; in keywords:
+        print(&#34;Reading coordinates from: &#34; + keywords[&#39;in_coords&#39;])
+    else:
+        print(&#34;Error, %s not found in keywords&#34; % &#34;&#39;coordinates&#39;&#34;)
+        raise ValueError
+
+    if keywords[&#34;topology&#34;]:
+        print(&#34;Reading topology from: &#34; + keywords[&#39;topology&#39;])
+    else:
+        print(&#34;Error, %s not found in keywords&#34; % &#34;&#39;structure&#39;&#34;)
+        raise ValueError
+
+    if &#34;out_coords&#34; in keywords:
+        print(&#34;Writing coordinates to: &#34; + keywords[&#39;out_coords&#39;])
+    else:
+        print(&#34;Error, %s not found in keywords&#34; % &#34;&#39;output_coords&#39;&#34;)
+        raise ValueError
+
+    if keywords[&#34;groups_path&#34;]:
+        print(&#34;Reading AP groups from: &#34; + keywords[&#39;groups_path&#39;])
+
+    if keywords[&#34;elements_file&#34;]:
+        print(&#34;Reading atomic elements from: &#34; + keywords[&#39;elements_file&#39;])
+
+    if keywords[&#34;write_partitions&#34;]:
+        if not keywords[&#34;groups_path&#34;]:
+            print(&#34;Error, you must specify groups_path with AP groups to write&#34;
+                  &#34; AP partitons&#34;)
+            sys.exit()
+        print(&#34;Writing partitions to folder: %s&#34; % keywords[&#34;write_folder&#34;])
+        print(&#34;Writing partitions every %d steps&#34; % keywords[&#34;write_freq&#34;])
+    if keywords[&#34;wrap&#34;] and not keywords[&#34;topology&#34;]:
+        sys.exit(&#34;Error, cannot wrap the system &#34;
+                 &#34;because there is no topology specified&#34;)
+
+    # Print all of the indicator variables
+    print(&#34;\nINDICATOR VARIABLES&#34;)
+    print(&#34;rlist: {0:0.3f}&#34;.format(indi.rlist))
+    print(&#34;rdh0 parameters:&#34;)
+    for key in indi.rxh:
+        print(&#34;    {0:8s}    {1:0.3f}&#34;.format(key, indi.rxh[key]))
+    print(&#34;Initial donor: {0:d}&#34;.format(indi.donor))
+    print(&#34;proton types:&#34;, keywords[&#34;proton_types&#34;])
+
+    # Print all of mCEC variables
+    if keywords[&#39;mcec&#39;]:
+        print(&#34;mCEC Variables&#34;)
+        print(&#34;rsw: %.3f&#34; % keywords[&#39;rsw&#39;])
+        print(&#34;dsw: %.3f&#34; % keywords[&#39;dsw&#39;])
+
+    # Print general things
+    print(&#34;SYSTEM VARIABLES&#34;)
+    try:
+        if &#39;dimensions&#39; in keywords:
+            print(&#34;Dimensions: {0:0.8f}   {1:0.8f}   {2:0.8f}&#34;.format(
+                *keywords[&#39;dimensions&#39;]))
+        elif keywords[&#39;wrap&#39;]:
+            print(&#34;\n\nERROR: Please supply system dimensions as three floats&#34;
+                  &#34; corresponding to x, y, z vectors&#34;)
+            sys.exit()
+        else:
+            print(&#34;No periodic boundaries specified&#34;)
+    except ValueError:
+        print(&#34;Please supply system dimensions as three floats corresponding &#34;
+              &#34;to x, y, z vectors&#34;)
+        sys.exit()
+    try:
+        if keywords[&#39;write_partitions&#39;]:
+            print(&#34;AP SETTINGS&#34;)
+            print(&#34;Active radius: {0:0.8f}&#34;.format(keywords[&#34;active_radius&#34;]))
+            print(&#34;Buffer radius: {0:0.8f}&#34;.format(keywords[&#34;active_radius&#34;]))
+            print(&#34;Permute order: {0:1d}&#34;.format(keywords[&#34;pap_order&#34;]))
+    except ValueError:
+        print(&#34;Error printing AP keywords&#34;)
+        sys.exit()
+    return</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.AdaptiveMD.cleanup"><code class="name flex">
+<span>def <span class="ident">cleanup</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>This subroutine deletes any temporary files which have been created during
+program execution.</p>
+<h2 id="parameters">Parameters</h2>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def cleanup():
+    &#34;&#34;&#34;
+    This subroutine deletes any temporary files which have been created during
+    program execution.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    if os.path.isfile(&#39;tmp.mol2&#39;):
+        os.remove(&#39;tmp.mol2&#39;)</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.AdaptiveMD.get_args"><code class="name flex">
+<span>def <span class="ident">get_args</span></span>(<span>args=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>This is written as a default funtion to put at beginning of all Python
+scripts which require command line arguments. This uses the argparse module
+which must be declared in the main program to ensure that the object is able
+to be used by the caller
+&ndash;Adam Duster 21 June 2017</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_args(args=None):
+    &#34;&#34;&#34; This is written as a default funtion to put at beginning of all Python
+    scripts which require command line arguments. This uses the argparse module
+    which must be declared in the main program to ensure that the object is able
+    to be used by the caller
+    --Adam Duster 21 June 2017
+    &#34;&#34;&#34;
+    parser = argparse.ArgumentParser(description=&#39;see header of python script&#39;)
+    parser.add_argument(
+        &#39;-i&#39;,
+        &#39;--input&#39;,
+        help=&#39;Input file name&#39;,
+        required=True)
+    parser.add_argument(
+        &#39;-v&#39;,
+        &#39;--verbose&#39;,
+        help=&#39;Controls the level of output, use multipe v for more output&#39;,
+        required=False,
+        action=&#39;count&#39;,
+        default=0)
+    parser.add_argument(
+        &#39;-d&#39;,
+        &#39;--debug&#39;,
+        help=&#39;Enter debug mode&#39;,
+        required=False,
+        action=&#39;store_true&#39;,
+        default=False)
+    return parser.parse_args(args)</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.AdaptiveMD.initialize_mcec"><code class="name flex">
+<span>def <span class="ident">initialize_mcec</span></span>(<span>keywords, indi)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Initialize the mCEC variables for the mCEC indicator. Note that currently
+you must have initialized Indicator4 variables previously to initializing
+the mCEC.
+:param keywords: dict user input
+:param indi:
+:return:</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def initialize_mcec(keywords, indi):
+    &#34;&#34;&#34;
+    Initialize the mCEC variables for the mCEC indicator. Note that currently
+    you must have initialized Indicator4 variables previously to initializing
+    the mCEC.
+    :param keywords: dict user input
+    :param indi:
+    :return:
+    &#34;&#34;&#34;
+    # Parse the acceptor type keywords. Make sure they are also acceptors for
+    # Indicator 4
+    vals = keywords[&#34;mcec_w&#34;][:]
+    if len(vals) == 1:
+        print(&#34;Error, no acceptor types found after keyword &#39;mcec&#39;&#34;)
+        raise NameError
+    vals = vals[1:]
+    if len(vals) % 2 != 0:
+        print(&#34;Error, each acceptor type for keyword &#39;mcec&#39; must be followed by&#34;
+              &#34; integer&#34;)
+        print(&#34;The integer is the reference state for the least protonated&#34;
+              &#34; state of the atom&#34;)
+        raise NameError
+    for i in range(len(vals) // 2):
+        acc = vals[2*i]
+        w = vals[2*i+1]
+        if acc not in indi.rxh.keys():
+            print()
+            print(&#34;Error, mCEC type found but does not correspond with &#34;
+                  &#34; the acceptors in the rdh0 list&#34;)
+            raise
+        try:
+            indi.m_acc_weight[acc] = float(w)
+        except TypeError:
+            print(&#34;Error, weight is not float for acceptor %s&#34; % acc)
+            print(&#34;Error keyword mcec&#34;)
+            raise
+
+    for key in list(indi.rxh.keys()):
+        if key not in indi.m_acc_weight.keys():
+            print(&#34;Error, acceptor %s is not in mcec list but is in rxh list&#34;
+                  % key)
+            raise KeyError
+    indi.rsw = keywords[&#39;rsw&#39;]
+    indi.dsw = keywords[&#39;dsw&#39;]
+    vals = keywords[&#39;mcec_g&#39;]
+    if vals:
+        for val in vals:
+            words = val.split(&#39;,&#39;)
+            if len(words) &lt;= 2:
+                print(&#34;For keyword mcec_g&#34;)
+                print(&#34;Error parsing mcec_g keyword, there are not enough&#34;
+                      &#34; integers for the group&#34;)
+                raise TypeError
+            group_ids = []
+            for w in words[:-1]:
+                if not w.isdigit():
+                    print(&#34;For keyword mcec_g&#34;)
+                    print(&#34;Error parsing integer for group id&#34;)
+                    raise TypeError
+                group_ids.append(int(w))
+            if not words[-1].isdigit():
+                print(&#34;For keyword mcec_g&#34;)
+                print(&#34;Error, group weight must be an integer corresponding to&#34;
+                      &#34; the reference state&#34;)
+                raise TypeError
+            indi.correction_groups.append(group_ids)
+            indi.correction_weights.append(int(words[-1])/float(len(group_ids)))
+    return</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.AdaptiveMD.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>This is the main hook. Here we parse the input, initialize data structures,
+and call the main loop over the trajectory.</p>
+<h2 id="parameters">Parameters</h2>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def main():
+    &#34;&#34;&#34;
+    This is the main hook. Here we parse the input, initialize data structures,
+    and call the main loop over the trajectory.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    debug = False
+    arg_vals = None
+    if debug:
+        arg_vals = [&#39;-i&#39;, &#39;ind_tools.inp&#39;]
+    command_line_args = get_args(arg_vals)
+
+    ifpath = command_line_args.input
+    keywords = read_input_file(ifpath)
+
+    indi = set_indicator(keywords)
+    check_keywords(keywords, indi)
+    core_loop(keywords, indi)
+    cleanup()</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.AdaptiveMD.read_input_file"><code class="name flex">
+<span>def <span class="ident">read_input_file</span></span>(<span>ifpath)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Read the input file and save the parameters</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ifpath</code></strong> :&ensp;<code>str</code></dt>
+<dd>input file path</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Dictionary of parameters</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def read_input_file(ifpath):
+    &#34;&#34;&#34;
+    Read the input file and save the parameters
+
+    Parameters
+    ----------
+    ifpath: str
+        input file path
+
+    Returns
+    -------
+    keywords: dict
+        Dictionary of parameters
+    &#34;&#34;&#34;
+    try:
+        ifi = open(ifpath, &#39;r&#39;)
+    except FileNotFoundError:
+        print(&#34;Error opening input file: &#34; + ifpath)
+        sys.exit()
+    keywords = {&#34;groups_path&#34;: None,
+                &#34;rlist&#34;: 3.5,
+                &#34;indicator_verbose&#34;: False,
+                &#34;proton_types&#34;: [],
+                &#34;write_freq&#34;: 20,
+                &#34;write_folder&#34;: &#39;./&#39;,
+                &#34;write_partitions&#34;: False,
+                &#34;active_radius&#34;: 5.0,
+                &#34;buffer_radius&#34;: 0.6,
+                &#34;pap_order&#34;: 2,
+                &#34;write_prefix&#34;: &#39;&#39;,
+                &#34;allow_hop&#34;: True,
+                &#34;dcd_pbc&#34;: False,
+                &#34;verbose&#34;: False,
+                &#34;ind_output_freq&#34;: 0,
+                &#34;wrap&#34;: True,
+                &#34;dimensions&#34;: [0, 0, 0],
+                &#34;ind_method&#34;: 0,
+                &#34;topology&#34;: None,
+                &#34;topology_type&#34;: &#39;psf&#39;,
+                &#34;rdh0&#34;: [],
+                &#34;ratio_topology_change&#34;: True,
+                &#34;mcec&#34;: False,
+                &#34;rsw&#34;: 1.4,
+                &#34;dsw&#34;: 0.04,
+                &#39;mcec_g&#39;: []
+                }
+    print(&#34;*********************** INPUT FILE ***********************&#34;)
+    while True:
+        line = ifi.readline()
+        if not line:
+            break
+        print(line)
+        words = line.split()
+        if not words:
+            continue
+        if words[0][0] == &#34;#&#34;:
+            continue
+        words[0] = words[0].lower()
+        try:
+            if words[0] == &#34;coordinates&#34;:
+                keywords[&#39;in_coords&#39;] = words[1]
+                continue
+            if words[0] == &#34;structure&#34;:
+                keywords[&#39;topology&#39;] = words[1]
+                if len(words) &gt; 2:
+                    keywords[&#39;topology_type&#39;] = words[2].lower()
+                continue
+            if words[0] == &#34;groups_file&#34;:
+                keywords[&#39;groups_path&#39;] = words[1]
+                continue
+            if words[0] == &#34;elements_file&#34;:
+                keywords[&#39;elements_file_type&#39;] = words[1]
+                keywords[&#39;elements_file&#39;] = words[2]
+                continue
+            if words[0] == &#34;donor_index&#34;:
+                keywords[&#39;donor_index&#39;] = words[1]
+                continue
+            if words[0] == &#34;output_coords&#34;:
+                keywords[&#39;out_coords&#39;] = words[1]
+                continue
+            if words[0] == &#34;rlist&#34;:
+                keywords[&#39;rlist&#39;] = words[1]
+                continue
+            if words[0] == &#34;rdh0&#34;:
+                keywords[&#34;rdh0&#34;] = words[1:]
+                continue
+            if words[0] == &#34;indicator_verbose&#34;:
+                keywords[&#34;indicator_verbose&#34;] = True
+                continue
+            if words[0] == &#34;write_n_steps&#34;:
+                keywords[&#34;write_freq&#34;] = int(words[1])
+                continue
+            if words[0] == &#34;write_partitions&#34;:
+                keywords[&#34;write_partitions&#34;] = True
+                if words[1]:
+                    if words[1][-1] != &#39;/&#39;:
+                        words[1] += &#39;/&#39;
+                    keywords[&#34;write_folder&#34;] = words[1]
+                    keywords[&#34;write_type&#34;] = words[2]
+                continue
+            if words[0] == &#34;write_prefix&#34;:
+                keywords[&#34;write_prefix&#34;] = words[1]
+                continue
+            if words[0] == &#34;active_radius&#34;:
+                keywords[words[0]] = float(words[1])
+                continue
+            if words[0] == &#34;buffer_radius&#34;:
+                keywords[words[0]] = float(words[1])
+                continue
+            if words[0] == &#34;dimensions&#34;:
+                keywords[&#39;dimensions&#39;] = [float(words[1]), float(words[2]),
+                                          float(words[3])]
+                continue
+            if words[0] == &#34;pap_order&#34;:
+                keywords[&#39;pap_order&#39;] = int(words[1])
+                continue
+            if words[0] == &#34;allow_hop&#34;:
+                keywords[&#39;allow_hop&#39;] = bool(int(words[1]))
+                continue
+            if words[0] == &#34;dcd_pbc&#34;:
+                keywords[&#39;dcd_pbc&#39;] = bool(int(words[1]))
+                continue
+            if words[0] == &#34;verbose&#34;:
+                keywords[&#39;verbose&#39;] = bool(int(words[1]))
+                continue
+            if words[0] == &#34;ind_output_freq&#34;:
+                keywords[&#39;ind_output_freq&#39;] = int(words[1])
+                continue
+            if words[0] == &#34;nowrap&#34;:
+                keywords[&#39;wrap&#39;] = False
+                continue
+            if words[0] == &#34;ind_method&#34;:
+                keywords[&#39;ind_method&#39;] = int(words[1])
+                continue
+            if words[0] == &#34;proton_types&#34;:
+                keywords[&#39;proton_types&#39;] = words[1:]
+                continue
+            if words[0] == &#34;no_pre_topo_change&#34;:
+                keywords[&#39;ratio_topology_change&#39;] = False
+                continue
+            if words[0] == &#39;mcec&#39;:
+                keywords[&#39;mcec&#39;] = True
+                keywords[&#39;mcec_w&#39;] = words[:]
+                continue
+            if words[0] == &#39;rsw&#39;:
+                keywords[&#39;rsw&#39;] = float(words[1])
+                continue
+            if words[0] == &#39;dsw&#39;:
+                keywords[&#39;dsw&#39;] = float(words[1])
+                continue
+            if words[0] == &#39;mcec_g&#39;:
+                keywords[&#39;mcec_g&#39;] = words[1:]
+                continue
+            print(&#34;Could not find keyword: &#34; + words[0])
+            raise RuntimeError
+
+        except RuntimeError:
+            print(&#34;Error parsing keyword &#34; + words[0])
+            sys.exit()
+    ifi.close()
+    print(&#34;****************************************************&#34;)
+    return keywords</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.AdaptiveMD.set_indicator"><code class="name flex">
+<span>def <span class="ident">set_indicator</span></span>(<span>keywords)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Initialize the indicator
+:param keywords: input keywords
+:type keywords: dict
+:return: indicator
+:rtype: Indicator</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def set_indicator(keywords):
+    &#34;&#34;&#34;
+    Initialize the indicator
+    :param keywords: input keywords
+    :type keywords: dict
+    :return: indicator
+    :rtype: Indicator
+    &#34;&#34;&#34;
+    if keywords[&#34;mcec&#34;]:
+        if keywords[&#34;ind_method&#34;] in [4, 11]:
+            indi = MCEC()
+        else:
+            print(&#34;Currently, you must only use mcec with indicator 4&#34;)
+            raise NotImplementedError
+    elif keywords[&#34;ind_method&#34;] in [0, 1, 2, 8]:
+        indi = Indicator()
+    elif keywords[&#34;ind_method&#34;] in [3, 4]:
+        indi = Indicator4()
+    elif keywords[&#34;ind_method&#34;] in [6]:
+        indi = Indicator6()
+    elif keywords[&#34;ind_method&#34;] in [7]:
+        indi = Indicator7()
+    elif keywords[&#34;ind_method&#34;] in [9]:
+        indi = Indicator9()
+    elif keywords[&#34;ind_method&#34;] in [11]:
+        indi = Indicator11()
+    else:
+        print(&#34;Error, could not recognize indicator type&#34;)
+        raise TypeError
+    if keywords[&#34;ind_method&#34;] in [2, 3]:
+        print(&#34;Unfortunately the requested indicator type is not implemented&#34;)
+        raise NotImplementedError
+
+    if &#34;rlist&#34; in keywords:
+        try:
+            indi.rlist = float(keywords[&#34;rlist&#34;])
+        except ValueError:
+            print(&#34;Error parsing rlist variable. It must be a float&#34;)
+    if keywords[&#34;rdh0&#34;]:
+        vals = keywords[&#34;rdh0&#34;]
+        if len(vals) % 2 != 0:
+            print(&#34;Error parsing rdh0 parameters, there should be an even &#34;
+                  &#34;number of them&#34;)
+            raise ValueError
+        for i in range(len(vals) // 2):
+            try:
+                indi.rxh[vals[2*i]] = float(vals[2*i + 1])
+            except ValueError:
+                print(&#34;Error parsing rdh0 variables: &#34;, vals[2*i:2*i+1])
+    else:
+        print(&#34;Error, did you specify the rdh0 keyword?&#34;)
+        raise NameError
+
+    try:
+        indi.donor = int(keywords[&#34;donor_index&#34;])
+    except ValueError:
+        print(&#34;Error, please supply the initial donor index as an integer&#34;)
+
+    try:
+        indi.print_all = keywords[&#34;indicator_verbose&#34;]
+    except ValueError:
+        print(&#34;Error setting indicator.printall flag&#34;)
+    indi.set_output_freq(keywords[&#34;ind_output_freq&#34;], keywords[&#39;write_prefix&#39;])
+
+    if keywords[&#39;mcec&#39;]:
+        initialize_mcec(keywords, indi)
+    return indi</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="adaptive_md_tools" href="index.html">adaptive_md_tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="adaptive_md_tools.AdaptiveMD.check_keywords" href="#adaptive_md_tools.AdaptiveMD.check_keywords">check_keywords</a></code></li>
+<li><code><a title="adaptive_md_tools.AdaptiveMD.cleanup" href="#adaptive_md_tools.AdaptiveMD.cleanup">cleanup</a></code></li>
+<li><code><a title="adaptive_md_tools.AdaptiveMD.get_args" href="#adaptive_md_tools.AdaptiveMD.get_args">get_args</a></code></li>
+<li><code><a title="adaptive_md_tools.AdaptiveMD.initialize_mcec" href="#adaptive_md_tools.AdaptiveMD.initialize_mcec">initialize_mcec</a></code></li>
+<li><code><a title="adaptive_md_tools.AdaptiveMD.main" href="#adaptive_md_tools.AdaptiveMD.main">main</a></code></li>
+<li><code><a title="adaptive_md_tools.AdaptiveMD.read_input_file" href="#adaptive_md_tools.AdaptiveMD.read_input_file">read_input_file</a></code></li>
+<li><code><a title="adaptive_md_tools.AdaptiveMD.set_indicator" href="#adaptive_md_tools.AdaptiveMD.set_indicator">set_indicator</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.6.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

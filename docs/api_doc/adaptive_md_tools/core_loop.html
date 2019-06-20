@@ -1,0 +1,2466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.6.2" />
+<title>adaptive_md_tools.core_loop API documentation</title>
+<meta name="description" content="This file contains the &#39;core loop&#39; subroutine which iterates over all of the
+frames in the trajectory and is the main driver of the program …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>adaptive_md_tools.core_loop</code></h1>
+</header>
+<section id="section-intro">
+<p>This file contains the 'core loop' subroutine which iterates over all of the
+frames in the trajectory and is the main driver of the program.</p>
+<p>It currently also contains all the logic for printing out adaptive partitioning
+files, and for handling the indicator.</p>
+<p>TODO:
+Move indicator subroutines to their own file to clean up code.</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">#!/usr/bin/env python
+&#34;&#34;&#34;
+This file contains the &#39;core loop&#39; subroutine which iterates over all of the
+frames in the trajectory and is the main driver of the program.
+
+It currently also contains all the logic for printing out adaptive partitioning
+files, and for handling the indicator.
+
+TODO:
+Move indicator subroutines to their own file to clean up code.
+&#34;&#34;&#34;
+__author__ = &#39;Adam Duster&#39;
+__copyright__ = &#39;&#39;
+__credits__ = [&#39;Adam Duster&#39;]
+__license__ = &#39;CC-BY-SA&#39;
+__version__ = &#39;0.1&#39;
+__email__ = &#39;adam.duster@ucdenver.edu&#39;
+__status__ = &#39;Development&#39;
+from scipy.spatial.distance import cdist
+import os
+import MDAnalysis as mda
+from .indicator import *
+from .indicator_mda_selections import *
+import adaptive_md_tools.mdtools as mdtools
+import sys
+import gc
+
+
+def core_loop(keywords, indi):
+    &#34;&#34;&#34;
+    Main loop for processing indicator. Here, the indicator is calculated if
+    requested. The atoms can be translated such that a specific atom or the
+    indicator is in the center of the box if requested.
+
+    1. Set up universe
+    2. Set up groups
+
+    3. Main Loop
+
+    :param keywords: input keywords
+    :type keywords: dict
+    :param indi: indicator class
+    :type indi: Indicator
+    &#34;&#34;&#34;
+    keywords[&#39;wrap_style&#39;] = &#39;residues&#39;
+    # mda.core.flags[&#39;use_periodic_selections&#39;] = True
+    # mda.core.flags[&#39;use_KDTree_routines&#39;] = False
+
+    # Main universe with original coordinates
+    try:
+        u = initialize_universe(keywords[&#34;topology&#34;], keywords[&#34;in_coords&#34;],
+                                *keywords[&#34;dimensions&#34;], 0)
+    except:
+        sys.exit(&#34;Error loading initial universe&#34;)
+    # This is the modified universe for the coordinate output
+    if not keywords[&#39;mcec&#39;]:
+        all_u = add_indicator_to_universe(u)
+    else:
+        all_u = add_indicator_to_universe(u, natoms=2)
+
+    sels = setup_selection(u, all_u, indi, keywords)
+
+    # Setup the initial translation vector
+    if keywords[&#34;wrap&#34;]:
+        box_center = u.dimensions[:3] / 2.0
+
+    #Setup the groups
+    if &#34;groups_path&#34; in keywords:
+        groups_file = mdtools.GroupsFile(keywords[&#34;groups_path&#34;])
+        groups = groups_file.getGroups()
+        ap = True
+
+    #Setup the elements
+    if keywords[&#34;write_partitions&#34;]:
+        try:
+            elements = mdtools.get_elements(keywords[&#34;elements_file&#34;],
+                                            keywords[&#34;elements_file_type&#34;])
+        except:
+            print(&#34;Error reading elements. Was the elements file specified?&#34;)
+            sys.exit()
+        if elements.size != u.atoms.n_atoms:
+            print(&#34;Error, number of elements does not match with system # els&#34;)
+            sys.exit()
+        if not os.path.isdir(keywords[&#34;write_folder&#34;]):
+            try:
+                os.mkdir(keywords[&#34;write_folder&#34;])
+            except OSError:
+                sys.exit(&#34;Error making partitions directory&#34;)
+    try:
+        W = mda.Writer(keywords[&#34;out_coords&#34;], sels.all.n_atoms)
+        # Wdebug = mda.Writer(&#39;debug.dcd&#39;, sels.sys.n_atoms)
+    except IOError:
+        print(&#34;Error opening output coord file: &#34; + keywords[&#34;output&#34;])
+
+    # Main Loop
+    nsteps = len(u.trajectory)
+    for t in range(nsteps):
+        ts = u.trajectory[t]
+
+        # Initialize the selections for this timestep
+        sels.set_dah(u, indi.donor)
+        sels.reset_universe_selections(u, all_u)
+        donor_coords = sels.d.positions
+
+        #  Wrapping instructions
+        if keywords[&#34;wrap&#34;]:
+            # Set the dimensions in the systems for this timestep
+            ts.dimensions[:] = [*keywords[&#39;dimensions&#39;], 90, 90, 90]
+            u.dimensions[:] = [*keywords[&#39;dimensions&#39;], 90, 90, 90]
+            all_u.dimensions[:] = [*keywords[&#39;dimensions&#39;], 90, 90, 90]
+
+            # Translate the no-indicator system such that the donor is in the
+            # center of the box
+            translation_vector = box_center - donor_coords
+            sels.sys.translate(translation_vector)
+
+            # Wrap atoms into the box
+            sels.sys.wrap(compound=keywords[&#39;wrap_style&#39;], center=&#39;com&#39;)
+
+        if not keywords[&#34;allow_hop&#34;]:
+            if ts.frame % keywords[&#34;write_freq&#34;] != 0:
+                continue
+        if keywords[&#34;ratio_topology_change&#34;]:
+            ratio_topology_change(u, indi, sels, keywords)
+            if indi.hop and keywords[&#34;allow_hop&#34;]:
+                u, all_u = do_hop(u,
+                                  all_u,
+                                  indi,
+                                  ts,
+                                  keywords,
+                                  sels,
+                                  groups,
+                                  intra=True)
+
+        calc_indicator(u, all_u, indi, sels, keywords)
+
+        if keywords[&#34;wrap&#34;]:
+            # Now translate the indicator into the center of the box and wrap
+            ind_translate = box_center - indi.x_i
+            translation_vector += ind_translate
+            # The below wrap commands are useful to output a debug trajectory.
+            sels.all.translate(ind_translate)
+            sels.all.wrap(compound=keywords[&#39;wrap_style&#39;], center=&#39;com&#39;)
+
+        # Wdebug.write(sels.sys)
+        W.write(sels.all)
+
+        # Update the topology and AP groups
+        if indi.hop and keywords[&#34;allow_hop&#34;]:
+            u, all_u = do_hop(u, all_u, indi, ts, keywords, sels, groups)
+            if keywords[&#34;wrap&#34;]:
+                sels.sys.translate(translation_vector)
+                sels.sys.wrap(compound=keywords[&#39;wrap_style&#39;], center=&#39;com&#39;)
+                sels.all.translate(translation_vector)
+                sels.all.wrap(compound=keywords[&#39;wrap_style&#39;], center=&#39;com&#39;)
+
+        # Write the coordinates
+
+        # Output the xyz coordinates if we are making xys for AP
+        if ts.frame &gt; 0:
+            if keywords[&#34;write_partitions&#34;] and\
+                    ts.frame % keywords[&#34;write_freq&#34;] == 0:
+                write_partitions(groups, ts, elements, indi.x_i, keywords)
+
+        # End of loop
+    return
+
+
+def setup_selection(u, all_u, indi, keywords):
+    &#34;&#34;&#34;
+    Set up the selections for the system
+
+    Parameters
+    ----------
+    u: MDAnalysis.Universe
+        main universe object
+    all_u: MDAnalysis.Universe
+        universe with proton
+    indi: Indicator class
+        proton indicator
+    keywords: dict
+        program parameters
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    # Selection setup
+    acceptor_types = list(indi.rxh.keys())
+    proton_types = keywords[&#34;proton_types&#34;]
+
+    if keywords[&#34;ind_method&#34;] in [1]:
+        sels = SelectionsInd1(u,
+                              all_u,
+                              proton_types,
+                              acceptor_types,
+                              indi.rlist,
+                              donor_index=indi.donor)
+    elif keywords[&#34;ind_method&#34;] == 2:
+        sels = SelectionsInd2(u,
+                              all_u,
+                              proton_types,
+                              acceptor_types,
+                              indi.rlist,
+                              donor_index=indi.donor)
+    else:
+        sels = Selections(u,
+                          all_u,
+                          proton_types,
+                          acceptor_types,
+                          indi.rlist,
+                          donor_index=indi.donor)
+    if keywords[&#34;ind_method&#34;] in [0]:
+        sels.set_donor = sels.set_one_donor
+        sels.set_acc = sels.set_original_acc
+    return sels
+
+
+def get_group_geom_center(u, types, ind, redundant=True, return_types=False):
+    &#34;&#34;&#34;
+    Get the center of geometry for the group that index in ind is a member of.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe that has the atoms which we want to get the com of
+    types: list of str
+        List of atom types for each ind
+    ind: list ints
+        0-Based indices to get the group center of mass from.
+    redundant: bool
+        Not sure
+    return_types: bool
+        If True, return a tuple containing the type of the
+
+    Returns
+    -------
+    com: list of float nd.arrays
+    ret_types: Optional, list of str
+       The types of the first atom in the selection for the COG.
+
+    for return_types=True, the tuple is:
+    (com, ret_types)
+
+    Warnings
+    --------
+    This subroutine frequently has issues.
+    &#34;&#34;&#34;
+    com = []
+    ret_types = []
+    num_types = len(types)
+    type_str = &#39;(type %s&#39; % (types[0])
+    for i in range(1, num_types):
+        type_str += &#34; or type %s&#34; % types[i]
+    type_str += &#39;)&#39;
+
+    for i in range(len(ind)):
+        sel_str = (&#39;same resnum as bynum %d&#39; % (ind[i] + 1))
+        try:
+            sel = u.select_atoms(sel_str)
+            sel = sel.select_atoms(type_str)
+        except:
+            &#34;Error selecting atoms&#34;
+            sys.exit()
+        if sel.n_atoms &lt; 1:
+            sys.exit(&#34;Empty selection for group COM&#34;)
+        if redundant:
+            com.append(sel.center_of_geometry())
+        else:
+            found = False
+            for c in com:
+                if np.isclose(c, sel.center_of_geometry()).all():
+                    found = True
+            if not found:
+                com.append(sel.center_of_geometry())
+                ret_types.append(sel.types[0])
+    if return_types:
+        return com, ret_types
+    else:
+        return com
+
+
+def get_group_ind(u, types, ind, redundant=True):
+    &#34;&#34;&#34;
+    Return a list of indices for atoms in COG groups for indicator 1.
+
+    I don&#39;t quite understand the code anymore...
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe that has the atoms which we want to get the com of
+    types: list of str
+        List of atom types for each ind
+    ind: list of lists of ints
+        Contains atoms in each group
+    redundant: bool
+        Not sure
+
+    Returns
+    -------
+    com: list of float nd.arrays
+
+    TODO
+    ----
+    Figure out what the hell this does.
+
+    Warnings
+    --------
+    This subroutine frequently has issues.
+    &#34;&#34;&#34;
+    inds = []
+    num_types = len(types)
+    type_str = &#39;(type %s&#39; % (types[0])
+    for i in range(1, num_types):
+        type_str += &#34; or type %s&#34; % types[i]
+    type_str += &#39;)&#39;
+
+    for i in range(len(ind)):
+        sel_str = (&#39;same resnum as bynum %d&#39; % (ind[i] + 1))
+        try:
+            sel = u.select_atoms(sel_str)
+            sel = sel.select_atoms(type_str)
+        except:
+            &#34;Error selecting atoms&#34;
+            sys.exit()
+        if sel.n_atoms &lt; 1:
+            sys.exit(&#34;Empty selection for group COM&#34;)
+        if redundant:
+            inds.append(sel.indices[0])
+        else:
+            found = False
+            for c in inds:
+                if np.isclose(c, sel.indices[0]):
+                    found = True
+            if not found:
+                inds.append(sel.indices[0])
+    return inds
+
+
+def sel_type_and_same_res(u, types, ind):
+    &#34;&#34;&#34;
+    Generic subroutine to select atoms with a type given in the list &#39;types&#39;
+    with the same resnum as the index of ind
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    types: list of str
+        List of atom types for each ind
+    ind: integer
+        1-based index of atom with resnum.
+
+    Returns
+    -------
+    sel: MDAnalysis.selection
+
+    TODO
+    ----
+    This subroutine contains logic that is used throughout the code. That
+    could all be consolidated.
+    &#34;&#34;&#34;
+    num_types = len(types)
+    type_str = &#39;(type %s&#39; % (types[0])
+    for i in range(1, num_types):
+        type_str += &#34; or type %s&#34; % types[i]
+    type_str += &#39;)&#39;
+    sel_str = (&#39;same resnum as bynum %d&#39; % (ind[i] + 1))
+    sel = u.select_atoms(sel_str)
+    sel = sel.select_atoms(type_str)
+    return sel
+
+
+def check_for_donor_switch(u, indi, sels):
+    &#34;&#34;&#34;
+    Check to see if an intramolecular proton transfer has occured.
+
+    Compare the distances between the protons and protonatable sites of a
+    donor group. If a proton is closer to another site than the one that
+    it is bonded to, add the hop to the indi.hop list.f
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    indi: Indicator class object.
+        Has info about donors, acceptors, etc
+    sels: Selection class object.
+        Contains selections that correspond to the indi class
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    largest_p = 0
+    don_ind = 0
+    sels.set_donors(u, indi.donor)
+    d_inds = sels.d.indices.copy()
+    d_pos = sels.d.positions.copy()
+
+    # Iterate over all protonatable sites.
+    for k in range(d_inds.size):
+        # Set the donor to site k
+        sels.set_dah(u, d_inds[k] + 1)
+        for j in range(sels.a.positions.shape[0]):
+            for m in range(sels.h.positions.shape[0]):
+                # Compute the projection of the proton m onto the vector
+                # between sites k and j
+                rdh = sels.h.positions[m, :] - d_pos[k, :]
+                rda = sels.a.positions[j, :] - d_pos[k, :]
+                p = np.dot(rdh, rda) / np.linalg.norm(rda)**2
+
+                # We will only select the largest rho in the case of two
+                # simultaneous hops.
+                if p &gt; largest_p:
+                    don_ind = d_inds[k]
+                    largest_p = p
+    # If there is no hop, reset the selection to the donor that we came in with
+    if largest_p &lt;= 0:
+        sels.set_dah(u, indi.donor)
+        return
+    # If there is a hop, note that and switch the donor.
+    if don_ind != indi.donor - 1:
+        print(&#34;Swapping donors in residue based on H-bond dists at step: &#34;,
+              u.trajectory.frame)
+        print(&#34;Old Don: {0}   New Don: {1}&#34;.format(indi.donor, don_ind + 1))
+        indi.donor = don_ind + 1
+    sels.set_dah(u, indi.donor)
+    return
+
+
+def calculate_weighted_coords(u, sels):
+    &#34;&#34;&#34;
+    Calculate a weighted coordinate for a group of donors in the system based
+    on the projection vectors between them and surrounding accpetors.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    sels: Selection class object.
+        Contains selections that correspond to the indicator class
+
+    Returns
+    -------
+    ndarray of floats with shape (3)
+
+    Raises
+    ------
+    DivideByZero : The sum of the weights is 0 and thus unnormalizable
+
+    Notes
+    -----
+    Here we calculate the vector between the donor K and all acceptors J. For
+    each proton M, we calculate the projection onto the J-K vector and get
+    the normalized distance of the projection D. We then weight each donor&#39;s
+    location based on the sum of D&#39;s for each donor and return the weighted
+    coordinate.
+
+    The idea here is that if a proton is further from a given donor, it is
+    more likely to transfer. We should weight the location of the indicator
+    towards that donor.
+    &#34;&#34;&#34;
+    d_inds = sels.d.indices.copy()
+    d_pos = sels.d.positions.copy()
+    num_d = d_inds.size
+    w_d = np.zeros(num_d)
+
+    for k in range(num_d):
+        sels.set_dah(u, d_inds[k] + 1)
+        for j in range(sels.a.positions.shape[0]):
+            for m in range(sels.h.positions.shape[0]):
+                rdh = sels.h.positions[m, :] - d_pos[k, :]
+                rda = sels.a.positions[j, :] - sels.h.positions[m, :]
+                p = np.dot(rdh, rda) / np.linalg.norm(rda)**2
+                if p &gt; 0:
+                    p = 0
+                w_d[k] += p
+    total = np.sum(w_d)
+    if total &lt;= 0:
+        print(&#34;Error weighting coordinates. There are probably no protons&#34;
+              &#34; bound to the donor group&#34;)
+        raise ZeroDivisionError
+    w_d /= np.sum(w_d)
+    don_com = w_d.reshape(num_d, 1) * d_pos
+    return np.sum(don_com, axis=0)
+
+
+def ratio_topology_change(u, indi, sels, keywords):
+    &#34;&#34;&#34;
+    Adds a proton hop from one donor to the next to the indicator object
+    depending on the D-H bond lengths for different atoms in the system.
+
+    The proton is transferred if:
+    r_km / [r_km + r_jm] &gt; 0.5 (the distance between the donor and it&#39;s proton
+                                is greater than an acceptor and the proton)
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+
+    Notes
+    -----
+    This can be used to describe tautomerization proton transfer reactions such
+    as that for the proton between the two oxygens in glutamic acid.
+
+    TODO
+    ----
+    Remove dependency on keywords variable
+    &#34;&#34;&#34;
+    if keywords[&#34;ind_method&#34;] == 2:
+        sels.set_donors(u, indi.donor)
+    num_d = len(sels.d.indices)
+    if num_d == 1:
+        return
+    indi.hop = []
+
+    #Iterate over all donor-acceptor combinations
+    for k in range(num_d):
+        for j in range(num_d):
+            if j == k:
+                continue
+            sels.set_proton(u, sels.d.indices[k] + 1)
+            num_h = len(sels.h.indices)
+            for m in range(num_h):
+
+                # Standard rho calculation
+                rdh = sels.d.positions[k, :] - sels.h.positions[m, :]
+                rdh = np.linalg.norm(rdh)
+                rah = sels.d.positions[j, :] - sels.h.positions[m, :]
+                rah = np.linalg.norm(rah)
+                p = rdh / (rdh + rah)
+                if p &gt; 0.5:
+                    indi.hop.append((m, j, p, k))
+    sels.set_dah(u, indi.donor)
+    return
+
+
+def calc_indicator(u, all_u, indi, sels, keywords):
+    &#34;&#34;&#34;
+    Stage and calculate the location of the indicator.
+    Different things happen depending on the indicator method.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    all_u: MDAnalysis.universe
+        Universe with indicator atom appended to it
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    # Set up atom selections for donor and acceptors
+    sels.set_dah(u, indi.donor)
+
+    # Print out what the hydrogens, acceptors, donors are
+    if keywords[&#34;indicator_verbose&#34;]:
+        print(&#34;#**************** STEP %d&#34; % u.trajectory.frame)
+        print(&#34;Donor indicies in order: &#34;, sels.d.indices)
+        print(&#34;Acc indices: &#34;, sels.a.indices)
+        print(&#34;Hyd indices: &#34;, sels.h.indices)
+    # Calculate the indicator location
+    if keywords[&#34;ind_method&#34;] == 0:
+        indi.calc_indicator(sels.d.positions[0], sels.a.positions,
+                            sels.h.positions, sels.d.types[0], sels.a.types)
+    elif keywords[&#34;ind_method&#34;] == 1:
+        don_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        [sels.d.indices[0]])[0]
+        acc_com, atypes = get_group_geom_center(u,
+                                                list(indi.rxh.keys()),
+                                                sels.a.indices,
+                                                redundant=False,
+                                                return_types=True)
+        acc_com = np.asarray(acc_com)
+
+        indi.calc_indicator(don_com, acc_com, sels.h.positions, sels.d.types[0],
+                            atypes)
+    elif keywords[&#34;ind_method&#34;] == 2:
+        check_for_donor_switch(u, indi, sels)
+        indi.calc_indicator(sels.d.positions[0], sels.a.positions,
+                            sels.h.positions, sels.d.types[0], sels.a.types)
+    elif keywords[&#34;ind_method&#34;] == 3:
+        don_com = [calculate_weighted_coords(u, indi, sels)]
+        acc_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        sels.a.indices)
+        h_coords = []
+        for i in range(sels.d.n_atoms):
+            sels.set_proton(u, sels.d.indices[i] + 1)
+            h_coords.append(sels.h.positions)
+
+        indi.calc_indicator(sels.d.positions, sels.a.positions, h_coords,
+                            sels.d.types, sels.a.types, don_com, acc_com)
+    elif keywords[&#34;ind_method&#34;] in [4, 6, 7, 9, 11]:
+        don_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        [sels.d.indices[0]])
+        acc_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        sels.a.indices)
+        h_coords = []
+        for i in range(sels.d.n_atoms):
+            sels.set_proton(u, sels.d.indices[i] + 1)
+            h_coords.append(sels.h.positions)
+
+        indi.calc_indicator(sels.d.positions, sels.a.positions, h_coords,
+                            sels.d.types, sels.a.types, don_com, acc_com)
+
+    elif keywords[&#34;ind_method&#34;] in [8]:
+        don_com = [calculate_weighted_coords(u, indi, sels)]
+        acc_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        sels.a.indices)
+        acc_com = np.asarray(acc_com)
+        indi.calc_indicator(don_com, acc_com, sels.h.positions, sels.d.types[0],
+                            sels.a.types)
+    if keywords[&#34;mcec&#34;]:
+        accs = sels.set_all_acc(u)
+        hyds = sels.set_all_protons(u)
+        group_locs = None
+        if indi.correction_groups:
+            group_locs = get_group_positions(u, indi)
+        indi.calc_mcec(hyds.positions, accs.positions, accs.types, group_locs)
+
+    # Update the atoms positions in the larger universe
+    if keywords[&#34;mcec&#34;]:
+        all_u.trajectory.coordinate_array[0, :-2] = sels.sys.positions[:]
+        all_u.trajectory.coordinate_array[0, -2] = indi.x_i
+        all_u.trajectory.coordinate_array[0, -1] = indi.x_mcec
+    else:
+        all_u.trajectory.coordinate_array[0, :-1] = sels.sys.positions[:]
+        all_u.trajectory.coordinate_array[0, -1] = indi.x_i
+    return
+
+
+def get_group_positions(u, indi):
+    &#34;&#34;&#34;
+    Return the locations of the members in the correction groups.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    indi: Indicator class object
+        The indicator info for checking the transfer
+
+    Returns
+    -------
+    list of ndarrays with shape (n,3)
+
+    &#34;&#34;&#34;
+    positions = []
+    for i in indi.correction_groups:
+        selstr = &#39;bynum %d&#39; % i[0]
+        for j in i[1:]:
+            selstr += &#39; or bynum %d&#39; % j
+        positions.append(u.select_atoms(selstr).positions)
+    return positions
+
+
+def do_hop_ind_class(u, indi, sels, intra, keywords):
+    &#34;&#34;&#34;
+    Here we adjust the indicator class for a proton hop. We change the donors
+    and acceptors, and find the transferring hydrogen. Then we reset the
+    selections.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe that has the atoms which we want to get the com of
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+    intra: bool
+        Whether this is an intramolecular proton hop or not
+
+    Returns
+    -------
+    transfer_h: int
+        0-based atom index of hydrogen that is transfered.
+    old_don: int
+        0-based atom index of donor before transfer
+    new_don: int
+        0-based atom index of donor after transfer
+    &#34;&#34;&#34;
+    # Choose the correct hop if there are multiple
+    if len(indi.hop) &gt; 1:
+        print(&#34;Warning: multiple hops at frame &#34;, u.trajectory.frame)
+        print(&#34;Choosing largest pmj&#34;)
+        for i in range(1, len(indi.hop)):
+            if indi.hop[i][2] &gt; indi.hop[0][2]:
+                indi.hop[0] = indi.hop[i]
+
+    # ???
+    if keywords[&#34;ind_method&#34;] == 7:
+        if indi.hop[0][4] == True:
+            intra = True
+
+    # We need to look for the new index from the donor selection rather than
+    # the acceptor if its an intramolecular hop
+    if intra:
+        if keywords[&#34;ind_method&#34;] == 2:
+            sels.set_donors(u, indi.donor)
+        new_don = sels.d.indices[indi.hop[0][1]]
+    else:
+        new_don = sels.a.indices[indi.hop[0][1]]
+
+    # Choose the old donor from the list of multiple donors.
+    if keywords[&#34;ind_method&#34;] in [3, 4, 6, 7, 9, 11]:
+        old_don = sels.d.indices[indi.hop[0][3]]
+        #
+    elif keywords[&#34;ind_method&#34;] in [1]:
+        inds = get_group_ind(u,
+                             list(indi.rxh.keys()),
+                             sels.a.indices,
+                             redundant=False)
+        new_don = inds[indi.hop[0][1]]
+        old_don = indi.donor - 1
+    else:  # For original indicator
+        old_don = indi.donor - 1
+    sels.set_proton(u, old_don + 1)
+    transfer_h = sels.h.indices[indi.hop[0][0]]
+    indi.donor = new_don + 1
+
+    return transfer_h, old_don, new_don
+
+
+def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False):
+    &#34;&#34;&#34;
+    This subroutine has a lot going on. We hop the proton by:
+        1. Changing the donor in the indicator and resetting selections
+        2. Change the topology
+        3. Because we cannot change the topology for the whole trajectory, we
+        must delete u and all_u, then reinitialize them
+    based on the new topologies.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    all_u: MDAnalysis.universe
+        Universe with indicator atom appended to it
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    translation_vector:
+        Vector to translate system by before wrapping.
+    ts: MDAnalysis.universe.trajectory.frame
+        The current trajectory frame
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    intra: bool
+        Whether this is an intramolecular proton hop or not
+    &#34;&#34;&#34;
+    # Fix the indicator class and get the indices of the atoms involved in the
+    # transfer
+    frame = ts.frame
+    transfer_h, old_don, new_don = do_hop_ind_class(u, indi, sels, intra,
+                                                    keywords)
+    if keywords[&#34;verbose&#34;]:
+        print(&#34;Proton hop at frame &#34;, ts.frame, &#34;Donor: &#34;, old_don + 1, &#34;ACC:&#34;,
+              new_don + 1)
+    #
+    # Change groups of atoms
+    groups.transferAtom(transfer_h, new_don)
+    #
+    # Go through and get the new list of bonds for rewriting the topology
+    new_bonds = calc_new_bonds_from_u(u, transfer_h, new_don)
+    #
+    # Write the new psf in a confusing and horrible way
+    if keywords[&#34;topology_type&#34;] == &#39;psf&#39;:
+        tmp_fi = &#39;tmp.psf&#39;
+        fi = mdtools.PSFFile(keywords[&#34;topology&#34;])
+        topo = fi.getTopo()
+        topo.mm_types.resId[:] = groups.atomGroups[:]
+        tmp_fi = &#39;tmp.psf&#39;
+        topo.set_ofi(tmp_fi)
+        topo.write_psf(new_bonds, u.atoms.n_atoms)
+    elif keywords[&#34;topology_type&#34;] == &#39;mol2&#39;:
+        fi = mdtools.Mol2File(keywords[&#34;topology&#34;])
+        topo = fi.getTopo()
+        topo.mm_types.resId[:] = groups.atomGroups[:]
+        tmp_fi = &#39;tmp.mol2&#39;
+        topo.set_ofi(tmp_fi)
+        topo.write_mol2(new_bonds)
+    #
+    # Reinitialize the universe
+    del u
+    del all_u
+    gc.collect()
+    try:
+        new_u = initialize_universe(tmp_fi,
+                                    keywords[&#34;in_coords&#34;],
+                                    *keywords[&#34;dimensions&#34;],
+                                    frame=frame)
+    except:
+        sys.exit(&#34;Error reloading universe after proton hop&#34;)
+    if keywords[&#39;mcec&#39;]:
+        new_all_u = add_indicator_to_universe(new_u, frame=frame, natoms=2)
+    else:
+        new_all_u = add_indicator_to_universe(new_u, frame=frame)
+    sels.reset_all(new_u, new_all_u, indi.donor)
+    indi.reset_hop()
+
+    return new_u, new_all_u
+
+
+def calc_new_bonds_from_u(u, transfer_h, new_don):
+    &#34;&#34;&#34;
+    Get the new bond list by deleting the bond between old_don and transfer_h,
+    and adding the one between new_don and transfer_h.
+
+    Here we make the assumption that the transfer H is only
+    bonded to one atom. We just switch that bond
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    transfer_h: int
+        0-based atom index of hydrogen that is transfered.
+    old_don: int
+        0-based atom index of donor before transfer
+    new_don: int
+        0-based atom index of donor after transfer
+
+    Returns
+    -------
+    new_bonds: list of list of ints
+        List of bonds. Bonds are lists with a pair of ints.
+        Example: [[1,2],[3,4]]
+    &#34;&#34;&#34;
+    num_bonds = u.bonds.indices.shape[0]
+    new_bonds = []
+    found_bond = False
+    for b in range(num_bonds):
+        if transfer_h in u.bonds.indices[b, :2]:
+            new_bonds.append((new_don, transfer_h))
+            if found_bond == False:
+                found_bond = True
+            else:
+                print(&#34;fatal error&#34;)
+        else:
+            new_bonds.append((u.bonds.indices[b, 0], u.bonds.indices[b, 1]))
+    if len(new_bonds) != num_bonds:
+        sys.exit(&#34;Error reorganizing bonds&#34;)
+    return new_bonds
+
+
+def add_indicator_to_universe(u,
+                              ind_type=&#34;IND&#34;,
+                              ind_name=&#34;IND&#34;,
+                              frame=0,
+                              natoms=1):
+    &#34;&#34;&#34;
+    Add another atom and return the current universe
+
+    Parameters
+    ----------
+    u: MDAnalysis.Universe
+        Universe to add indicator to
+    natoms: int
+        The number of atoms to append to the universe.
+
+    Returns
+    -------
+    all_u: MDAnalysis.Universe
+        The new universe
+    &#34;&#34;&#34;
+    all_atoms = u.select_atoms(&#34;all&#34;)
+    ind_sel = u.select_atoms(&#34;bynum %d&#34; % 1)
+    all_u = mda.Merge(all_atoms, ind_sel)
+    for i in range(1, natoms):
+        all_atoms = all_u.select_atoms(&#34;all&#34;)
+        ind_sel = u.select_atoms(&#34;bynum %d&#34; % 1)
+        all_u = mda.Merge(all_atoms, ind_sel)
+    all_u.dimensions = u.dimensions
+    return all_u
+
+
+def write_partitions(groups, ts, elements, center, keywords):
+    &#34;&#34;&#34;
+    Write out the partitions that would be calculated if this were an adaptive
+    partitioning calculation.
+
+    Parameters
+    ----------
+    groups: mdtools.Groups
+        A groups object containing the adaptive partitioning groups
+    ts: MDAnalysis.trajectory.timestep
+        The current timestep
+    elements:
+    center: ndarray of floats with shape (3)
+        The center of the active zone
+    keywords: dict
+        Program parameters
+    &#34;&#34;&#34;
+    from itertools import combinations
+
+    # Set up the variables
+    r_a = keywords[&#34;active_radius&#34;]
+    r_b = keywords[&#34;buffer_radius&#34;]
+    r_ap = r_a + r_b
+
+    # Get the group locations from the universe object
+    group_positions = ts.positions[groups.groupReps]
+
+    # Calculate the pairwise distances between the atoms and the center
+    cen = center.reshape(1, 3)
+    dists = cdist(group_positions, cen).flatten()
+
+    # Set up the ap zones
+    active_groups = np.argwhere(dists &lt; r_a)
+    buffer_groups = np.argwhere((dists &gt;= r_a) &amp; (dists &lt; r_ap))
+
+    # Calculate the partitions
+    partition_groups = [[*active_groups]]
+    for order in range(1, keywords[&#34;pap_order&#34;] + 1):
+        group_combos = list(combinations(buffer_groups, order))
+        for combo in group_combos:
+            partition_groups.append([*active_groups, *combo])
+
+    # Calculate the atom indicies in the partitions
+    partition_inds = []
+    for i, p in enumerate(partition_groups):
+        partition_inds.append([])
+        for g in p:
+            partition_inds[i].extend(groups.groupAtoms[np.asscalar(g)])
+
+    # Write the partitions
+    for i, p in enumerate(partition_inds):
+        # generate the output name
+        of_path = keywords[&#34;write_folder&#34;]
+        if keywords[&#34;write_prefix&#34;] != &#34;&#34;:
+            of_path += keywords[&#34;write_prefix&#34;] + &#39;-&#39;
+        of_path += &#34;{0:06d}_{1:03d}.&#34;.format(ts.frame, i)
+        # write the file
+        if keywords[&#34;write_type&#34;] == &#34;xyz&#34;:
+            of_path += &#34;xyz&#34;
+            ofi = open(of_path, &#39;w&#39;)
+            mdtools.print_xyz(len(p),
+                              ts.positions[p, 0],
+                              ts.positions[p, 1],
+                              ts.positions[p, 2],
+                              elements[p],
+                              ofi=ofi)
+            ofi.close()
+        else:
+            print(&#34;Unsupported output type&#34;)
+            sys.exit()
+
+
+def initialize_universe(struct, coords, xdim, ydim, zdim, frame=0):
+    &#34;&#34;&#34;
+    Initialize an MDAnalysis universe
+
+    Parameters
+    ----------
+    struct: str
+        The name of the structure file to input to the universe
+    coords: str
+        The name of the coordinate file for the universe
+    frame: int
+        timestep to jump to
+    xdim: float
+        x dimension in A
+    ydim: float
+        y dimension in A
+    zdim: float
+        z dimension in A
+    :return: universe
+    &#34;&#34;&#34;
+    try:
+        u = mda.Universe(struct, coords)
+    except IOError:
+        print(&#34;Error loading MDA universe from coordinates and structure&#34;,
+              struct, coords)
+        raise
+    try:
+        u.trajectory[frame]
+    except LookupError:
+        print(&#34;Error going to trajectory frame&#34;, frame)
+        raise
+
+    u.dimensions = [xdim, ydim, zdim, 90, 90, 90]
+    return u</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="adaptive_md_tools.core_loop.add_indicator_to_universe"><code class="name flex">
+<span>def <span class="ident">add_indicator_to_universe</span></span>(<span>u, ind_type='IND', ind_name='IND', frame=0, natoms=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Add another atom and return the current universe</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.Universe</code></dt>
+<dd>Universe to add indicator to</dd>
+<dt><strong><code>natoms</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of atoms to append to the universe.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.Universe</code></dt>
+<dd>The new universe</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def add_indicator_to_universe(u,
+                              ind_type=&#34;IND&#34;,
+                              ind_name=&#34;IND&#34;,
+                              frame=0,
+                              natoms=1):
+    &#34;&#34;&#34;
+    Add another atom and return the current universe
+
+    Parameters
+    ----------
+    u: MDAnalysis.Universe
+        Universe to add indicator to
+    natoms: int
+        The number of atoms to append to the universe.
+
+    Returns
+    -------
+    all_u: MDAnalysis.Universe
+        The new universe
+    &#34;&#34;&#34;
+    all_atoms = u.select_atoms(&#34;all&#34;)
+    ind_sel = u.select_atoms(&#34;bynum %d&#34; % 1)
+    all_u = mda.Merge(all_atoms, ind_sel)
+    for i in range(1, natoms):
+        all_atoms = all_u.select_atoms(&#34;all&#34;)
+        ind_sel = u.select_atoms(&#34;bynum %d&#34; % 1)
+        all_u = mda.Merge(all_atoms, ind_sel)
+    all_u.dimensions = u.dimensions
+    return all_u</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.calc_indicator"><code class="name flex">
+<span>def <span class="ident">calc_indicator</span></span>(<span>u, all_u, indi, sels, keywords)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Stage and calculate the location of the indicator.
+Different things happen depending on the indicator method.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Universe with indicator atom appended to it</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+<dt><strong><code>sels</code></strong> :&ensp;<code>Selection</code> <code>class</code> <code>object</code></dt>
+<dd>Contains selections that correspond to the indicator class</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>Dictionary object which contains indicator method we are using.</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_indicator(u, all_u, indi, sels, keywords):
+    &#34;&#34;&#34;
+    Stage and calculate the location of the indicator.
+    Different things happen depending on the indicator method.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    all_u: MDAnalysis.universe
+        Universe with indicator atom appended to it
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    # Set up atom selections for donor and acceptors
+    sels.set_dah(u, indi.donor)
+
+    # Print out what the hydrogens, acceptors, donors are
+    if keywords[&#34;indicator_verbose&#34;]:
+        print(&#34;#**************** STEP %d&#34; % u.trajectory.frame)
+        print(&#34;Donor indicies in order: &#34;, sels.d.indices)
+        print(&#34;Acc indices: &#34;, sels.a.indices)
+        print(&#34;Hyd indices: &#34;, sels.h.indices)
+    # Calculate the indicator location
+    if keywords[&#34;ind_method&#34;] == 0:
+        indi.calc_indicator(sels.d.positions[0], sels.a.positions,
+                            sels.h.positions, sels.d.types[0], sels.a.types)
+    elif keywords[&#34;ind_method&#34;] == 1:
+        don_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        [sels.d.indices[0]])[0]
+        acc_com, atypes = get_group_geom_center(u,
+                                                list(indi.rxh.keys()),
+                                                sels.a.indices,
+                                                redundant=False,
+                                                return_types=True)
+        acc_com = np.asarray(acc_com)
+
+        indi.calc_indicator(don_com, acc_com, sels.h.positions, sels.d.types[0],
+                            atypes)
+    elif keywords[&#34;ind_method&#34;] == 2:
+        check_for_donor_switch(u, indi, sels)
+        indi.calc_indicator(sels.d.positions[0], sels.a.positions,
+                            sels.h.positions, sels.d.types[0], sels.a.types)
+    elif keywords[&#34;ind_method&#34;] == 3:
+        don_com = [calculate_weighted_coords(u, indi, sels)]
+        acc_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        sels.a.indices)
+        h_coords = []
+        for i in range(sels.d.n_atoms):
+            sels.set_proton(u, sels.d.indices[i] + 1)
+            h_coords.append(sels.h.positions)
+
+        indi.calc_indicator(sels.d.positions, sels.a.positions, h_coords,
+                            sels.d.types, sels.a.types, don_com, acc_com)
+    elif keywords[&#34;ind_method&#34;] in [4, 6, 7, 9, 11]:
+        don_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        [sels.d.indices[0]])
+        acc_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        sels.a.indices)
+        h_coords = []
+        for i in range(sels.d.n_atoms):
+            sels.set_proton(u, sels.d.indices[i] + 1)
+            h_coords.append(sels.h.positions)
+
+        indi.calc_indicator(sels.d.positions, sels.a.positions, h_coords,
+                            sels.d.types, sels.a.types, don_com, acc_com)
+
+    elif keywords[&#34;ind_method&#34;] in [8]:
+        don_com = [calculate_weighted_coords(u, indi, sels)]
+        acc_com = get_group_geom_center(u, list(indi.rxh.keys()),
+                                        sels.a.indices)
+        acc_com = np.asarray(acc_com)
+        indi.calc_indicator(don_com, acc_com, sels.h.positions, sels.d.types[0],
+                            sels.a.types)
+    if keywords[&#34;mcec&#34;]:
+        accs = sels.set_all_acc(u)
+        hyds = sels.set_all_protons(u)
+        group_locs = None
+        if indi.correction_groups:
+            group_locs = get_group_positions(u, indi)
+        indi.calc_mcec(hyds.positions, accs.positions, accs.types, group_locs)
+
+    # Update the atoms positions in the larger universe
+    if keywords[&#34;mcec&#34;]:
+        all_u.trajectory.coordinate_array[0, :-2] = sels.sys.positions[:]
+        all_u.trajectory.coordinate_array[0, -2] = indi.x_i
+        all_u.trajectory.coordinate_array[0, -1] = indi.x_mcec
+    else:
+        all_u.trajectory.coordinate_array[0, :-1] = sels.sys.positions[:]
+        all_u.trajectory.coordinate_array[0, -1] = indi.x_i
+    return</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.calc_new_bonds_from_u"><code class="name flex">
+<span>def <span class="ident">calc_new_bonds_from_u</span></span>(<span>u, transfer_h, new_don)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get the new bond list by deleting the bond between old_don and transfer_h,
+and adding the one between new_don and transfer_h.</p>
+<p>Here we make the assumption that the transfer H is only
+bonded to one atom. We just switch that bond</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>transfer_h</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of hydrogen that is transfered.</dd>
+<dt><strong><code>old_don</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of donor before transfer</dd>
+<dt><strong><code>new_don</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of donor after transfer</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>new_bonds</code></strong> :&ensp;<code>list</code> of <code>list</code> of <code>ints</code></dt>
+<dd>List of bonds. Bonds are lists with a pair of ints.
+Example: [[1,2],[3,4]]</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calc_new_bonds_from_u(u, transfer_h, new_don):
+    &#34;&#34;&#34;
+    Get the new bond list by deleting the bond between old_don and transfer_h,
+    and adding the one between new_don and transfer_h.
+
+    Here we make the assumption that the transfer H is only
+    bonded to one atom. We just switch that bond
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    transfer_h: int
+        0-based atom index of hydrogen that is transfered.
+    old_don: int
+        0-based atom index of donor before transfer
+    new_don: int
+        0-based atom index of donor after transfer
+
+    Returns
+    -------
+    new_bonds: list of list of ints
+        List of bonds. Bonds are lists with a pair of ints.
+        Example: [[1,2],[3,4]]
+    &#34;&#34;&#34;
+    num_bonds = u.bonds.indices.shape[0]
+    new_bonds = []
+    found_bond = False
+    for b in range(num_bonds):
+        if transfer_h in u.bonds.indices[b, :2]:
+            new_bonds.append((new_don, transfer_h))
+            if found_bond == False:
+                found_bond = True
+            else:
+                print(&#34;fatal error&#34;)
+        else:
+            new_bonds.append((u.bonds.indices[b, 0], u.bonds.indices[b, 1]))
+    if len(new_bonds) != num_bonds:
+        sys.exit(&#34;Error reorganizing bonds&#34;)
+    return new_bonds</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.calculate_weighted_coords"><code class="name flex">
+<span>def <span class="ident">calculate_weighted_coords</span></span>(<span>u, sels)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculate a weighted coordinate for a group of donors in the system based
+on the projection vectors between them and surrounding accpetors.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+</dl>
+<p>sels: Selection class object.
+Contains selections that correspond to the indicator class</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ndarray</code> of <code>floats</code> <code>with</code> <code>shape</code> (<code>3</code>)</dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><strong><code>DivideByZero</code></strong> :&ensp;<code>The</code> <code>sum</code> of <code>the</code> <code>weights</code> <code>is</code> <code>0</code> <code>and</code> <code>thus</code> <code>unnormalizable</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>Here we calculate the vector between the donor K and all acceptors J. For
+each proton M, we calculate the projection onto the J-K vector and get
+the normalized distance of the projection D. We then weight each donor's
+location based on the sum of D's for each donor and return the weighted
+coordinate.</p>
+<p>The idea here is that if a proton is further from a given donor, it is
+more likely to transfer. We should weight the location of the indicator
+towards that donor.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def calculate_weighted_coords(u, sels):
+    &#34;&#34;&#34;
+    Calculate a weighted coordinate for a group of donors in the system based
+    on the projection vectors between them and surrounding accpetors.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    sels: Selection class object.
+        Contains selections that correspond to the indicator class
+
+    Returns
+    -------
+    ndarray of floats with shape (3)
+
+    Raises
+    ------
+    DivideByZero : The sum of the weights is 0 and thus unnormalizable
+
+    Notes
+    -----
+    Here we calculate the vector between the donor K and all acceptors J. For
+    each proton M, we calculate the projection onto the J-K vector and get
+    the normalized distance of the projection D. We then weight each donor&#39;s
+    location based on the sum of D&#39;s for each donor and return the weighted
+    coordinate.
+
+    The idea here is that if a proton is further from a given donor, it is
+    more likely to transfer. We should weight the location of the indicator
+    towards that donor.
+    &#34;&#34;&#34;
+    d_inds = sels.d.indices.copy()
+    d_pos = sels.d.positions.copy()
+    num_d = d_inds.size
+    w_d = np.zeros(num_d)
+
+    for k in range(num_d):
+        sels.set_dah(u, d_inds[k] + 1)
+        for j in range(sels.a.positions.shape[0]):
+            for m in range(sels.h.positions.shape[0]):
+                rdh = sels.h.positions[m, :] - d_pos[k, :]
+                rda = sels.a.positions[j, :] - sels.h.positions[m, :]
+                p = np.dot(rdh, rda) / np.linalg.norm(rda)**2
+                if p &gt; 0:
+                    p = 0
+                w_d[k] += p
+    total = np.sum(w_d)
+    if total &lt;= 0:
+        print(&#34;Error weighting coordinates. There are probably no protons&#34;
+              &#34; bound to the donor group&#34;)
+        raise ZeroDivisionError
+    w_d /= np.sum(w_d)
+    don_com = w_d.reshape(num_d, 1) * d_pos
+    return np.sum(don_com, axis=0)</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.check_for_donor_switch"><code class="name flex">
+<span>def <span class="ident">check_for_donor_switch</span></span>(<span>u, indi, sels)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Check to see if an intramolecular proton transfer has occured.</p>
+<p>Compare the distances between the protons and protonatable sites of a
+donor group. If a proton is closer to another site than the one that
+it is bonded to, add the hop to the indi.hop list.f</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+</dl>
+<p>indi: Indicator class object.
+Has info about donors, acceptors, etc
+sels: Selection class object.
+Contains selections that correspond to the indi class</p>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def check_for_donor_switch(u, indi, sels):
+    &#34;&#34;&#34;
+    Check to see if an intramolecular proton transfer has occured.
+
+    Compare the distances between the protons and protonatable sites of a
+    donor group. If a proton is closer to another site than the one that
+    it is bonded to, add the hop to the indi.hop list.f
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    indi: Indicator class object.
+        Has info about donors, acceptors, etc
+    sels: Selection class object.
+        Contains selections that correspond to the indi class
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    largest_p = 0
+    don_ind = 0
+    sels.set_donors(u, indi.donor)
+    d_inds = sels.d.indices.copy()
+    d_pos = sels.d.positions.copy()
+
+    # Iterate over all protonatable sites.
+    for k in range(d_inds.size):
+        # Set the donor to site k
+        sels.set_dah(u, d_inds[k] + 1)
+        for j in range(sels.a.positions.shape[0]):
+            for m in range(sels.h.positions.shape[0]):
+                # Compute the projection of the proton m onto the vector
+                # between sites k and j
+                rdh = sels.h.positions[m, :] - d_pos[k, :]
+                rda = sels.a.positions[j, :] - d_pos[k, :]
+                p = np.dot(rdh, rda) / np.linalg.norm(rda)**2
+
+                # We will only select the largest rho in the case of two
+                # simultaneous hops.
+                if p &gt; largest_p:
+                    don_ind = d_inds[k]
+                    largest_p = p
+    # If there is no hop, reset the selection to the donor that we came in with
+    if largest_p &lt;= 0:
+        sels.set_dah(u, indi.donor)
+        return
+    # If there is a hop, note that and switch the donor.
+    if don_ind != indi.donor - 1:
+        print(&#34;Swapping donors in residue based on H-bond dists at step: &#34;,
+              u.trajectory.frame)
+        print(&#34;Old Don: {0}   New Don: {1}&#34;.format(indi.donor, don_ind + 1))
+        indi.donor = don_ind + 1
+    sels.set_dah(u, indi.donor)
+    return</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.core_loop"><code class="name flex">
+<span>def <span class="ident">core_loop</span></span>(<span>keywords, indi)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Main loop for processing indicator. Here, the indicator is calculated if
+requested. The atoms can be translated such that a specific atom or the
+indicator is in the center of the box if requested.</p>
+<ol>
+<li>Set up universe</li>
+<li>
+<p>Set up groups</p>
+</li>
+<li>
+<p>Main Loop</p>
+</li>
+</ol>
+<p>:param keywords: input keywords
+:type keywords: dict
+:param indi: indicator class
+:type indi: Indicator</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def core_loop(keywords, indi):
+    &#34;&#34;&#34;
+    Main loop for processing indicator. Here, the indicator is calculated if
+    requested. The atoms can be translated such that a specific atom or the
+    indicator is in the center of the box if requested.
+
+    1. Set up universe
+    2. Set up groups
+
+    3. Main Loop
+
+    :param keywords: input keywords
+    :type keywords: dict
+    :param indi: indicator class
+    :type indi: Indicator
+    &#34;&#34;&#34;
+    keywords[&#39;wrap_style&#39;] = &#39;residues&#39;
+    # mda.core.flags[&#39;use_periodic_selections&#39;] = True
+    # mda.core.flags[&#39;use_KDTree_routines&#39;] = False
+
+    # Main universe with original coordinates
+    try:
+        u = initialize_universe(keywords[&#34;topology&#34;], keywords[&#34;in_coords&#34;],
+                                *keywords[&#34;dimensions&#34;], 0)
+    except:
+        sys.exit(&#34;Error loading initial universe&#34;)
+    # This is the modified universe for the coordinate output
+    if not keywords[&#39;mcec&#39;]:
+        all_u = add_indicator_to_universe(u)
+    else:
+        all_u = add_indicator_to_universe(u, natoms=2)
+
+    sels = setup_selection(u, all_u, indi, keywords)
+
+    # Setup the initial translation vector
+    if keywords[&#34;wrap&#34;]:
+        box_center = u.dimensions[:3] / 2.0
+
+    #Setup the groups
+    if &#34;groups_path&#34; in keywords:
+        groups_file = mdtools.GroupsFile(keywords[&#34;groups_path&#34;])
+        groups = groups_file.getGroups()
+        ap = True
+
+    #Setup the elements
+    if keywords[&#34;write_partitions&#34;]:
+        try:
+            elements = mdtools.get_elements(keywords[&#34;elements_file&#34;],
+                                            keywords[&#34;elements_file_type&#34;])
+        except:
+            print(&#34;Error reading elements. Was the elements file specified?&#34;)
+            sys.exit()
+        if elements.size != u.atoms.n_atoms:
+            print(&#34;Error, number of elements does not match with system # els&#34;)
+            sys.exit()
+        if not os.path.isdir(keywords[&#34;write_folder&#34;]):
+            try:
+                os.mkdir(keywords[&#34;write_folder&#34;])
+            except OSError:
+                sys.exit(&#34;Error making partitions directory&#34;)
+    try:
+        W = mda.Writer(keywords[&#34;out_coords&#34;], sels.all.n_atoms)
+        # Wdebug = mda.Writer(&#39;debug.dcd&#39;, sels.sys.n_atoms)
+    except IOError:
+        print(&#34;Error opening output coord file: &#34; + keywords[&#34;output&#34;])
+
+    # Main Loop
+    nsteps = len(u.trajectory)
+    for t in range(nsteps):
+        ts = u.trajectory[t]
+
+        # Initialize the selections for this timestep
+        sels.set_dah(u, indi.donor)
+        sels.reset_universe_selections(u, all_u)
+        donor_coords = sels.d.positions
+
+        #  Wrapping instructions
+        if keywords[&#34;wrap&#34;]:
+            # Set the dimensions in the systems for this timestep
+            ts.dimensions[:] = [*keywords[&#39;dimensions&#39;], 90, 90, 90]
+            u.dimensions[:] = [*keywords[&#39;dimensions&#39;], 90, 90, 90]
+            all_u.dimensions[:] = [*keywords[&#39;dimensions&#39;], 90, 90, 90]
+
+            # Translate the no-indicator system such that the donor is in the
+            # center of the box
+            translation_vector = box_center - donor_coords
+            sels.sys.translate(translation_vector)
+
+            # Wrap atoms into the box
+            sels.sys.wrap(compound=keywords[&#39;wrap_style&#39;], center=&#39;com&#39;)
+
+        if not keywords[&#34;allow_hop&#34;]:
+            if ts.frame % keywords[&#34;write_freq&#34;] != 0:
+                continue
+        if keywords[&#34;ratio_topology_change&#34;]:
+            ratio_topology_change(u, indi, sels, keywords)
+            if indi.hop and keywords[&#34;allow_hop&#34;]:
+                u, all_u = do_hop(u,
+                                  all_u,
+                                  indi,
+                                  ts,
+                                  keywords,
+                                  sels,
+                                  groups,
+                                  intra=True)
+
+        calc_indicator(u, all_u, indi, sels, keywords)
+
+        if keywords[&#34;wrap&#34;]:
+            # Now translate the indicator into the center of the box and wrap
+            ind_translate = box_center - indi.x_i
+            translation_vector += ind_translate
+            # The below wrap commands are useful to output a debug trajectory.
+            sels.all.translate(ind_translate)
+            sels.all.wrap(compound=keywords[&#39;wrap_style&#39;], center=&#39;com&#39;)
+
+        # Wdebug.write(sels.sys)
+        W.write(sels.all)
+
+        # Update the topology and AP groups
+        if indi.hop and keywords[&#34;allow_hop&#34;]:
+            u, all_u = do_hop(u, all_u, indi, ts, keywords, sels, groups)
+            if keywords[&#34;wrap&#34;]:
+                sels.sys.translate(translation_vector)
+                sels.sys.wrap(compound=keywords[&#39;wrap_style&#39;], center=&#39;com&#39;)
+                sels.all.translate(translation_vector)
+                sels.all.wrap(compound=keywords[&#39;wrap_style&#39;], center=&#39;com&#39;)
+
+        # Write the coordinates
+
+        # Output the xyz coordinates if we are making xys for AP
+        if ts.frame &gt; 0:
+            if keywords[&#34;write_partitions&#34;] and\
+                    ts.frame % keywords[&#34;write_freq&#34;] == 0:
+                write_partitions(groups, ts, elements, indi.x_i, keywords)
+
+        # End of loop
+    return</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.do_hop"><code class="name flex">
+<span>def <span class="ident">do_hop</span></span>(<span>u, all_u, indi, ts, keywords, sels, groups, intra=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>This subroutine has a lot going on. We hop the proton by:
+1. Changing the donor in the indicator and resetting selections
+2. Change the topology
+3. Because we cannot change the topology for the whole trajectory, we
+must delete u and all_u, then reinitialize them
+based on the new topologies.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Universe with indicator atom appended to it</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+<dt>translation_vector:</dt>
+<dt>Vector to translate system by before wrapping.</dt>
+<dt><strong><code>ts</code></strong> :&ensp;<code>MDAnalysis.universe.trajectory.frame</code></dt>
+<dd>The current trajectory frame</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>Dictionary object which contains indicator method we are using.</dd>
+<dt><strong><code>sels</code></strong> :&ensp;<code>Selection</code> <code>class</code> <code>object</code></dt>
+<dd>Contains selections that correspond to the indicator class</dd>
+<dt><strong><code>intra</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether this is an intramolecular proton hop or not</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False):
+    &#34;&#34;&#34;
+    This subroutine has a lot going on. We hop the proton by:
+        1. Changing the donor in the indicator and resetting selections
+        2. Change the topology
+        3. Because we cannot change the topology for the whole trajectory, we
+        must delete u and all_u, then reinitialize them
+    based on the new topologies.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    all_u: MDAnalysis.universe
+        Universe with indicator atom appended to it
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    translation_vector:
+        Vector to translate system by before wrapping.
+    ts: MDAnalysis.universe.trajectory.frame
+        The current trajectory frame
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    intra: bool
+        Whether this is an intramolecular proton hop or not
+    &#34;&#34;&#34;
+    # Fix the indicator class and get the indices of the atoms involved in the
+    # transfer
+    frame = ts.frame
+    transfer_h, old_don, new_don = do_hop_ind_class(u, indi, sels, intra,
+                                                    keywords)
+    if keywords[&#34;verbose&#34;]:
+        print(&#34;Proton hop at frame &#34;, ts.frame, &#34;Donor: &#34;, old_don + 1, &#34;ACC:&#34;,
+              new_don + 1)
+    #
+    # Change groups of atoms
+    groups.transferAtom(transfer_h, new_don)
+    #
+    # Go through and get the new list of bonds for rewriting the topology
+    new_bonds = calc_new_bonds_from_u(u, transfer_h, new_don)
+    #
+    # Write the new psf in a confusing and horrible way
+    if keywords[&#34;topology_type&#34;] == &#39;psf&#39;:
+        tmp_fi = &#39;tmp.psf&#39;
+        fi = mdtools.PSFFile(keywords[&#34;topology&#34;])
+        topo = fi.getTopo()
+        topo.mm_types.resId[:] = groups.atomGroups[:]
+        tmp_fi = &#39;tmp.psf&#39;
+        topo.set_ofi(tmp_fi)
+        topo.write_psf(new_bonds, u.atoms.n_atoms)
+    elif keywords[&#34;topology_type&#34;] == &#39;mol2&#39;:
+        fi = mdtools.Mol2File(keywords[&#34;topology&#34;])
+        topo = fi.getTopo()
+        topo.mm_types.resId[:] = groups.atomGroups[:]
+        tmp_fi = &#39;tmp.mol2&#39;
+        topo.set_ofi(tmp_fi)
+        topo.write_mol2(new_bonds)
+    #
+    # Reinitialize the universe
+    del u
+    del all_u
+    gc.collect()
+    try:
+        new_u = initialize_universe(tmp_fi,
+                                    keywords[&#34;in_coords&#34;],
+                                    *keywords[&#34;dimensions&#34;],
+                                    frame=frame)
+    except:
+        sys.exit(&#34;Error reloading universe after proton hop&#34;)
+    if keywords[&#39;mcec&#39;]:
+        new_all_u = add_indicator_to_universe(new_u, frame=frame, natoms=2)
+    else:
+        new_all_u = add_indicator_to_universe(new_u, frame=frame)
+    sels.reset_all(new_u, new_all_u, indi.donor)
+    indi.reset_hop()
+
+    return new_u, new_all_u</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.do_hop_ind_class"><code class="name flex">
+<span>def <span class="ident">do_hop_ind_class</span></span>(<span>u, indi, sels, intra, keywords)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Here we adjust the indicator class for a proton hop. We change the donors
+and acceptors, and find the transferring hydrogen. Then we reset the
+selections.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe that has the atoms which we want to get the com of</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+<dt><strong><code>sels</code></strong> :&ensp;<code>Selection</code> <code>class</code> <code>object</code></dt>
+<dd>Contains selections that correspond to the indicator class</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>Dictionary object which contains indicator method we are using.</dd>
+<dt><strong><code>intra</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether this is an intramolecular proton hop or not</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>transfer_h</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of hydrogen that is transfered.</dd>
+<dt><strong><code>old_don</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of donor before transfer</dd>
+<dt><strong><code>new_don</code></strong> :&ensp;<code>int</code></dt>
+<dd>0-based atom index of donor after transfer</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def do_hop_ind_class(u, indi, sels, intra, keywords):
+    &#34;&#34;&#34;
+    Here we adjust the indicator class for a proton hop. We change the donors
+    and acceptors, and find the transferring hydrogen. Then we reset the
+    selections.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe that has the atoms which we want to get the com of
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+    intra: bool
+        Whether this is an intramolecular proton hop or not
+
+    Returns
+    -------
+    transfer_h: int
+        0-based atom index of hydrogen that is transfered.
+    old_don: int
+        0-based atom index of donor before transfer
+    new_don: int
+        0-based atom index of donor after transfer
+    &#34;&#34;&#34;
+    # Choose the correct hop if there are multiple
+    if len(indi.hop) &gt; 1:
+        print(&#34;Warning: multiple hops at frame &#34;, u.trajectory.frame)
+        print(&#34;Choosing largest pmj&#34;)
+        for i in range(1, len(indi.hop)):
+            if indi.hop[i][2] &gt; indi.hop[0][2]:
+                indi.hop[0] = indi.hop[i]
+
+    # ???
+    if keywords[&#34;ind_method&#34;] == 7:
+        if indi.hop[0][4] == True:
+            intra = True
+
+    # We need to look for the new index from the donor selection rather than
+    # the acceptor if its an intramolecular hop
+    if intra:
+        if keywords[&#34;ind_method&#34;] == 2:
+            sels.set_donors(u, indi.donor)
+        new_don = sels.d.indices[indi.hop[0][1]]
+    else:
+        new_don = sels.a.indices[indi.hop[0][1]]
+
+    # Choose the old donor from the list of multiple donors.
+    if keywords[&#34;ind_method&#34;] in [3, 4, 6, 7, 9, 11]:
+        old_don = sels.d.indices[indi.hop[0][3]]
+        #
+    elif keywords[&#34;ind_method&#34;] in [1]:
+        inds = get_group_ind(u,
+                             list(indi.rxh.keys()),
+                             sels.a.indices,
+                             redundant=False)
+        new_don = inds[indi.hop[0][1]]
+        old_don = indi.donor - 1
+    else:  # For original indicator
+        old_don = indi.donor - 1
+    sels.set_proton(u, old_don + 1)
+    transfer_h = sels.h.indices[indi.hop[0][0]]
+    indi.donor = new_don + 1
+
+    return transfer_h, old_don, new_don</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.get_group_geom_center"><code class="name flex">
+<span>def <span class="ident">get_group_geom_center</span></span>(<span>u, types, ind, redundant=True, return_types=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get the center of geometry for the group that index in ind is a member of.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe that has the atoms which we want to get the com of</dd>
+<dt><strong><code>types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>List of atom types for each ind</dd>
+<dt><strong><code>ind</code></strong> :&ensp;<code>list</code> <code>ints</code></dt>
+<dd>0-Based indices to get the group center of mass from.</dd>
+<dt><strong><code>redundant</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Not sure</dd>
+<dt><strong><code>return_types</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, return a tuple containing the type of the</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>com</code></strong> :&ensp;<code>list</code> of <code>float</code> <code>nd.arrays</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>ret_types</code></strong> :&ensp;<code>Optional</code>, <code>list</code> of <code>str</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>The types of the first atom in the selection for the COG.</p>
+<dl>
+<dt><code>for</code> <code>return_types</code>=<code>True</code>, <code>the</code> <code>tuple</code> <code>is</code>:</dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>(com, ret_types)</p>
+<h2 id="warnings">Warnings</h2>
+<p>This subroutine frequently has issues.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_group_geom_center(u, types, ind, redundant=True, return_types=False):
+    &#34;&#34;&#34;
+    Get the center of geometry for the group that index in ind is a member of.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe that has the atoms which we want to get the com of
+    types: list of str
+        List of atom types for each ind
+    ind: list ints
+        0-Based indices to get the group center of mass from.
+    redundant: bool
+        Not sure
+    return_types: bool
+        If True, return a tuple containing the type of the
+
+    Returns
+    -------
+    com: list of float nd.arrays
+    ret_types: Optional, list of str
+       The types of the first atom in the selection for the COG.
+
+    for return_types=True, the tuple is:
+    (com, ret_types)
+
+    Warnings
+    --------
+    This subroutine frequently has issues.
+    &#34;&#34;&#34;
+    com = []
+    ret_types = []
+    num_types = len(types)
+    type_str = &#39;(type %s&#39; % (types[0])
+    for i in range(1, num_types):
+        type_str += &#34; or type %s&#34; % types[i]
+    type_str += &#39;)&#39;
+
+    for i in range(len(ind)):
+        sel_str = (&#39;same resnum as bynum %d&#39; % (ind[i] + 1))
+        try:
+            sel = u.select_atoms(sel_str)
+            sel = sel.select_atoms(type_str)
+        except:
+            &#34;Error selecting atoms&#34;
+            sys.exit()
+        if sel.n_atoms &lt; 1:
+            sys.exit(&#34;Empty selection for group COM&#34;)
+        if redundant:
+            com.append(sel.center_of_geometry())
+        else:
+            found = False
+            for c in com:
+                if np.isclose(c, sel.center_of_geometry()).all():
+                    found = True
+            if not found:
+                com.append(sel.center_of_geometry())
+                ret_types.append(sel.types[0])
+    if return_types:
+        return com, ret_types
+    else:
+        return com</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.get_group_ind"><code class="name flex">
+<span>def <span class="ident">get_group_ind</span></span>(<span>u, types, ind, redundant=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return a list of indices for atoms in COG groups for indicator 1.</p>
+<p>I don't quite understand the code anymore&hellip;</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe that has the atoms which we want to get the com of</dd>
+<dt><strong><code>types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>List of atom types for each ind</dd>
+<dt><strong><code>ind</code></strong> :&ensp;<code>list</code> of <code>lists</code> of <code>ints</code></dt>
+<dd>Contains atoms in each group</dd>
+<dt><strong><code>redundant</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Not sure</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>com</code></strong> :&ensp;<code>list</code> of <code>float</code> <code>nd.arrays</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="todo">TODO</h2>
+<p>Figure out what the hell this does.</p>
+<h2 id="warnings">Warnings</h2>
+<p>This subroutine frequently has issues.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_group_ind(u, types, ind, redundant=True):
+    &#34;&#34;&#34;
+    Return a list of indices for atoms in COG groups for indicator 1.
+
+    I don&#39;t quite understand the code anymore...
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe that has the atoms which we want to get the com of
+    types: list of str
+        List of atom types for each ind
+    ind: list of lists of ints
+        Contains atoms in each group
+    redundant: bool
+        Not sure
+
+    Returns
+    -------
+    com: list of float nd.arrays
+
+    TODO
+    ----
+    Figure out what the hell this does.
+
+    Warnings
+    --------
+    This subroutine frequently has issues.
+    &#34;&#34;&#34;
+    inds = []
+    num_types = len(types)
+    type_str = &#39;(type %s&#39; % (types[0])
+    for i in range(1, num_types):
+        type_str += &#34; or type %s&#34; % types[i]
+    type_str += &#39;)&#39;
+
+    for i in range(len(ind)):
+        sel_str = (&#39;same resnum as bynum %d&#39; % (ind[i] + 1))
+        try:
+            sel = u.select_atoms(sel_str)
+            sel = sel.select_atoms(type_str)
+        except:
+            &#34;Error selecting atoms&#34;
+            sys.exit()
+        if sel.n_atoms &lt; 1:
+            sys.exit(&#34;Empty selection for group COM&#34;)
+        if redundant:
+            inds.append(sel.indices[0])
+        else:
+            found = False
+            for c in inds:
+                if np.isclose(c, sel.indices[0]):
+                    found = True
+            if not found:
+                inds.append(sel.indices[0])
+    return inds</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.get_group_positions"><code class="name flex">
+<span>def <span class="ident">get_group_positions</span></span>(<span>u, indi)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return the locations of the members in the correction groups.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>ndarrays</code> <code>with</code> <code>shape</code> (<code>n</code>,<code>3</code>)</dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_group_positions(u, indi):
+    &#34;&#34;&#34;
+    Return the locations of the members in the correction groups.
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    indi: Indicator class object
+        The indicator info for checking the transfer
+
+    Returns
+    -------
+    list of ndarrays with shape (n,3)
+
+    &#34;&#34;&#34;
+    positions = []
+    for i in indi.correction_groups:
+        selstr = &#39;bynum %d&#39; % i[0]
+        for j in i[1:]:
+            selstr += &#39; or bynum %d&#39; % j
+        positions.append(u.select_atoms(selstr).positions)
+    return positions</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.initialize_universe"><code class="name flex">
+<span>def <span class="ident">initialize_universe</span></span>(<span>struct, coords, xdim, ydim, zdim, frame=0)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Initialize an MDAnalysis universe</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>struct</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the structure file to input to the universe</dd>
+<dt><strong><code>coords</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the coordinate file for the universe</dd>
+<dt><strong><code>frame</code></strong> :&ensp;<code>int</code></dt>
+<dd>timestep to jump to</dd>
+<dt><strong><code>xdim</code></strong> :&ensp;<code>float</code></dt>
+<dd>x dimension in A</dd>
+<dt><strong><code>ydim</code></strong> :&ensp;<code>float</code></dt>
+<dd>y dimension in A</dd>
+<dt><strong><code>zdim</code></strong> :&ensp;<code>float</code></dt>
+<dd>z dimension in A</dd>
+</dl>
+<p>:return: universe</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def initialize_universe(struct, coords, xdim, ydim, zdim, frame=0):
+    &#34;&#34;&#34;
+    Initialize an MDAnalysis universe
+
+    Parameters
+    ----------
+    struct: str
+        The name of the structure file to input to the universe
+    coords: str
+        The name of the coordinate file for the universe
+    frame: int
+        timestep to jump to
+    xdim: float
+        x dimension in A
+    ydim: float
+        y dimension in A
+    zdim: float
+        z dimension in A
+    :return: universe
+    &#34;&#34;&#34;
+    try:
+        u = mda.Universe(struct, coords)
+    except IOError:
+        print(&#34;Error loading MDA universe from coordinates and structure&#34;,
+              struct, coords)
+        raise
+    try:
+        u.trajectory[frame]
+    except LookupError:
+        print(&#34;Error going to trajectory frame&#34;, frame)
+        raise
+
+    u.dimensions = [xdim, ydim, zdim, 90, 90, 90]
+    return u</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.ratio_topology_change"><code class="name flex">
+<span>def <span class="ident">ratio_topology_change</span></span>(<span>u, indi, sels, keywords)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Adds a proton hop from one donor to the next to the indicator object
+depending on the D-H bond lengths for different atoms in the system.</p>
+<p>The proton is transferred if:
+r_km / [r_km + r_jm] &gt; 0.5 (the distance between the donor and it's proton
+is greater than an acceptor and the proton)</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code> <code>object</code></dt>
+<dd>The indicator info for checking the transfer</dd>
+<dt><strong><code>sels</code></strong> :&ensp;<code>Selection</code> <code>class</code> <code>object</code></dt>
+<dd>Contains selections that correspond to the indicator class</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>Dictionary object which contains indicator method we are using.</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>This can be used to describe tautomerization proton transfer reactions such
+as that for the proton between the two oxygens in glutamic acid.</p>
+<h2 id="todo">TODO</h2>
+<p>Remove dependency on keywords variable</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def ratio_topology_change(u, indi, sels, keywords):
+    &#34;&#34;&#34;
+    Adds a proton hop from one donor to the next to the indicator object
+    depending on the D-H bond lengths for different atoms in the system.
+
+    The proton is transferred if:
+    r_km / [r_km + r_jm] &gt; 0.5 (the distance between the donor and it&#39;s proton
+                                is greater than an acceptor and the proton)
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    indi: Indicator class object
+        The indicator info for checking the transfer
+    sels: Selection class object
+        Contains selections that correspond to the indicator class
+    keywords: dictionary
+        Dictionary object which contains indicator method we are using.
+
+    Notes
+    -----
+    This can be used to describe tautomerization proton transfer reactions such
+    as that for the proton between the two oxygens in glutamic acid.
+
+    TODO
+    ----
+    Remove dependency on keywords variable
+    &#34;&#34;&#34;
+    if keywords[&#34;ind_method&#34;] == 2:
+        sels.set_donors(u, indi.donor)
+    num_d = len(sels.d.indices)
+    if num_d == 1:
+        return
+    indi.hop = []
+
+    #Iterate over all donor-acceptor combinations
+    for k in range(num_d):
+        for j in range(num_d):
+            if j == k:
+                continue
+            sels.set_proton(u, sels.d.indices[k] + 1)
+            num_h = len(sels.h.indices)
+            for m in range(num_h):
+
+                # Standard rho calculation
+                rdh = sels.d.positions[k, :] - sels.h.positions[m, :]
+                rdh = np.linalg.norm(rdh)
+                rah = sels.d.positions[j, :] - sels.h.positions[m, :]
+                rah = np.linalg.norm(rah)
+                p = rdh / (rdh + rah)
+                if p &gt; 0.5:
+                    indi.hop.append((m, j, p, k))
+    sels.set_dah(u, indi.donor)
+    return</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.sel_type_and_same_res"><code class="name flex">
+<span>def <span class="ident">sel_type_and_same_res</span></span>(<span>u, types, ind)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generic subroutine to select atoms with a type given in the list 'types'
+with the same resnum as the index of ind</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.universe</code></dt>
+<dd>Main universe with atoms for selection</dd>
+<dt><strong><code>types</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>List of atom types for each ind</dd>
+<dt><strong><code>ind</code></strong> :&ensp;<code>integer</code></dt>
+<dd>1-based index of atom with resnum.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>sel</code></strong> :&ensp;<code>MDAnalysis.selection</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="todo">TODO</h2>
+<p>This subroutine contains logic that is used throughout the code. That
+could all be consolidated.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def sel_type_and_same_res(u, types, ind):
+    &#34;&#34;&#34;
+    Generic subroutine to select atoms with a type given in the list &#39;types&#39;
+    with the same resnum as the index of ind
+
+    Parameters
+    ----------
+    u: MDAnalysis.universe
+        Main universe with atoms for selection
+    types: list of str
+        List of atom types for each ind
+    ind: integer
+        1-based index of atom with resnum.
+
+    Returns
+    -------
+    sel: MDAnalysis.selection
+
+    TODO
+    ----
+    This subroutine contains logic that is used throughout the code. That
+    could all be consolidated.
+    &#34;&#34;&#34;
+    num_types = len(types)
+    type_str = &#39;(type %s&#39; % (types[0])
+    for i in range(1, num_types):
+        type_str += &#34; or type %s&#34; % types[i]
+    type_str += &#39;)&#39;
+    sel_str = (&#39;same resnum as bynum %d&#39; % (ind[i] + 1))
+    sel = u.select_atoms(sel_str)
+    sel = sel.select_atoms(type_str)
+    return sel</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.setup_selection"><code class="name flex">
+<span>def <span class="ident">setup_selection</span></span>(<span>u, all_u, indi, keywords)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set up the selections for the system</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>u</code></strong> :&ensp;<code>MDAnalysis.Universe</code></dt>
+<dd>main universe object</dd>
+<dt><strong><code>all_u</code></strong> :&ensp;<code>MDAnalysis.Universe</code></dt>
+<dd>universe with proton</dd>
+<dt><strong><code>indi</code></strong> :&ensp;<code>Indicator</code> <code>class</code></dt>
+<dd>proton indicator</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dict</code></dt>
+<dd>program parameters</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def setup_selection(u, all_u, indi, keywords):
+    &#34;&#34;&#34;
+    Set up the selections for the system
+
+    Parameters
+    ----------
+    u: MDAnalysis.Universe
+        main universe object
+    all_u: MDAnalysis.Universe
+        universe with proton
+    indi: Indicator class
+        proton indicator
+    keywords: dict
+        program parameters
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    # Selection setup
+    acceptor_types = list(indi.rxh.keys())
+    proton_types = keywords[&#34;proton_types&#34;]
+
+    if keywords[&#34;ind_method&#34;] in [1]:
+        sels = SelectionsInd1(u,
+                              all_u,
+                              proton_types,
+                              acceptor_types,
+                              indi.rlist,
+                              donor_index=indi.donor)
+    elif keywords[&#34;ind_method&#34;] == 2:
+        sels = SelectionsInd2(u,
+                              all_u,
+                              proton_types,
+                              acceptor_types,
+                              indi.rlist,
+                              donor_index=indi.donor)
+    else:
+        sels = Selections(u,
+                          all_u,
+                          proton_types,
+                          acceptor_types,
+                          indi.rlist,
+                          donor_index=indi.donor)
+    if keywords[&#34;ind_method&#34;] in [0]:
+        sels.set_donor = sels.set_one_donor
+        sels.set_acc = sels.set_original_acc
+    return sels</code></pre>
+</details>
+</dd>
+<dt id="adaptive_md_tools.core_loop.write_partitions"><code class="name flex">
+<span>def <span class="ident">write_partitions</span></span>(<span>groups, ts, elements, center, keywords)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Write out the partitions that would be calculated if this were an adaptive
+partitioning calculation.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>groups</code></strong> :&ensp;<code>mdtools.Groups</code></dt>
+<dd>A groups object containing the adaptive partitioning groups</dd>
+<dt><strong><code>ts</code></strong> :&ensp;<code>MDAnalysis.trajectory.timestep</code></dt>
+<dd>The current timestep</dd>
+<dt>elements:</dt>
+<dt><strong><code>center</code></strong> :&ensp;<code>ndarray</code> of <code>floats</code> <code>with</code> <code>shape</code> (<code>3</code>)</dt>
+<dd>The center of the active zone</dd>
+<dt><strong><code>keywords</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Program parameters</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def write_partitions(groups, ts, elements, center, keywords):
+    &#34;&#34;&#34;
+    Write out the partitions that would be calculated if this were an adaptive
+    partitioning calculation.
+
+    Parameters
+    ----------
+    groups: mdtools.Groups
+        A groups object containing the adaptive partitioning groups
+    ts: MDAnalysis.trajectory.timestep
+        The current timestep
+    elements:
+    center: ndarray of floats with shape (3)
+        The center of the active zone
+    keywords: dict
+        Program parameters
+    &#34;&#34;&#34;
+    from itertools import combinations
+
+    # Set up the variables
+    r_a = keywords[&#34;active_radius&#34;]
+    r_b = keywords[&#34;buffer_radius&#34;]
+    r_ap = r_a + r_b
+
+    # Get the group locations from the universe object
+    group_positions = ts.positions[groups.groupReps]
+
+    # Calculate the pairwise distances between the atoms and the center
+    cen = center.reshape(1, 3)
+    dists = cdist(group_positions, cen).flatten()
+
+    # Set up the ap zones
+    active_groups = np.argwhere(dists &lt; r_a)
+    buffer_groups = np.argwhere((dists &gt;= r_a) &amp; (dists &lt; r_ap))
+
+    # Calculate the partitions
+    partition_groups = [[*active_groups]]
+    for order in range(1, keywords[&#34;pap_order&#34;] + 1):
+        group_combos = list(combinations(buffer_groups, order))
+        for combo in group_combos:
+            partition_groups.append([*active_groups, *combo])
+
+    # Calculate the atom indicies in the partitions
+    partition_inds = []
+    for i, p in enumerate(partition_groups):
+        partition_inds.append([])
+        for g in p:
+            partition_inds[i].extend(groups.groupAtoms[np.asscalar(g)])
+
+    # Write the partitions
+    for i, p in enumerate(partition_inds):
+        # generate the output name
+        of_path = keywords[&#34;write_folder&#34;]
+        if keywords[&#34;write_prefix&#34;] != &#34;&#34;:
+            of_path += keywords[&#34;write_prefix&#34;] + &#39;-&#39;
+        of_path += &#34;{0:06d}_{1:03d}.&#34;.format(ts.frame, i)
+        # write the file
+        if keywords[&#34;write_type&#34;] == &#34;xyz&#34;:
+            of_path += &#34;xyz&#34;
+            ofi = open(of_path, &#39;w&#39;)
+            mdtools.print_xyz(len(p),
+                              ts.positions[p, 0],
+                              ts.positions[p, 1],
+                              ts.positions[p, 2],
+                              elements[p],
+                              ofi=ofi)
+            ofi.close()
+        else:
+            print(&#34;Unsupported output type&#34;)
+            sys.exit()</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="adaptive_md_tools" href="index.html">adaptive_md_tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="adaptive_md_tools.core_loop.add_indicator_to_universe" href="#adaptive_md_tools.core_loop.add_indicator_to_universe">add_indicator_to_universe</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.calc_indicator" href="#adaptive_md_tools.core_loop.calc_indicator">calc_indicator</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.calc_new_bonds_from_u" href="#adaptive_md_tools.core_loop.calc_new_bonds_from_u">calc_new_bonds_from_u</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.calculate_weighted_coords" href="#adaptive_md_tools.core_loop.calculate_weighted_coords">calculate_weighted_coords</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.check_for_donor_switch" href="#adaptive_md_tools.core_loop.check_for_donor_switch">check_for_donor_switch</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.core_loop" href="#adaptive_md_tools.core_loop.core_loop">core_loop</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.do_hop" href="#adaptive_md_tools.core_loop.do_hop">do_hop</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.do_hop_ind_class" href="#adaptive_md_tools.core_loop.do_hop_ind_class">do_hop_ind_class</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.get_group_geom_center" href="#adaptive_md_tools.core_loop.get_group_geom_center">get_group_geom_center</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.get_group_ind" href="#adaptive_md_tools.core_loop.get_group_ind">get_group_ind</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.get_group_positions" href="#adaptive_md_tools.core_loop.get_group_positions">get_group_positions</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.initialize_universe" href="#adaptive_md_tools.core_loop.initialize_universe">initialize_universe</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.ratio_topology_change" href="#adaptive_md_tools.core_loop.ratio_topology_change">ratio_topology_change</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.sel_type_and_same_res" href="#adaptive_md_tools.core_loop.sel_type_and_same_res">sel_type_and_same_res</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.setup_selection" href="#adaptive_md_tools.core_loop.setup_selection">setup_selection</a></code></li>
+<li><code><a title="adaptive_md_tools.core_loop.write_partitions" href="#adaptive_md_tools.core_loop.write_partitions">write_partitions</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.6.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

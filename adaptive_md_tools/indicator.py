@@ -572,8 +572,8 @@ class Indicator4(Indicator):
             self.ofi.write("Proton Coords\n")
             self.ofi.write("Donor COM\n")
             print(d_com, file=ofi)
-            # print("Acceptor COMs", file=ofi)
-            # print(as_com)
+            print("Acceptor COMs", file=ofi)
+            print(as_com)
 
         gI = 0
         self.x_i = np.zeros(3)
@@ -626,22 +626,9 @@ class Indicator4(Indicator):
                              np.linalg.norm(self.x_as[j] - self.x_hs[m] )
                     xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
                     gmjs[m, j] = self.calc_gmj(xmjs[m, j])
-                    # self.x_i[:] += gmjs[m, j] * (2*x_as[j] - as_com[j] + d_com[0] - x_d[k])
-                    # self.x_i[:] += gmjs[m, j] * (x_as[j])
                     print("Correction:  ", x_d[k] - d_com[0])
-                    # This is the donor centered correction
-                    self.x_i[:] += gmjs[m, j] * as_com[j] #aaa
-#                    self.x_i[:] += gmjs[m, j] * (x_as[j] +(x_d[k] - d_com[0]
-#                                                 -x_as[j] + as_com[j])) #bbb
-#                    self.x_i[:] += gmjs[m, j] * (x_as[j] + (x_d[k] - d_com[0])) #ccc
-#                    self.x_i[:] += gmjs[m, j] * (as_com[j] - (x_d[k] - d_com[0]) #ddd
-#                                                  + x_as[j] - as_com[j]) #ddd
-#                    self.x_i[:] += gmjs[m, j] * (x_as[j]) #eee
-#                    self.x_i[:] += gmjs[m, j] * (x_as[j] + 0.5 * ((x_d[k] - d_com[0]) + (-x_as[j] + as_com[j])))
-                    # This is the acceptor centered correction
-#                    self.x_i[:] += gmjs[m, j] * (as_com[j])
-                    # Should this be considered? centered correction
-                    #self.x_i[:] += gmjs[m, j] * (x_as[j] - (x_d[k] - d_com[0]))
+                    # Add the weighted Acceptor cog coordinate
+                    self.x_i[:] += gmjs[m, j] * as_com[j]
             sum_gs += np.sum(gmjs[:])
 
             if self.print_all:
