@@ -502,6 +502,14 @@ class Indicator:
 #         self.step += 1
 #         return 0
 
+class IndicatorNull(Indicator):
+    """
+    Indicator class if there is no indicator
+    """
+
+    def __init__(self):
+        Indicator.__init__(self)
+
 
 class Indicator4(Indicator):
     """

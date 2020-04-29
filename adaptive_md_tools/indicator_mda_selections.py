@@ -3,7 +3,7 @@
 This module contains classes for selecting donors, acceptors, and transferring
 protons for the indicator classes in indicator.py.
 
-All of the selections are for an MDAnalysis universe.
+All of the selections are for an MDAnalysis universe.zz
 """
 import warnings
 

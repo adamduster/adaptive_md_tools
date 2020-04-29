@@ -39,7 +39,7 @@ def core_loop(keywords, indi):
 
     :param keywords: input keywords
     :type keywords: dict
-    :param indi: indicator class
+    :param indi: indicator classz
     :type indi: Indicator
     """
     keywords['wrap_style'] = 'residues'
@@ -86,11 +86,12 @@ def core_loop(keywords, indi):
                 os.mkdir(keywords["write_folder"])
             except OSError:
                 sys.exit("Error making partitions directory")
-    try:
-        W = mda.Writer(keywords["out_coords"], sels.all.n_atoms)
-        # Wdebug = mda.Writer('debug.dcd', sels.sys.n_atoms)
-    except IOError:
-        print("Error opening output coord file: " + keywords["output"])
+    if keywords["out_coords"]:
+        try:
+            W = mda.Writer(keywords["out_coords"], sels.all.n_atoms)
+            # Wdebug = mda.Writer('debug.dcd', sels.sys.n_atoms)
+        except IOError:
+            print("Error opening output coord file: " + keywords["output"])
 
     # Main Loop
     nsteps = len(u.trajectory)
@@ -143,24 +144,24 @@ def core_loop(keywords, indi):
             sels.all.wrap(compound=keywords['wrap_style'], center='com')
 
         # Wdebug.write(sels.sys)
-        W.write(sels.all)
+        if keywords["out_coords"]:
+            W.write(sels.all)
 
         # Update the topology and AP groups
         if indi.hop and keywords["allow_hop"]:
             u, all_u = do_hop(u, all_u, indi, ts, keywords, sels, groups)
-            if keywords["wrap"]:
-                sels.sys.translate(translation_vector)
-                sels.sys.wrap(compound=keywords['wrap_style'], center='com')
-                sels.all.translate(translation_vector)
-                sels.all.wrap(compound=keywords['wrap_style'], center='com')
+        if keywords["wrap"]:
+            sels.sys.translate(translation_vector)
+            sels.sys.wrap(compound=keywords['wrap_style'], center='com')
+            sels.all.translate(translation_vector)
+            sels.all.wrap(compound=keywords['wrap_style'], center='com')
 
         # Write the coordinates
 
         # Output the xyz coordinates if we are making xys for AP
-        if ts.frame > 0:
-            if keywords["write_partitions"] and\
-                    ts.frame % keywords["write_freq"] == 0:
-                write_partitions(groups, ts, elements, indi.x_i, keywords)
+        if keywords["write_partitions"] and\
+                ts.frame % keywords["write_freq"] == 0:
+            write_partitions(groups, ts, elements, indi.x_i, keywords)
 
         # End of loop
     return
@@ -188,8 +189,16 @@ def setup_selection(u, all_u, indi, keywords):
     # Selection setup
     acceptor_types = list(indi.rxh.keys())
     proton_types = keywords["proton_types"]
-
-    if keywords["ind_method"] in [1]:
+    if keywords["ind_method"] == -1:
+        proton_types = ["HT"]
+        acceptor_types =["OT"]
+        sels = SelectionsInd1(u,
+                              all_u,
+                              proton_types,
+                              acceptor_types,
+                              1.0,
+                              donor_index=indi.donor)
+    elif keywords["ind_method"] in [1]:
         sels = SelectionsInd1(u,
                               all_u,
                               proton_types,
@@ -566,6 +575,10 @@ def calc_indicator(u, all_u, indi, sels, keywords):
     -------
 
     """
+    # Just set the indicator to the donor if there is no indicator
+    if keywords["ind_method"] == -1:
+        indi.x_i = sels.d.positions[0]
+        return
     # Set up atom selections for donor and acceptors
     sels.set_dah(u, indi.donor)
 
@@ -945,6 +958,9 @@ def write_partitions(groups, ts, elements, center, keywords):
 
     # Write the partitions
     for i, p in enumerate(partition_inds):
+        if keywords["ap_write_probability"]:
+            if np.random.random() > keywords["ap_write_probability"]:
+                continue
         # generate the output name
         of_path = keywords["write_folder"]
         if keywords["write_prefix"] != "":

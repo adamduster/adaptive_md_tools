@@ -81,8 +81,9 @@ def read_input_file(ifpath):
                 "verbose": False,
                 "ind_output_freq": 0,
                 "wrap": True,
+                "wrap_style": 'fragments',
                 "dimensions": [0, 0, 0],
-                "ind_method": 0,
+                "ind_method": -1,
                 "topology": None,
                 "topology_type": 'psf',
                 "rdh0": [],
@@ -90,7 +91,9 @@ def read_input_file(ifpath):
                 "mcec": False,
                 "rsw": 1.4,
                 "dsw": 0.04,
-                'mcec_g': []
+                'mcec_g': [],
+                'out_coords': None,
+                'ap_write_probability': None
                 }
     print("*********************** INPUT FILE ***********************")
     while True:
@@ -199,6 +202,9 @@ def read_input_file(ifpath):
             if words[0] == 'mcec_g':
                 keywords['mcec_g'] = words[1:]
                 continue
+            if words[0] == 'ap_write_probability':
+                keywords['ap_write_probability'] = float(words[1])
+                continue
             print("Could not find keyword: " + words[0])
             raise RuntimeError
 
@@ -233,11 +239,10 @@ def check_keywords(keywords, indi):
         print("Error, %s not found in keywords" % "'structure'")
         raise ValueError
 
-    if "out_coords" in keywords:
+    if keywords["out_coords"]:
         print("Writing coordinates to: " + keywords['out_coords'])
     else:
-        print("Error, %s not found in keywords" % "'output_coords'")
-        raise ValueError
+        print("Not writing output coordinates")
 
     if keywords["groups_path"]:
         print("Reading AP groups from: " + keywords['groups_path'])
@@ -255,7 +260,10 @@ def check_keywords(keywords, indi):
     if keywords["wrap"] and not keywords["topology"]:
         sys.exit("Error, cannot wrap the system "
                  "because there is no topology specified")
-
+    if keywords["ap_write_probability"]:
+         if keywords["ap_write_probability"] < 0 or \
+            keywords["ap_write_probability"] > 1:
+             sys.exit("Error write probability must be between 0 and 1")
     # Print all of the indicator variables
     print("\nINDICATOR VARIABLES")
     print("rlist: {0:0.3f}".format(indi.rlist))
@@ -307,7 +315,9 @@ def set_indicator(keywords):
     :return: indicator
     :rtype: Indicator
     """
-    if keywords["mcec"]:
+    if keywords["ind_method"] == -1:
+        indi = IndicatorNull()
+    elif keywords["mcec"]:
         if keywords["ind_method"] in [4, 11]:
             indi = MCEC()
         else:
@@ -328,6 +338,17 @@ def set_indicator(keywords):
     else:
         print("Error, could not recognize indicator type")
         raise TypeError
+
+    # Set the donor
+    try:
+        indi.donor = int(keywords["donor_index"])
+    except ValueError:
+        print("Error, please supply the initial donor index as an integer")
+
+    # We can exit now if we are null class
+    if keywords["ind_method"] == -1:
+        return indi
+
     if keywords["ind_method"] in [2, 3]:
         print("Unfortunately the requested indicator type is not implemented")
         raise NotImplementedError
@@ -351,11 +372,6 @@ def set_indicator(keywords):
     else:
         print("Error, did you specify the rdh0 keyword?")
         raise NameError
-
-    try:
-        indi.donor = int(keywords["donor_index"])
-    except ValueError:
-        print("Error, please supply the initial donor index as an integer")
 
     try:
         indi.print_all = keywords["indicator_verbose"]

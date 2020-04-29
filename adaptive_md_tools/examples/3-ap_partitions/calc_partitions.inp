@@ -3,7 +3,6 @@ structure   ./water_box.psf
 donor_index 4306
 output_coords ./out_box.dcd
 dimensions 35.2 35.2 35.2
-dcd_pbc 1
 groups_file ./water_box.groups
 write_partitions ./t300xyz xyz
 write_n_steps  2
