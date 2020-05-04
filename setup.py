@@ -50,7 +50,8 @@ setup(
     install_requires=[
         "MDAnalysis",
         "numba",
-        "numpy"
+        "numpy",
+        "scipy"
     ],              # Required packages, pulls from pip if needed; do not use for Conda deployment
     # platforms=['Linux',
     #            'Mac OS-X',
