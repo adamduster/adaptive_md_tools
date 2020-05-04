@@ -71,7 +71,9 @@ def read_input_file(ifpath):
                 "proton_types": [],
                 "write_freq": 20,
                 "write_folder": './',
+                "sispa_folder": './',
                 "write_partitions": False,
+                "write_sispa": False,
                 "active_radius": 5.0,
                 "buffer_radius": 0.6,
                 "pap_order": 2,
@@ -148,6 +150,13 @@ def read_input_file(ifpath):
                         words[1] += '/'
                     keywords["write_folder"] = words[1]
                     keywords["write_type"] = words[2]
+                continue
+            if words[0] == "write_sispa":
+                keywords["write_sispa"] = True
+                if words[1]:
+                    if words[1][-1] != '/':
+                        words[1] += '/'
+                    keywords["sispa_folder"] = words[1]
                 continue
             if words[0] == "write_prefix":
                 keywords["write_prefix"] = words[1]
@@ -255,8 +264,17 @@ def check_keywords(keywords, indi):
             print("Error, you must specify groups_path with AP groups to write"
                   " AP partitons")
             sys.exit()
-        print("Writing partitions to folder: %s" % keywords["write_folder"])
-        print("Writing partitions every %d steps" % keywords["write_freq"])
+        print("Writing PAP partitions to folder: %s" % keywords["write_folder"])
+        print("Writing PAP partitions every %d steps" % keywords["write_freq"])
+    if keywords["write_sispa"]:
+        if not keywords["groups_path"]:
+            print("Error, you must specify groups_path with AP groups to write"
+                  " SISPA partitons")
+            sys.exit()
+        print("Writing SISPA partitions to folder: %s" %
+              keywords["sispa_folder"])
+        print("Writing SISPA partitions every %d steps" %
+              keywords["write_freq"])
     if keywords["wrap"] and not keywords["topology"]:
         sys.exit("Error, cannot wrap the system "
                  "because there is no topology specified")

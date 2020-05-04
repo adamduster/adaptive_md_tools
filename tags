@@ -1,0 +1,311 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AP settings	docs/manual.tex	/^To wrap simulations, the dimensions of the period box must be specified using the \\texttt{dimensions} keyword. The keyword \\texttt{nowrap} can be used to prevent wrapping.$/;"	P
+All Input Files	docs/manual.tex	/^For the full list of keywords and more detail, see section \\ref{sec:keywords}.$/;"	P
+BUILDDIR	docs/make.bat	/^set BUILDDIR=_build$/;"	v
+Bonds	adaptive_md_tools/mdtools.py	/^class Bonds:$/;"	c
+CONDA_BIN	devtools/scripts/create_conda_env.py	/^            CONDA_BIN = os.path.dirname(os.environ['CONDA_EXE'])$/;"	v
+Directions	docs/manual.tex	/^Python3 via Conda$/;"	P
+File	adaptive_md_tools/mdtools.py	/^class File:$/;"	c
+Groups	adaptive_md_tools/mdtools.py	/^class Groups:$/;"	c
+GroupsFile	adaptive_md_tools/mdtools.py	/^class GroupsFile:$/;"	c
+HANDLERS	adaptive_md_tools/_version.py	/^HANDLERS = {}$/;"	v
+HANDLERS	versioneer.py	/^HANDLERS = {}$/;"	v
+Indicator	adaptive_md_tools/indicator.py	/^class Indicator:$/;"	c
+Indicator Variables	docs/manual.tex	/^\\end{enumerate} $/;"	P
+Indicator Variables	docs/manual.tex	/^\\end{enumerate}$/;"	P
+Indicator11	adaptive_md_tools/indicator.py	/^class Indicator11(Indicator):$/;"	c
+Indicator4	adaptive_md_tools/indicator.py	/^class Indicator4(Indicator):$/;"	c
+Indicator6	adaptive_md_tools/indicator.py	/^class Indicator6(Indicator4):$/;"	c
+Indicator7	adaptive_md_tools/indicator.py	/^class Indicator7(Indicator4):$/;"	c
+Indicator9	adaptive_md_tools/indicator.py	/^class Indicator9(Indicator4):$/;"	c
+IndicatorNull	adaptive_md_tools/indicator.py	/^class IndicatorNull(Indicator):$/;"	c
+Indicators	docs/manual.tex	/^The adaptive partition methodology is discussed elsewhere.$/;"	u
+Installation	docs/manual.tex	/^\\end{abstract}$/;"	s
+LONG_VERSION_PY	adaptive_md_tools/_version.py	/^LONG_VERSION_PY = {}$/;"	v
+LONG_VERSION_PY	versioneer.py	/^LONG_VERSION_PY = {}$/;"	v
+MCEC	adaptive_md_tools/indicator.py	/^class MCEC(Indicator4):$/;"	c
+MMTypes	adaptive_md_tools/mdtools.py	/^class MMTypes:$/;"	c
+Methodology	docs/manual.tex	/^\\end{enumerate}$/;"	s
+Mol2File	adaptive_md_tools/mdtools.py	/^class Mol2File(File):$/;"	c
+NotThisMethod	adaptive_md_tools/_version.py	/^class NotThisMethod(Exception):$/;"	c
+NotThisMethod	versioneer.py	/^class NotThisMethod(Exception):$/;"	c
+PDBFile	adaptive_md_tools/mdtools.py	/^class PDBFile(File):$/;"	c
+PSFFile	adaptive_md_tools/mdtools.py	/^class PSFFile:$/;"	c
+Prerequisites	docs/manual.tex	/^This program is a python package with dependencies on MDAnalysis, Numba, and NumPy. I recommend that the user create a Conda environment specifically for using this package. Then they can install the dependencies and use pip to install this program.$/;"	P
+SOURCEDIR	docs/make.bat	/^set SOURCEDIR=.$/;"	v
+SPHINXBUILD	docs/make.bat	/^	set SPHINXBUILD=sphinx-build$/;"	v
+SPHINXPROJ	docs/make.bat	/^set SPHINXPROJ=adaptive_md_tools$/;"	v
+Selections	adaptive_md_tools/indicator_mda_selections.py	/^class Selections:$/;"	c
+SelectionsInd1	adaptive_md_tools/indicator_mda_selections.py	/^class SelectionsInd1(Selections):$/;"	c
+SelectionsInd2	adaptive_md_tools/indicator_mda_selections.py	/^class SelectionsInd2(Selections):$/;"	c
+Topology	adaptive_md_tools/mdtools.py	/^class Topology:$/;"	c
+Usage	docs/manual.tex	/^\\end{enumerate}$/;"	s
+VersioneerBadRootError	versioneer.py	/^class VersioneerBadRootError(Exception):$/;"	c
+VersioneerConfig	adaptive_md_tools/_version.py	/^class VersioneerConfig:$/;"	c
+VersioneerConfig	versioneer.py	/^class VersioneerConfig:$/;"	c
+Wrapping simulations	docs/manual.tex	/^\\end{enumerate}$/;"	P
+Writing Partitions	docs/manual.tex	/^\\end{enumerate}$/;"	P
+__author__	adaptive_md_tools/core_loop.py	/^__author__ = 'Adam Duster'$/;"	v
+__author__	adaptive_md_tools/mdtools.py	/^__author__ = 'Adam Duster'$/;"	v
+__author__	adaptive_md_tools/wrap_xst.py	/^__author__ = 'Adam Duster'$/;"	v
+__copyright__	adaptive_md_tools/core_loop.py	/^__copyright__ = ''$/;"	v
+__copyright__	adaptive_md_tools/mdtools.py	/^__copyright__ = ''$/;"	v
+__copyright__	adaptive_md_tools/wrap_xst.py	/^__copyright__ = ''$/;"	v
+__credits__	adaptive_md_tools/core_loop.py	/^__credits__ = ['Adam Duster']$/;"	v
+__credits__	adaptive_md_tools/mdtools.py	/^__credits__ = ['Adam Duster']$/;"	v
+__credits__	adaptive_md_tools/wrap_xst.py	/^__credits__ = ['Adam Duster']$/;"	v
+__el2num	adaptive_md_tools/mdtools.py	/^__el2num = {'H':1,$/;"	v
+__email__	adaptive_md_tools/core_loop.py	/^__email__ = 'adam.duster@ucdenver.edu'$/;"	v
+__email__	adaptive_md_tools/mdtools.py	/^__email__ = 'adam.duster@ucdenver.edu'$/;"	v
+__email__	adaptive_md_tools/wrap_xst.py	/^__email__ = 'adam.duster@ucdenver.edu'$/;"	v
+__git_revision__	adaptive_md_tools/__init__.py	/^__git_revision__ = versions['full-revisionid']$/;"	v
+__init__	adaptive_md_tools/indicator.py	/^    def __init__(self):$/;"	m	class:Indicator
+__init__	adaptive_md_tools/indicator.py	/^    def __init__(self):$/;"	m	class:Indicator11
+__init__	adaptive_md_tools/indicator.py	/^    def __init__(self):$/;"	m	class:Indicator4
+__init__	adaptive_md_tools/indicator.py	/^    def __init__(self):$/;"	m	class:Indicator6
+__init__	adaptive_md_tools/indicator.py	/^    def __init__(self):$/;"	m	class:Indicator7
+__init__	adaptive_md_tools/indicator.py	/^    def __init__(self):$/;"	m	class:Indicator9
+__init__	adaptive_md_tools/indicator.py	/^    def __init__(self):$/;"	m	class:IndicatorNull
+__init__	adaptive_md_tools/indicator.py	/^    def __init__(self, switching='chakrabarti'):$/;"	m	class:MCEC
+__init__	adaptive_md_tools/indicator_mda_selections.py	/^    def __init__(self, u, all_u, proton_types, acceptor_types, rlist, donor_index=None, a=None):$/;"	m	class:SelectionsInd2
+__init__	adaptive_md_tools/indicator_mda_selections.py	/^    def __init__(self, u, all_u, proton_types, acceptor_types, rlist,$/;"	m	class:Selections
+__init__	adaptive_md_tools/indicator_mda_selections.py	/^    def __init__(self, u, all_u, proton_types, acceptor_types, rlist,$/;"	m	class:SelectionsInd1
+__init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, filePath, fileType=''):$/;"	m	class:File
+__init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, groupsPath):$/;"	m	class:GroupsFile
+__init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, numAtoms):$/;"	m	class:MMTypes
+__init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, numAtoms, bond_list=[]):$/;"	m	class:Bonds
+__init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, numGroups, numAtoms):$/;"	m	class:Groups
+__init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, of_path=None, num_atoms=0):$/;"	m	class:Topology
+__init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, pdbPath, required=None):$/;"	m	class:PDBFile
+__init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, psfPath):$/;"	m	class:PSFFile
+__license__	adaptive_md_tools/core_loop.py	/^__license__ = 'CC-BY-SA'$/;"	v
+__license__	adaptive_md_tools/mdtools.py	/^__license__ = 'CC-BY-SA'$/;"	v
+__license__	adaptive_md_tools/wrap_xst.py	/^__license__ = 'CC-BY-SA'$/;"	v
+__num2el	adaptive_md_tools/mdtools.py	/^__num2el = {1:'H',$/;"	v
+__status__	adaptive_md_tools/core_loop.py	/^__status__ = 'Development'$/;"	v
+__status__	adaptive_md_tools/mdtools.py	/^__status__ = 'Development'$/;"	v
+__status__	adaptive_md_tools/wrap_xst.py	/^__status__ = 'Development'$/;"	v
+__version__	adaptive_md_tools/__init__.py	/^__version__ = versions['version']$/;"	v
+__version__	adaptive_md_tools/core_loop.py	/^__version__ = '0.1'$/;"	v
+__version__	adaptive_md_tools/mdtools.py	/^__version__ = '0.1'$/;"	v
+__version__	adaptive_md_tools/wrap_xst.py	/^__version__ = '0.1'$/;"	v
+_rLine	adaptive_md_tools/mdtools.py	/^def _rLine(ifi):$/;"	f
+_write_log	adaptive_md_tools/indicator.py	/^    def _write_log(self, p, dr, coords=None):$/;"	m	class:Indicator
+addBonds	adaptive_md_tools/mdtools.py	/^    def addBonds(self, a1, a2):$/;"	m	class:Bonds
+add_indicator_to_universe	adaptive_md_tools/core_loop.py	/^def add_indicator_to_universe(u,$/;"	f
+add_rdh0	adaptive_md_tools/indicator.py	/^    def add_rdh0(self, rdh, atom_type: str):$/;"	m	class:Indicator
+args	devtools/scripts/create_conda_env.py	/^args = parser.parse_args()$/;"	v
+author	setup.py	/^    author='Adam Duster',$/;"	v
+author_email	setup.py	/^    author_email='adam.duster@ucdenver.edu',$/;"	v
+boolean_options	versioneer.py	/^        boolean_options = []$/;"	v	class:get_cmdclass.cmd_version
+calc_d_weights	adaptive_md_tools/indicator.py	/^    def calc_d_weights(self, type_d, x_hms):$/;"	m	class:Indicator9
+calc_gI	adaptive_md_tools/indicator.py	/^    def calc_gI(gmjs):$/;"	m	class:Indicator
+calc_gI	adaptive_md_tools/indicator.py	/^    def calc_gI(gmjs):$/;"	m	class:Indicator6
+calc_gmj	adaptive_md_tools/indicator.py	/^    def calc_gmj(self, xmj):$/;"	m	class:Indicator6
+calc_gmj	adaptive_md_tools/indicator.py	/^    def calc_gmj(xmj):$/;"	m	class:Indicator
+calc_ind	adaptive_md_tools/indicator.py	/^    def calc_ind(self, d_com, gI):$/;"	m	class:Indicator11
+calc_ind	adaptive_md_tools/indicator.py	/^    def calc_ind(self, d_com, gI):$/;"	m	class:Indicator4
+calc_ind	adaptive_md_tools/indicator.py	/^    def calc_ind(self, d_com, gI):$/;"	m	class:Indicator6
+calc_indicator	adaptive_md_tools/core_loop.py	/^def calc_indicator(u, all_u, indi, sels, keywords):$/;"	f
+calc_indicator	adaptive_md_tools/indicator.py	/^    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, d_com, as_com,$/;"	m	class:Indicator4
+calc_indicator	adaptive_md_tools/indicator.py	/^    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, ofi=None):$/;"	m	class:Indicator
+calc_indicator	adaptive_md_tools/indicator.py	/^    def calc_indicator(self,$/;"	m	class:Indicator11
+calc_indicator	adaptive_md_tools/indicator.py	/^    def calc_indicator(self,$/;"	m	class:Indicator7
+calc_indicator	adaptive_md_tools/indicator.py	/^    def calc_indicator(self,$/;"	m	class:Indicator9
+calc_mcec	adaptive_md_tools/indicator.py	/^    def calc_mcec(self, rH, rXj, acc_types, correction_groups=None):$/;"	m	class:MCEC
+calc_mcec_correction	adaptive_md_tools/indicator.py	/^    def calc_mcec_correction(self, rH, rGroups, verbose=True):$/;"	m	class:MCEC
+calc_mcec_location	adaptive_md_tools/indicator.py	/^def calc_mcec_location(rH, rXj, w, rsw, dsw, verbose=False):$/;"	f
+calc_new_bonds_from_u	adaptive_md_tools/core_loop.py	/^def calc_new_bonds_from_u(u, transfer_h, new_don):$/;"	f
+calc_pmj	adaptive_md_tools/indicator.py	/^    def calc_pmj(x_d, x_aj, x_hm):$/;"	m	class:Indicator
+calc_xmj	adaptive_md_tools/indicator.py	/^    def calc_xmj(pmj, pmj0, pmax):$/;"	m	class:Indicator
+calculate_weighted_coords	adaptive_md_tools/core_loop.py	/^def calculate_weighted_coords(u, sels):$/;"	f
+chakrabarti_switching	adaptive_md_tools/indicator.py	/^def chakrabarti_switching(d, rsw, dsw):$/;"	f
+checkGroups	adaptive_md_tools/mdtools.py	/^    def checkGroups(self):$/;"	m	class:Groups
+check_for_donor_switch	adaptive_md_tools/core_loop.py	/^def check_for_donor_switch(u, indi, sels):$/;"	f
+check_keywords	adaptive_md_tools/AdaptiveMD.py	/^def check_keywords(keywords, indi):$/;"	f
+cleanup	adaptive_md_tools/AdaptiveMD.py	/^def cleanup():$/;"	f
+close_ofi	adaptive_md_tools/mdtools.py	/^    def close_ofi(self):$/;"	m	class:Topology
+cmd	versioneer.py	/^    cmd = sys.argv[1]$/;"	v
+cmd_build_exe	versioneer.py	/^        class cmd_build_exe(_build_exe):$/;"	c	class:get_cmdclass.cmd_build_py
+cmd_build_py	versioneer.py	/^    class cmd_build_py(_build_py):$/;"	c	function:get_cmdclass
+cmd_py2exe	versioneer.py	/^        class cmd_py2exe(_py2exe):$/;"	c	class:get_cmdclass.cmd_build_py
+cmd_sdist	versioneer.py	/^    class cmd_sdist(_sdist):$/;"	c	function:get_cmdclass
+cmd_version	versioneer.py	/^    class cmd_version(Command):$/;"	c	function:get_cmdclass
+cmdclass	setup.py	/^    cmdclass=versioneer.get_cmdclass(),$/;"	v
+conda_path	devtools/scripts/create_conda_env.py	/^    conda_path = os.environ["CONDA_EXE"]$/;"	v
+conda_path	devtools/scripts/create_conda_env.py	/^    conda_path = shutil.which("conda")$/;"	v
+core_loop	adaptive_md_tools/core_loop.py	/^def core_loop(keywords, indi):$/;"	f
+decorate	adaptive_md_tools/_version.py	/^    def decorate(f):$/;"	f	function:register_vcs_handler
+decorate	versioneer.py	/^    def decorate(f):$/;"	f	function:register_vcs_handler
+description	setup.py	/^    description=short_description[0],$/;"	v
+description	versioneer.py	/^        description = "report generated version string"$/;"	v	class:get_cmdclass.cmd_version
+diff_max	adaptive_md_tools/indicator.py	/^    def diff_max(results, power=15):$/;"	m	class:MCEC
+do_hop	adaptive_md_tools/core_loop.py	/^def do_hop(u, all_u, indi, ts, keywords, sels, groups, intra=False):$/;"	f
+do_hop_ind_class	adaptive_md_tools/core_loop.py	/^def do_hop_ind_class(u, indi, sels, intra, keywords):$/;"	f
+do_setup	versioneer.py	/^def do_setup():$/;"	f
+do_vcs_install	versioneer.py	/^def do_vcs_install(manifest_in, versionfile_source, ipy):$/;"	f
+end	docs/make.bat	/^:end$/;"	l
+errors	versioneer.py	/^        errors = do_setup()$/;"	v
+finalize_options	versioneer.py	/^        def finalize_options(self):$/;"	m	class:get_cmdclass.cmd_version
+fos	adaptive_md_tools/indicator.py	/^    def fos(x):$/;"	m	class:MCEC
+get	versioneer.py	/^    def get(parser, name):$/;"	f	function:get_config_from_root
+getBonds	adaptive_md_tools/mdtools.py	/^    def getBonds(self):$/;"	m	class:Mol2File
+getBonds	adaptive_md_tools/mdtools.py	/^    def getBonds(self):$/;"	m	class:PSFFile
+getGroups	adaptive_md_tools/mdtools.py	/^    def getGroups(self):$/;"	m	class:GroupsFile
+getMMTypes	adaptive_md_tools/mdtools.py	/^    def getMMTypes(self):$/;"	m	class:Mol2File
+getMMTypes	adaptive_md_tools/mdtools.py	/^    def getMMTypes(self):$/;"	m	class:PSFFile
+getNumAtoms	adaptive_md_tools/mdtools.py	/^    def getNumAtoms(self):$/;"	m	class:Mol2File
+getNumAtoms	adaptive_md_tools/mdtools.py	/^    def getNumAtoms(self):$/;"	m	class:PSFFile
+getTopo	adaptive_md_tools/mdtools.py	/^    def getTopo(self):$/;"	m	class:Mol2File
+getTopo	adaptive_md_tools/mdtools.py	/^    def getTopo(self):$/;"	m	class:PSFFile
+getUniqueBonds	adaptive_md_tools/mdtools.py	/^    def getUniqueBonds(self):$/;"	m	class:Bonds
+get_args	adaptive_md_tools/AdaptiveMD.py	/^def get_args(args=None):$/;"	f
+get_args	adaptive_md_tools/mdtools.py	/^def get_args(args=None):$/;"	f
+get_args	adaptive_md_tools/wrap_xst.py	/^def get_args(args=None):$/;"	f
+get_center	adaptive_md_tools/wrap_xst.py	/^def get_center(arg, pos):$/;"	f
+get_cmdclass	versioneer.py	/^def get_cmdclass():$/;"	f
+get_config	adaptive_md_tools/_version.py	/^def get_config():$/;"	f
+get_config_from_root	versioneer.py	/^def get_config_from_root(root):$/;"	f
+get_elements	adaptive_md_tools/mdtools.py	/^def get_elements(in_path, file_type):$/;"	f
+get_group_geom_center	adaptive_md_tools/core_loop.py	/^def get_group_geom_center(u, types, ind, redundant=True, return_types=False):$/;"	f
+get_group_ind	adaptive_md_tools/core_loop.py	/^def get_group_ind(u, types, ind, redundant=True):$/;"	f
+get_group_positions	adaptive_md_tools/core_loop.py	/^def get_group_positions(u, indi):$/;"	f
+get_keywords	adaptive_md_tools/_version.py	/^def get_keywords():$/;"	f
+get_root	versioneer.py	/^def get_root():$/;"	f
+get_version	versioneer.py	/^def get_version():$/;"	f
+get_versions	adaptive_md_tools/_version.py	/^def get_versions():$/;"	f
+get_versions	versioneer.py	/^def get_versions(verbose=False):$/;"	f
+get_weight_vector	adaptive_md_tools/indicator.py	/^    def get_weight_vector(self, types):$/;"	m	class:MCEC
+git_get_keywords	adaptive_md_tools/_version.py	/^def git_get_keywords(versionfile_abs):$/;"	f
+git_get_keywords	versioneer.py	/^def git_get_keywords(versionfile_abs):$/;"	f
+git_pieces_from_vcs	adaptive_md_tools/_version.py	/^def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):$/;"	f
+git_pieces_from_vcs	versioneer.py	/^def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):$/;"	f
+git_versions_from_keywords	adaptive_md_tools/_version.py	/^def git_versions_from_keywords(keywords, tag_prefix, verbose):$/;"	f
+git_versions_from_keywords	versioneer.py	/^def git_versions_from_keywords(keywords, tag_prefix, verbose):$/;"	f
+help	devtools/scripts/create_conda_env.py	/^                    help='The file for the created Python environment')$/;"	v
+help	devtools/scripts/create_conda_env.py	/^                    help='The name of the created Python environment')$/;"	v
+help	devtools/scripts/create_conda_env.py	/^                    help='The version of the created Python environment')$/;"	v
+help	docs/make.bat	/^:help$/;"	l
+include_package_data	setup.py	/^    include_package_data=True,$/;"	v
+initialize_mcec	adaptive_md_tools/AdaptiveMD.py	/^def initialize_mcec(keywords, indi):$/;"	f
+initialize_options	versioneer.py	/^        def initialize_options(self):$/;"	m	class:get_cmdclass.cmd_version
+initialize_universe	adaptive_md_tools/core_loop.py	/^def initialize_universe(struct, coords, xdim, ydim, zdim, frame=0):$/;"	f
+install_requires	setup.py	/^    install_requires=[$/;"	v
+license	setup.py	/^    license='MIT',$/;"	v
+loader	devtools/scripts/create_conda_env.py	/^    loader = yaml.YAML(typ="safe").load  # typ="safe" avoids odd typing on output$/;"	v
+loader	devtools/scripts/create_conda_env.py	/^    loader = yaml.load$/;"	v
+long_description	setup.py	/^        long_description = handle.read()$/;"	v
+long_description	setup.py	/^    long_description = "\\n".join(short_description[2:]),$/;"	v
+long_description	setup.py	/^    long_description=long_description,$/;"	v
+long_description_content_type	setup.py	/^    long_description_content_type="text\/markdown",$/;"	v
+mCEC Variables	docs/manual.tex	/^\\end{enumerate}$/;"	P
+main	adaptive_md_tools/AdaptiveMD.py	/^def main():$/;"	f
+main	adaptive_md_tools/mdtools.py	/^def main():$/;"	f
+main	adaptive_md_tools/wrap_xst.py	/^def main():$/;"	f
+make_release_tree	versioneer.py	/^        def make_release_tree(self, base_dir, files):$/;"	m	class:get_cmdclass.cmd_sdist
+make_str	adaptive_md_tools/mdtools.py	/^    def make_str(self, inds, str_width=8):$/;"	m	class:Topology
+md5sum	devtools/travis-ci/before_install.sh	/^    md5sum () {$/;"	f
+name	setup.py	/^    name='adaptive_md_tools',$/;"	v
+needs_pytest	setup.py	/^needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)$/;"	v
+packages	setup.py	/^    packages=find_packages(),$/;"	v
+parsePDB	adaptive_md_tools/mdtools.py	/^    def parsePDB(self):$/;"	m	class:PDBFile
+parser	devtools/scripts/create_conda_env.py	/^parser = argparse.ArgumentParser(description='Creates a conda environment from file for a given Python version.')$/;"	v
+plus_or_dot	adaptive_md_tools/_version.py	/^def plus_or_dot(pieces):$/;"	f
+plus_or_dot	versioneer.py	/^def plus_or_dot(pieces):$/;"	f
+printBonds	adaptive_md_tools/mdtools.py	/^    def printBonds(self, style=None):$/;"	m	class:Bonds
+printGroups	adaptive_md_tools/mdtools.py	/^    def printGroups(self, style='groups.log'):$/;"	m	class:Groups
+print_rdh0	adaptive_md_tools/indicator.py	/^    def print_rdh0(self, ofi=None):$/;"	m	class:Indicator
+print_xyz	adaptive_md_tools/mdtools.py	/^def print_xyz(num_atoms, x, y, z, atom_type, title=None, ofi=None):$/;"	f
+print_xyz_traj	adaptive_md_tools/mdtools.py	/^def print_xyz_traj(coords, types, title=None, ofi=None):$/;"	f
+pytest_runner	setup.py	/^pytest_runner = ['pytest-runner'] if needs_pytest else []$/;"	v
+python_replacement_string	devtools/scripts/create_conda_env.py	/^python_replacement_string = "python {}*".format(args.python)$/;"	v
+ratio_topology_change	adaptive_md_tools/core_loop.py	/^def ratio_topology_change(u, indi, sels, keywords):$/;"	f
+rawincount	adaptive_md_tools/mdtools.py	/^def rawincount(filename):$/;"	f
+read_atom	adaptive_md_tools/mdtools.py	/^    def read_atom(self, mmType):$/;"	m	class:Mol2File
+read_beginning_lines	adaptive_md_tools/mdtools.py	/^    def read_beginning_lines(self):$/;"	m	class:PSFFile
+read_bonds	adaptive_md_tools/mdtools.py	/^    def read_bonds(self, bonds, numBonds):$/;"	m	class:Mol2File
+read_input_file	adaptive_md_tools/AdaptiveMD.py	/^def read_input_file(ifpath):$/;"	f
+read_xst_cube	adaptive_md_tools/wrap_xst.py	/^def read_xst_cube(xst_path):$/;"	f
+read_xst_triclinic	adaptive_md_tools/wrap_xst.py	/^def read_xst_triclinic(xst_path):$/;"	f
+read_xyz	adaptive_md_tools/mdtools.py	/^def read_xyz(ifpath, return_coord_array=False):$/;"	f
+read_xyz2	adaptive_md_tools/mdtools.py	/^def read_xyz2(ifpath):$/;"	f
+read_xyz_trajectory	adaptive_md_tools/mdtools.py	/^def read_xyz_trajectory(ifpath):$/;"	f
+register_vcs_handler	adaptive_md_tools/_version.py	/^def register_vcs_handler(vcs, method):  # decorator$/;"	f
+register_vcs_handler	versioneer.py	/^def register_vcs_handler(vcs, method):  # decorator$/;"	f
+render	adaptive_md_tools/_version.py	/^def render(pieces, style):$/;"	f
+render	versioneer.py	/^def render(pieces, style):$/;"	f
+render_git_describe	adaptive_md_tools/_version.py	/^def render_git_describe(pieces):$/;"	f
+render_git_describe	versioneer.py	/^def render_git_describe(pieces):$/;"	f
+render_git_describe_long	adaptive_md_tools/_version.py	/^def render_git_describe_long(pieces):$/;"	f
+render_git_describe_long	versioneer.py	/^def render_git_describe_long(pieces):$/;"	f
+render_pep440	adaptive_md_tools/_version.py	/^def render_pep440(pieces):$/;"	f
+render_pep440	versioneer.py	/^def render_pep440(pieces):$/;"	f
+render_pep440_old	adaptive_md_tools/_version.py	/^def render_pep440_old(pieces):$/;"	f
+render_pep440_old	versioneer.py	/^def render_pep440_old(pieces):$/;"	f
+render_pep440_post	adaptive_md_tools/_version.py	/^def render_pep440_post(pieces):$/;"	f
+render_pep440_post	versioneer.py	/^def render_pep440_post(pieces):$/;"	f
+render_pep440_pre	adaptive_md_tools/_version.py	/^def render_pep440_pre(pieces):$/;"	f
+render_pep440_pre	versioneer.py	/^def render_pep440_pre(pieces):$/;"	f
+reset_all	adaptive_md_tools/indicator_mda_selections.py	/^    def reset_all(self, u, all_u, donor_ind):$/;"	m	class:Selections
+reset_hop	adaptive_md_tools/indicator.py	/^    def reset_hop(self):$/;"	m	class:Indicator
+reset_universe_selections	adaptive_md_tools/indicator_mda_selections.py	/^    def reset_universe_selections(self, u, all_u):$/;"	m	class:Selections
+ruamel_yaml_path	devtools/scripts/create_conda_env.py	/^            ruamel_yaml_path = glob.glob(os.path.join(CONDA_BIN, '..',$/;"	v
+run	versioneer.py	/^            def run(self):$/;"	m	class:get_cmdclass.cmd_build_py.cmd_build_exe
+run	versioneer.py	/^            def run(self):$/;"	m	class:get_cmdclass.cmd_build_py.cmd_py2exe
+run	versioneer.py	/^        def run(self):$/;"	m	class:get_cmdclass.cmd_build_py
+run	versioneer.py	/^        def run(self):$/;"	m	class:get_cmdclass.cmd_sdist
+run	versioneer.py	/^        def run(self):$/;"	m	class:get_cmdclass.cmd_version
+run_command	adaptive_md_tools/_version.py	/^def run_command(commands, args, cwd=None, verbose=False, hide_stderr=False,$/;"	f
+run_command	versioneer.py	/^def run_command(commands, args, cwd=None, verbose=False, hide_stderr=False,$/;"	f
+scan_setup_py	versioneer.py	/^def scan_setup_py():$/;"	f
+sel_type_and_same_res	adaptive_md_tools/core_loop.py	/^def sel_type_and_same_res(u, types, ind):$/;"	f
+setAtomGroup	adaptive_md_tools/mdtools.py	/^    def setAtomGroup(self, ind, group):$/;"	m	class:Groups
+setGroupRep	adaptive_md_tools/mdtools.py	/^    def setGroupRep(self, ind, group):$/;"	m	class:Groups
+set_acc	adaptive_md_tools/indicator_mda_selections.py	/^    def set_acc(self, u):$/;"	m	class:Selections
+set_all_acc	adaptive_md_tools/indicator_mda_selections.py	/^    def set_all_acc(self, u):$/;"	m	class:Selections
+set_all_protons	adaptive_md_tools/indicator_mda_selections.py	/^    def set_all_protons(self, u):$/;"	m	class:Selections
+set_dah	adaptive_md_tools/indicator_mda_selections.py	/^    def set_dah(self, u, donor_ind):$/;"	m	class:Selections
+set_donor	adaptive_md_tools/indicator_mda_selections.py	/^    def set_donor(self, u, donor_ind):$/;"	m	class:Selections
+set_donor	adaptive_md_tools/indicator_mda_selections.py	/^    def set_donor(self, u, donor_ind):$/;"	m	class:SelectionsInd2
+set_donors	adaptive_md_tools/indicator_mda_selections.py	/^    def set_donors(self, u, donor_ind):$/;"	m	class:SelectionsInd2
+set_indicator	adaptive_md_tools/AdaptiveMD.py	/^def set_indicator(keywords):$/;"	f
+set_ofi	adaptive_md_tools/mdtools.py	/^    def set_ofi(self, of_path):$/;"	m	class:Topology
+set_one_donor	adaptive_md_tools/indicator_mda_selections.py	/^    def set_one_donor(self, u, donor_ind):$/;"	m	class:Selections
+set_original_acc	adaptive_md_tools/indicator_mda_selections.py	/^    def set_original_acc(self, u):$/;"	m	class:Selections
+set_output_freq	adaptive_md_tools/indicator.py	/^    def set_output_freq(self, freq, prefix=''):$/;"	m	class:Indicator
+set_proton	adaptive_md_tools/indicator_mda_selections.py	/^    def set_proton(self, u, atom_ind):$/;"	m	class:Selections
+set_proton	adaptive_md_tools/indicator_mda_selections.py	/^    def set_proton(self, u, donor_ind):$/;"	m	class:SelectionsInd1
+setup_requires	setup.py	/^    setup_requires=[$/;"	v
+setup_selection	adaptive_md_tools/core_loop.py	/^def setup_selection(u, all_u, indi, keywords):$/;"	f
+short_description	setup.py	/^short_description = __doc__.split("\\n")$/;"	v
+spec	devtools/scripts/create_conda_env.py	/^            spec = import_util.spec_from_file_location('ruamel_yaml', ruamel_yaml_path)$/;"	v
+temp_cd	devtools/scripts/create_conda_env.py	/^def temp_cd():$/;"	f
+temp_file_name	devtools/scripts/create_conda_env.py	/^    temp_file_name = "temp_script.yaml"$/;"	v
+testGroups	adaptive_md_tools/mdtools.py	/^def testGroups(groupsPath='.\/test_files\/groups.log'):$/;"	f
+testPSFBonds	adaptive_md_tools/mdtools.py	/^def testPSFBonds(psfPath='.\/test_files\/h3o.psf'):$/;"	f
+test_adaptive_md_tools_imported	adaptive_md_tools/tests/test_adaptive_md_tools.py	/^def test_adaptive_md_tools_imported():$/;"	f
+transferAtom	adaptive_md_tools/mdtools.py	/^    def transferAtom(self, atom, new_atom):$/;"	m	class:Groups
+user_options	versioneer.py	/^        user_options = []$/;"	v	class:get_cmdclass.cmd_version
+version	setup.py	/^    version=versioneer.get_version(),$/;"	v
+versions	adaptive_md_tools/__init__.py	/^versions = get_versions()$/;"	v
+versions_from_file	versioneer.py	/^def versions_from_file(filename):$/;"	f
+versions_from_parentdir	adaptive_md_tools/_version.py	/^def versions_from_parentdir(parentdir_prefix, root, verbose):$/;"	f
+versions_from_parentdir	versioneer.py	/^def versions_from_parentdir(parentdir_prefix, root, verbose):$/;"	f
+wrap_coords	adaptive_md_tools/mdtools.py	/^def wrap_coords(cell_x, cell_y, cell_z, x, y, z, num_atoms, center):$/;"	f
+wrap_dimension	adaptive_md_tools/mdtools.py	/^    def wrap_dimension(x, cell_x):$/;"	f	function:wrap_coords
+write_atom	adaptive_md_tools/mdtools.py	/^    def write_atom(self):$/;"	m	class:Topology
+write_bond	adaptive_md_tools/mdtools.py	/^    def write_bond(self, bonds):$/;"	m	class:Topology
+write_mol2	adaptive_md_tools/mdtools.py	/^    def write_mol2(self, bonds):$/;"	m	class:Topology
+write_natom	adaptive_md_tools/mdtools.py	/^    def write_natom(self):$/;"	m	class:Topology
+write_partitions	adaptive_md_tools/core_loop.py	/^def write_partitions(groups, ts, elements, center, keywords):$/;"	f
+write_psf	adaptive_md_tools/mdtools.py	/^    def write_psf(self, bonds, num_atoms, start_lines=None):$/;"	m	class:Topology
+write_section	adaptive_md_tools/mdtools.py	/^    def write_section(self, tstring, inds, groups_per_line):$/;"	m	class:Topology
+write_title	adaptive_md_tools/mdtools.py	/^    def write_title(self):$/;"	m	class:Topology
+write_to_version_file	versioneer.py	/^def write_to_version_file(filename, versions):$/;"	f
+yaml	devtools/scripts/create_conda_env.py	/^            yaml = spec.loader.load_module()$/;"	v
+yaml_script	devtools/scripts/create_conda_env.py	/^    yaml_script = loader(handle.read())$/;"	v

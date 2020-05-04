@@ -14,7 +14,8 @@ import argparse
 import numpy as np
 import MDAnalysis as mda
 from MDAnalysis.transformations.translate import center_in_box
-from MDAnalysis.lib._cz
+#from MDAnalysis.lib._cz
+
 def get_args(args=None):
     """ This is written as a default function to put at beginning of all Python
     scripts which require command line arguments. This uses the argparse module

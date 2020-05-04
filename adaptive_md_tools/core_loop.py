@@ -16,12 +16,13 @@ __license__ = 'CC-BY-SA'
 __version__ = '0.1'
 __email__ = 'adam.duster@ucdenver.edu'
 __status__ = 'Development'
-from scipy.spatial.distance import cdist
 import os
 import MDAnalysis as mda
 from .indicator import *
 from .indicator_mda_selections import *
+from adaptive_md_tools.ap_algorithms import write_partitions, write_sispa
 import adaptive_md_tools.mdtools as mdtools
+
 import sys
 import gc
 
@@ -71,7 +72,7 @@ def core_loop(keywords, indi):
         ap = True
 
     #Setup the elements
-    if keywords["write_partitions"]:
+    if keywords["write_partitions"] or keywords["write_sispa"]:
         try:
             elements = mdtools.get_elements(keywords["elements_file"],
                                             keywords["elements_file_type"])
@@ -81,17 +82,31 @@ def core_loop(keywords, indi):
         if elements.size != u.atoms.n_atoms:
             print("Error, number of elements does not match with system # els")
             sys.exit()
+    if keywords["write_partitions"]:
         if not os.path.isdir(keywords["write_folder"]):
             try:
                 os.mkdir(keywords["write_folder"])
             except OSError:
                 sys.exit("Error making partitions directory")
+    if keywords["write_sispa"]:
+        if not os.path.isdir(keywords["sispa_folder"]):
+            try:
+                os.mkdir(keywords["sispa_folder"])
+            except OSError:
+                sys.exit("Error making partitions directory")
     if keywords["out_coords"]:
-        try:
-            W = mda.Writer(keywords["out_coords"], sels.all.n_atoms)
-            # Wdebug = mda.Writer('debug.dcd', sels.sys.n_atoms)
-        except IOError:
-            print("Error opening output coord file: " + keywords["output"])
+        if keywords["ind_method"] > -1:
+            try:
+                W = mda.Writer(keywords["out_coords"], sels.all.n_atoms)
+            except IOError:
+                print("Error opening output coord file: " + keywords["out_coords"])
+                sys.exit('Error opining trajectory out with indicator')
+        else:
+            try:
+                W = mda.Writer(keywords["out_coords"], sels.sys.n_atoms)
+            except IOError:
+                print("Error opening output coord file: " + keywords["out_coords"])
+                sys.exit('Error opining trajectory out with indicator')
 
     # Main Loop
     nsteps = len(u.trajectory)
@@ -118,45 +133,51 @@ def core_loop(keywords, indi):
             # Wrap atoms into the box
             sels.sys.wrap(compound=keywords['wrap_style'], center='com')
 
-        if not keywords["allow_hop"]:
-            if ts.frame % keywords["write_freq"] != 0:
-                continue
-        if keywords["ratio_topology_change"]:
-            ratio_topology_change(u, indi, sels, keywords)
+        if keywords["ind_method"] == -1:
+            if keywords["out_coords"]:
+                W.write(sels.sys)
+        elif keywords["ind_method"] > -1:
+            if not keywords["allow_hop"]:
+                if ts.frame % keywords["write_freq"] != 0:
+                    continue
+            if keywords["ratio_topology_change"]:
+                ratio_topology_change(u, indi, sels, keywords)
+                if indi.hop and keywords["allow_hop"]:
+                    u, all_u = do_hop(u,
+                                      all_u,
+                                      indi,
+                                      ts,
+                                      keywords,
+                                      sels,
+                                      groups,
+                                      intra=True)
+
+            calc_indicator(u, all_u, indi, sels, keywords)
+
+            if keywords["wrap"]:
+                # Now translate the indicator into the center of the box and wrap
+                ind_translate = box_center - indi.x_i
+                translation_vector += ind_translate
+                # The below wrap commands are useful to output a debug trajectory.
+                sels.all.translate(ind_translate)
+                sels.all.wrap(compound=keywords['wrap_style'], center='com')
+
+            # Update the topology and AP groups
             if indi.hop and keywords["allow_hop"]:
-                u, all_u = do_hop(u,
-                                  all_u,
-                                  indi,
-                                  ts,
-                                  keywords,
-                                  sels,
-                                  groups,
-                                  intra=True)
+                u, all_u = do_hop(u, all_u, indi, ts, keywords, sels, groups)
+                if keywords["wrap"]:
+                    sels.sys.translate(translation_vector)
+                    sels.sys.wrap(compound=keywords['wrap_style'], center='com')
+                    sels.all.translate(translation_vector)
+                    sels.all.wrap(compound=keywords['wrap_style'], center='com')
 
-        calc_indicator(u, all_u, indi, sels, keywords)
+            if keywords["out_coords"]:
+                W.write(sels.all)
 
-        if keywords["wrap"]:
-            # Now translate the indicator into the center of the box and wrap
-            ind_translate = box_center - indi.x_i
-            translation_vector += ind_translate
-            # The below wrap commands are useful to output a debug trajectory.
-            sels.all.translate(ind_translate)
-            sels.all.wrap(compound=keywords['wrap_style'], center='com')
-
-        # Wdebug.write(sels.sys)
-        if keywords["out_coords"]:
-            W.write(sels.all)
-
-        # Update the topology and AP groups
-        if indi.hop and keywords["allow_hop"]:
-            u, all_u = do_hop(u, all_u, indi, ts, keywords, sels, groups)
-        if keywords["wrap"]:
-            sels.sys.translate(translation_vector)
-            sels.sys.wrap(compound=keywords['wrap_style'], center='com')
-            sels.all.translate(translation_vector)
-            sels.all.wrap(compound=keywords['wrap_style'], center='com')
-
-        # Write the coordinates
+        # Write the coordinates for sispa
+        if keywords["write_sispa"] and\
+                ts.frame % keywords["write_freq"] == 0:
+            write_sispa(groups, ts, elements, indi.x_i, keywords)
 
         # Output the xyz coordinates if we are making xys for AP
         if keywords["write_partitions"] and\
@@ -905,81 +926,6 @@ def add_indicator_to_universe(u,
         all_u = mda.Merge(all_atoms, ind_sel)
     all_u.dimensions = u.dimensions
     return all_u
-
-
-def write_partitions(groups, ts, elements, center, keywords):
-    """
-    Write out the partitions that would be calculated if this were an adaptive
-    partitioning calculation.
-
-    Parameters
-    ----------
-    groups: mdtools.Groups
-        A groups object containing the adaptive partitioning groups
-    ts: MDAnalysis.trajectory.timestep
-        The current timestep
-    elements:
-    center: ndarray of floats with shape (3)
-        The center of the active zone
-    keywords: dict
-        Program parameters
-    """
-    from itertools import combinations
-
-    # Set up the variables
-    r_a = keywords["active_radius"]
-    r_b = keywords["buffer_radius"]
-    r_ap = r_a + r_b
-
-    # Get the group locations from the universe object
-    group_positions = ts.positions[groups.groupReps]
-
-    # Calculate the pairwise distances between the atoms and the center
-    cen = center.reshape(1, 3)
-    dists = cdist(group_positions, cen).flatten()
-
-    # Set up the ap zones
-    active_groups = np.argwhere(dists < r_a)
-    buffer_groups = np.argwhere((dists >= r_a) & (dists < r_ap))
-
-    # Calculate the partitions
-    partition_groups = [[*active_groups]]
-    for order in range(1, keywords["pap_order"] + 1):
-        group_combos = list(combinations(buffer_groups, order))
-        for combo in group_combos:
-            partition_groups.append([*active_groups, *combo])
-
-    # Calculate the atom indicies in the partitions
-    partition_inds = []
-    for i, p in enumerate(partition_groups):
-        partition_inds.append([])
-        for g in p:
-            partition_inds[i].extend(groups.groupAtoms[np.asscalar(g)])
-
-    # Write the partitions
-    for i, p in enumerate(partition_inds):
-        if keywords["ap_write_probability"]:
-            if np.random.random() > keywords["ap_write_probability"]:
-                continue
-        # generate the output name
-        of_path = keywords["write_folder"]
-        if keywords["write_prefix"] != "":
-            of_path += keywords["write_prefix"] + '-'
-        of_path += "{0:06d}_{1:03d}.".format(ts.frame, i)
-        # write the file
-        if keywords["write_type"] == "xyz":
-            of_path += "xyz"
-            ofi = open(of_path, 'w')
-            mdtools.print_xyz(len(p),
-                              ts.positions[p, 0],
-                              ts.positions[p, 1],
-                              ts.positions[p, 2],
-                              elements[p],
-                              ofi=ofi)
-            ofi.close()
-        else:
-            print("Unsupported output type")
-            sys.exit()
 
 
 def initialize_universe(struct, coords, xdim, ydim, zdim, frame=0):

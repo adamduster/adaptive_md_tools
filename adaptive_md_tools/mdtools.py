@@ -1023,6 +1023,31 @@ def wrap_coords(cell_x, cell_y, cell_z, x, y, z, num_atoms, center):
 
 
 def print_xyz(num_atoms, x, y, z, atom_type, title=None, ofi=None):
+    """
+    Print out a geometry with 4 float columns and the atom type
+
+    Parameters
+    ----------
+    num_atoms: int
+        The number of atoms in the geometry
+    x: list of floats
+        The x coordinates of the atom
+    y: list of floats
+        The y coordinates of the atom
+    z: list of floats
+        The z coordinates of the atom
+    atom_type: list of int or str
+        The elmental symbol or atomic number for the atom
+    title: string, optional
+        The title line for the xyz file
+    ofi: _io.TextIOWrapper
+        Optional location to print the xyz (default is sys.stdout)
+
+    Returns
+    -------
+        None
+    """
+
     print(num_atoms, file=ofi)
     if title:
         print(title[:-1], file=ofi)
@@ -1030,8 +1055,44 @@ def print_xyz(num_atoms, x, y, z, atom_type, title=None, ofi=None):
         print("", file=ofi)
     l = "{0:2}    {1:10.6f}    {2:10.6f}    {3:10.6f}"
     for i in range(num_atoms):
-        print(l.format(atom_type[i], x[i],y[i], z[i]), file=ofi)
-    pass
+        print(l.format(atom_type[i], x[i], y[i], z[i]), file=ofi)
+
+
+def print_sispa(num_atoms, x, y, z, pi, atom_type, title=None, ofi=None):
+    """
+    Print out a geometry with 4 float columns and the atom type
+
+    Parameters
+    ----------
+    num_atoms: int
+        The number of atoms in the geometry
+    x: list of floats
+        The x coordinates of the atom
+    y: list of floats
+        The y coordinates of the atom
+    z: list of floats
+        The z coordinates of the atom
+    pi: list of floats
+        The pi (or other float) value for the atom
+    atom_type: list of int or str
+        The elmental symbol or atomic number for the atom
+    title: string, optional
+        The title line for the xyz file
+    ofi: _io.TextIOWrapper
+        Optional location to print the xyz (default is sys.stdout)
+
+    Returns
+    -------
+        None
+    """
+    print(num_atoms, file=ofi)
+    if title:
+        print(title[:-1], file=ofi)
+    else:
+        print("", file=ofi)
+    l = "{0:2}    {1:10.6f}    {2:10.6f}    {3:10.6f}           {4:10e}"
+    for i in range(num_atoms):
+        print(l.format(atom_type[i], x[i], y[i], z[i], pi[i]), file=ofi)
 
 
 def print_xyz_traj(coords, types, title=None, ofi=None):
