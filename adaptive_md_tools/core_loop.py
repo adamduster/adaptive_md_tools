@@ -136,6 +136,7 @@ def core_loop(keywords, indi):
         if keywords["ind_method"] == -1:
             if keywords["out_coords"]:
                 W.write(sels.sys)
+            indi.x_i = box_center # Reset this for print_partitions to pass as center
         elif keywords["ind_method"] > -1:
             if not keywords["allow_hop"]:
                 if ts.frame % keywords["write_freq"] != 0:
