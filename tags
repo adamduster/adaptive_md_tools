@@ -50,16 +50,20 @@ VersioneerConfig	adaptive_md_tools/_version.py	/^class VersioneerConfig:$/;"	c
 VersioneerConfig	versioneer.py	/^class VersioneerConfig:$/;"	c
 Wrapping simulations	docs/manual.tex	/^\\end{enumerate}$/;"	P
 Writing Partitions	docs/manual.tex	/^\\end{enumerate}$/;"	P
+__author__	adaptive_md_tools/ap_algorithms.py	/^__author__ = 'Adam Duster'$/;"	v
 __author__	adaptive_md_tools/core_loop.py	/^__author__ = 'Adam Duster'$/;"	v
 __author__	adaptive_md_tools/mdtools.py	/^__author__ = 'Adam Duster'$/;"	v
 __author__	adaptive_md_tools/wrap_xst.py	/^__author__ = 'Adam Duster'$/;"	v
+__copyright__	adaptive_md_tools/ap_algorithms.py	/^__copyright__ = ''$/;"	v
 __copyright__	adaptive_md_tools/core_loop.py	/^__copyright__ = ''$/;"	v
 __copyright__	adaptive_md_tools/mdtools.py	/^__copyright__ = ''$/;"	v
 __copyright__	adaptive_md_tools/wrap_xst.py	/^__copyright__ = ''$/;"	v
+__credits__	adaptive_md_tools/ap_algorithms.py	/^__credits__ = ['Adam Duster']$/;"	v
 __credits__	adaptive_md_tools/core_loop.py	/^__credits__ = ['Adam Duster']$/;"	v
 __credits__	adaptive_md_tools/mdtools.py	/^__credits__ = ['Adam Duster']$/;"	v
 __credits__	adaptive_md_tools/wrap_xst.py	/^__credits__ = ['Adam Duster']$/;"	v
 __el2num	adaptive_md_tools/mdtools.py	/^__el2num = {'H':1,$/;"	v
+__email__	adaptive_md_tools/ap_algorithms.py	/^__email__ = 'adam.duster@ucdenver.edu'$/;"	v
 __email__	adaptive_md_tools/core_loop.py	/^__email__ = 'adam.duster@ucdenver.edu'$/;"	v
 __email__	adaptive_md_tools/mdtools.py	/^__email__ = 'adam.duster@ucdenver.edu'$/;"	v
 __email__	adaptive_md_tools/wrap_xst.py	/^__email__ = 'adam.duster@ucdenver.edu'$/;"	v
@@ -83,14 +87,17 @@ __init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, numGroups, numAto
 __init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, of_path=None, num_atoms=0):$/;"	m	class:Topology
 __init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, pdbPath, required=None):$/;"	m	class:PDBFile
 __init__	adaptive_md_tools/mdtools.py	/^    def __init__(self, psfPath):$/;"	m	class:PSFFile
+__license__	adaptive_md_tools/ap_algorithms.py	/^__license__ = 'CC-BY-SA'$/;"	v
 __license__	adaptive_md_tools/core_loop.py	/^__license__ = 'CC-BY-SA'$/;"	v
 __license__	adaptive_md_tools/mdtools.py	/^__license__ = 'CC-BY-SA'$/;"	v
 __license__	adaptive_md_tools/wrap_xst.py	/^__license__ = 'CC-BY-SA'$/;"	v
 __num2el	adaptive_md_tools/mdtools.py	/^__num2el = {1:'H',$/;"	v
+__status__	adaptive_md_tools/ap_algorithms.py	/^__status__ = 'Development'$/;"	v
 __status__	adaptive_md_tools/core_loop.py	/^__status__ = 'Development'$/;"	v
 __status__	adaptive_md_tools/mdtools.py	/^__status__ = 'Development'$/;"	v
 __status__	adaptive_md_tools/wrap_xst.py	/^__status__ = 'Development'$/;"	v
 __version__	adaptive_md_tools/__init__.py	/^__version__ = versions['version']$/;"	v
+__version__	adaptive_md_tools/ap_algorithms.py	/^__version__ = '0.1'$/;"	v
 __version__	adaptive_md_tools/core_loop.py	/^__version__ = '0.1'$/;"	v
 __version__	adaptive_md_tools/mdtools.py	/^__version__ = '0.1'$/;"	v
 __version__	adaptive_md_tools/wrap_xst.py	/^__version__ = '0.1'$/;"	v
@@ -152,6 +159,7 @@ do_vcs_install	versioneer.py	/^def do_vcs_install(manifest_in, versionfile_sourc
 end	docs/make.bat	/^:end$/;"	l
 errors	versioneer.py	/^        errors = do_setup()$/;"	v
 finalize_options	versioneer.py	/^        def finalize_options(self):$/;"	m	class:get_cmdclass.cmd_version
+find_active_buffer_groups	adaptive_md_tools/ap_algorithms.py	/^def find_active_buffer_groups(active_radius, buffer_radius, center,$/;"	f
 fos	adaptive_md_tools/indicator.py	/^    def fos(x):$/;"	m	class:MCEC
 get	versioneer.py	/^    def get(parser, name):$/;"	f	function:get_config_from_root
 getBonds	adaptive_md_tools/mdtools.py	/^    def getBonds(self):$/;"	m	class:Mol2File
@@ -220,6 +228,7 @@ plus_or_dot	versioneer.py	/^def plus_or_dot(pieces):$/;"	f
 printBonds	adaptive_md_tools/mdtools.py	/^    def printBonds(self, style=None):$/;"	m	class:Bonds
 printGroups	adaptive_md_tools/mdtools.py	/^    def printGroups(self, style='groups.log'):$/;"	m	class:Groups
 print_rdh0	adaptive_md_tools/indicator.py	/^    def print_rdh0(self, ofi=None):$/;"	m	class:Indicator
+print_sispa	adaptive_md_tools/mdtools.py	/^def print_sispa(num_atoms, x, y, z, pi, atom_type, title=None, ofi=None):$/;"	f
 print_xyz	adaptive_md_tools/mdtools.py	/^def print_xyz(num_atoms, x, y, z, atom_type, title=None, ofi=None):$/;"	f
 print_xyz_traj	adaptive_md_tools/mdtools.py	/^def print_xyz_traj(coords, types, title=None, ofi=None):$/;"	f
 pytest_runner	setup.py	/^pytest_runner = ['pytest-runner'] if needs_pytest else []$/;"	v
@@ -302,9 +311,10 @@ write_atom	adaptive_md_tools/mdtools.py	/^    def write_atom(self):$/;"	m	class:
 write_bond	adaptive_md_tools/mdtools.py	/^    def write_bond(self, bonds):$/;"	m	class:Topology
 write_mol2	adaptive_md_tools/mdtools.py	/^    def write_mol2(self, bonds):$/;"	m	class:Topology
 write_natom	adaptive_md_tools/mdtools.py	/^    def write_natom(self):$/;"	m	class:Topology
-write_partitions	adaptive_md_tools/core_loop.py	/^def write_partitions(groups, ts, elements, center, keywords):$/;"	f
+write_partitions	adaptive_md_tools/ap_algorithms.py	/^def write_partitions(groups, ts, elements, center, keywords):$/;"	f
 write_psf	adaptive_md_tools/mdtools.py	/^    def write_psf(self, bonds, num_atoms, start_lines=None):$/;"	m	class:Topology
 write_section	adaptive_md_tools/mdtools.py	/^    def write_section(self, tstring, inds, groups_per_line):$/;"	m	class:Topology
+write_sispa	adaptive_md_tools/ap_algorithms.py	/^def write_sispa(groups, ts, elements, center, keywords):$/;"	f
 write_title	adaptive_md_tools/mdtools.py	/^    def write_title(self):$/;"	m	class:Topology
 write_to_version_file	versioneer.py	/^def write_to_version_file(filename, versions):$/;"	f
 yaml	devtools/scripts/create_conda_env.py	/^            yaml = spec.loader.load_module()$/;"	v
