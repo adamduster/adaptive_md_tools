@@ -127,7 +127,13 @@ def core_loop(keywords, indi):
 
             # Translate the no-indicator system such that the donor is in the
             # center of the box
-            translation_vector = box_center - donor_coords
+            try:
+                translation_vector = box_center - donor_coords
+            except:
+                if donor_coords.size > 3:
+                    print("Error, multiple donor atoms selected for translation")
+                    print("If you meant to select one atom, do you have multiple donor atom types within the same residue?")
+                    sys.exit()
             sels.sys.translate(translation_vector)
 
             # Wrap atoms into the box

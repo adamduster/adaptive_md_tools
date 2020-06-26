@@ -53,7 +53,7 @@ def write_sispa(groups, ts, elements, center, keywords):
     prefix = ''
     if keywords["write_prefix"] != "":
         prefix = keywords["write_prefix"] + '-'
-    of_path = prefix + "sispa-{0:06d}.xyz".format(ts.frame)
+    of_path = prefix + "{0:06d}.xyz".format(ts.frame)
     of_path = os.path.join(keywords["sispa_folder"], of_path)
 
     # write the file
