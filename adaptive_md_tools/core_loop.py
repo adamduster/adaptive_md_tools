@@ -169,6 +169,9 @@ def core_loop(keywords, indi):
                 sels.all.translate(ind_translate)
                 sels.all.wrap(compound=keywords['wrap_style'], center='com')
 
+            if keywords["out_coords"]:
+                W.write(sels.all)
+
             # Update the topology and AP groups
             if indi.hop and keywords["allow_hop"]:
                 u, all_u = do_hop(u, all_u, indi, ts, keywords, sels, groups)
@@ -177,9 +180,6 @@ def core_loop(keywords, indi):
                     sels.sys.wrap(compound=keywords['wrap_style'], center='com')
                     sels.all.translate(translation_vector)
                     sels.all.wrap(compound=keywords['wrap_style'], center='com')
-
-            if keywords["out_coords"]:
-                W.write(sels.all)
 
         # Write the coordinates for sispa
         if keywords["write_sispa"] and\
