@@ -42,7 +42,7 @@ class Indicator:
         self.output_freq = 0
         # Where to print indicator reaction coordinate information?
         self.log_path = 'indicator.log'
-        self.xyz_path = 'indicator.xyz'
+        self.xyz_path = 'donor.xyz'
         # Where to print debug information?
         self.ofi = sys.stdout
         # Log file object
@@ -51,6 +51,11 @@ class Indicator:
         self.max_xyz_atoms = 5
         # This step
         self.step = 0
+
+    def initialize_outind(self, path):
+        "Open the outind file"
+        self.indfi = open(path, 'w')
+        print("In indicator outfile, first atom is indicator 2nd mcec")
 
     def set_output_freq(self, freq, prefix=''):
         """
@@ -1083,12 +1088,10 @@ class Indicator9(Indicator4):
 
 class Indicator11(Indicator):
     """
-    This implementation of the indicator is the one I developed but
-    the distance between the donor center of mass and the kth donor
-    are added to the final result.
+    This is equivalent to 4 and was only added because I didn't realize
+    that it was the same at the time...
 
-    This accounts for the distance between each of the k-th donors and the
-    center of mass.
+    Do not use it.
     """
 
     # TODO: Finish this documentation
@@ -1245,6 +1248,467 @@ class Indicator11(Indicator):
         self.x_i += d_com[0][:]
         self.x_i /= gI
 
+
+class VariablePower(Indicator4):
+    """
+    This indicator exponentiates the g(x) variable using x_min, s, and t.
+    It is chosen with Indicator 12 in the code.
+    """
+    def __init__(self, s=4., t=6.):
+        Indicator4.__init__(self)
+        self.s = s
+        self.t = t
+    def set_output_freq(self, freq, prefix=''):
+        """
+        Initialize variables for writing the xyz and the log file
+
+        Parameters
+        ----------
+        freq: int
+            output frequency
+        prefix: str
+            file prefix
+        """
+        try:
+            int(freq)
+        except TypeError:
+            sys.exit("Error: indicator output frequency must be an integer")
+        if freq > 0:
+            self.output_freq = freq
+            if prefix != '':
+                self.log_path = prefix + '-' + self.log_path
+                self.xyz_path = prefix + '-' + self.xyz_path
+            self._lfi = open(self.log_path, 'w')
+            self._lfi.write("# Step           rho             dr         minx         maxg\n")
+            self._xyz = open(self.xyz_path, 'w')
+
+    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, ofi=None):
+        """
+        This is the main subroutine for calculating the indicator
+
+        Parameters
+        ----------
+        x_d: ndarray of float
+            coordinates with shape [3]
+        x_as: ndarray of float
+            acceptor coordinates each with shape [j,3]
+        x_hms: ndarray of float
+            hydrogen coordinates each with shape [m,3]
+        type_d: str
+            donor type to link with rho parameters
+        type_as: list of str
+            acceptor types to link with rho parameters
+        ofi: file object
+            where to print stuff
+        """
+        cstr = "{0:0.5f}   {1:0.5f}   {2:0.5f}\n"
+        icstr = "{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n"
+
+        # Set donor coordinates
+        try:
+            self.x_d[:] = x_d[:]
+        except RuntimeError("calc_indicator 1"):
+            print("Error setting donor coordinates")
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print("Warning: NO ACCEPTOR")
+                print("Setting indicator location to donor coordinates")
+                self.x_i[:] = self.x_d[:]
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError("calc_indicator 2"):
+            print("Error setting acceptor coordinates")
+            sys.exit()
+
+        # Set hydrogen coordinates
+        self.num_h = x_hms.shape[0]
+        if self.num_h <= 0:
+            print("Error, no protons for indicator")
+            raise RuntimeError("calc_indicator 4")
+        try:
+            self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+            self.x_hs = x_hms[:, :]
+        except RuntimeError("Calc indicator 3"):
+            print("Error setting Hydrogen coordinates")
+            sys.exit()
+
+        # Initialize the rho parameters
+        try:
+            rdh0 = self.rxh[type_d]
+        except RuntimeError:
+            print("Error hashing donor. Is donor in rdh0 list? is only one"
+                  " donor passed to subroutine?")
+            raise
+        pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+        pmj0 = rdh0 / self.rlist
+
+        # Initialize the other arrays
+        dims = (self.num_h, self.num_acceptors)
+        pmjs = np.zeros(dims, dtype=float)
+        xmjs = np.zeros(dims, dtype=float)
+        gmjs = np.zeros(dims, dtype=float)
+        xmjes= np.zeros(dims, dtype=float)
+        self.hop = []
+
+        #Begin the calculations
+        largest_p = 0
+        dr = 0
+        for m in range(self.num_h):
+            for j in range(self.num_acceptors):
+                pmjs[m, j] = self.calc_pmj(self.x_d, self.x_as[j], self.x_hs[m])
+                if pmjs[m, j] > pmaxs[j]:
+                    self.hop.append((m, j, pmjs[m, j]))
+                if pmjs[m, j] > largest_p:
+                    largest_p = pmjs[m, j]
+                    dr = np.linalg.norm(self.x_d - self.x_hs[m]) - \
+                         np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                #gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+        xmjes = self.calc_xmje(xmjs, xmjes, self.s, self.t)
+        for m in range(self.num_h):
+            for j in range(self.num_acceptors):
+                gmjs[m, j] = self.calc_gmj(xmjs[m, j], xmjes[m, j])
+        minx, maxg = self.calc_vars(xmjs, gmjs)
+        gI = self.calc_gI(gmjs)
+        self.x_i[:] = self.x_d[:]
+        for j in range(self.num_acceptors):
+            for m in range(self.num_h):
+                self.x_i[:] += gmjs[m, j] * x_as[j]
+        self.x_i *= 1. / gI
+
+        if self.print_all:
+            self.ofi.write("Detailed Stats\n")
+            self.ofi.write("Donor Coords:\n")
+            self.ofi.write(cstr.format(*self.x_d))
+            self.ofi.write("Acceptor Coords:\n")
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write("Proton Coords\n")
+            for m in range(self.num_h):
+                self.ofi.write(icstr.format(m, *self.x_hs[m]))
+            self.ofi.write("pmjs\n")
+            print(pmjs, file=ofi)
+            self.ofi.write("xmjs\n")
+            print(xmjs, file=ofi)
+            self.ofi.write("gmjs\n")
+            print(gmjs, file=ofi)
+            self.ofi.write("gI\n")
+            print(gI, file=ofi)
+            self.ofi.write("Hops:\n")
+            print(self.hop, file=ofi)
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, minx, maxg, coords=self.x_d.reshape(-1, 3))
+        self.step += 1
+        return 0
+
+    @staticmethod
+    @jit(nopython=True)
+    def calc_vars(amx, gmjs):
+        """provides minimum variables for analysis"""
+        minx = 1
+        maxg = 0
+        for m in range(len(amx)):
+            for j in range(len(amx[0])):
+                if amx[m,j] >= 1:
+                    nothing = 0
+                elif amx[m, j] < 0:
+                    minx = 0
+                    maxg = gmjs[m, j]
+                elif amx[m, j] < minx and amx[m, j] >=0:
+                    minx = amx[m, j]
+                    maxg = gmjs[m, j]
+        return minx, maxg
+
+    def _write_log(self, p, dr, minx, maxg, coords=None):
+        """
+        Write the results of a step
+        Write the rho and dr coordinates
+        If a matrix of coordinates is present, write them to the xyz file
+
+        Parameters
+        ----------
+        :param p:
+        :param dr:
+        :param minx: float
+        :param maxg: float
+        :param coords:
+        :return:
+        """
+        self._lfi.write('{0:10d}  {1:10.6f}   {2:10.6f}   {3:10.6f}   {4:10.6f}\n'.format(
+            self.step, p, dr, minx, maxg))
+
+        if coords is None:
+            return
+        #if not coords.any():
+        #    return
+
+        natoms = coords.shape[0]
+
+        try:
+            self._xyz.write('%d\n' % self.max_xyz_atoms)
+        except:
+            sys.exit("Error writing number of atoms")
+        self._xyz.write('\n')
+
+        xyz_str = "{3}     {0:12.6}     {1:12.6f}     {2:12.6f}\n"
+        els = ["Ti", "V ", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge"]
+        try:
+            for i in range(natoms):
+                self._xyz.write(xyz_str.format(*coords[i], els[i]))
+            for j in range(i + 1, self.max_xyz_atoms):
+                self._xyz.write(xyz_str.format(0., 0., 0., els[j]))
+        except IOError:
+            print("Error writing coords")
+            raise
+        self._lfi.flush()
+        return
+    @staticmethod
+    @jit(nopython=True)
+    def calc_xmje(amx, xmjes, s, t):
+        """calculate the variable B for g(x). This is the exponent that deals
+        with how much power must be added to smoothing function
+
+        Parameters
+        ----------
+        amx: xmjs as ndrray
+        xmjes: empty ndarray for exponents
+        s: float for s parameter in exponent
+        t: float for t parameter in exponent
+
+        Returns
+        -------
+        xmjes: ndarray
+        """
+        min =1
+        for m in range(len(amx)):
+            for j in range(len(amx[0])):
+                if amx[m, j] >= 1:
+                    xmjes[m, j] = 1
+                elif amx[m, j] < 0:
+                    xmjes[m, j] = 1
+                    min = 0
+                elif amx[m, j] < min and amx[m, j] >=0:
+                    min = amx[m,j]
+        for m in range(len(amx)):
+            for j in range(len(amx[0])):
+                if amx[m, j] >= 0 and amx[m, j] < 1:
+                    xmjes[m, j] = float(t + (amx[m, j] - min)*s)
+                    """The power level goes from 1 to 10 for B"""
+        return xmjes
+
+    @staticmethod
+    @jit(nopython=True)
+    def calc_gmj(xmj, xmjes):
+
+        if 1 <= xmj:
+            gmj = 0
+        elif xmj < 0:
+            gmj = 1
+        else:
+            gmj = (-6 * xmj**5 + 15 * xmj**4 - 10 * xmj**3 + 1)**xmjes
+        return gmj
+
+class Softmax(Indicator4):
+    def __init__(self, a=0.05, zmax=30):
+        Indicator4.__init__(self)
+        self.a = a
+        self.zmax = zmax
+    pass
+
+    def calc_indicator(self, x_d, x_as, x_hms, type_d, type_as, ofi=None):
+        """
+        This is the main subroutine for calculating the indicator
+
+        Parameters
+        ----------
+        x_d: ndarray of float
+            coordinates with shape [3]
+        x_as: ndarray of float
+            acceptor coordinates each with shape [j,3]
+        x_hms: ndarray of float
+            hydrogen coordinates each with shape [m,3]
+        type_d: str
+            donor type to link with rho parameters
+        type_as: list of str
+            acceptor types to link with rho parameters
+        ofi: file object
+            where to print stuff
+        """
+        cstr = "{0:0.5f}   {1:0.5f}   {2:0.5f}\n"
+        icstr = "{0:9d}   {1:9.5f}   {2:9.5f}   {3:9.5f}\n"
+
+        # Set donor coordinates
+        try:
+            self.x_d[:] = x_d[:]
+        except RuntimeError("calc_indicator 1"):
+            print("Error setting donor coordinates")
+            sys.exit()
+
+        # Set acceptor coordinates
+        try:
+            self.num_acceptors = x_as.shape[0]
+            if self.num_acceptors == 0:
+                print("Warning: NO ACCEPTOR")
+                print("Setting indicator location to donor coordinates")
+                self.x_i[:] = self.x_d[:]
+                return 1
+            self.x_as = np.zeros((self.num_acceptors, 3), dtype=float)
+            self.x_as[:, :] = x_as[:, :]
+        except RuntimeError("calc_indicator 2"):
+            print("Error setting acceptor coordinates")
+            sys.exit()
+
+        # Set hydrogen coordinates
+        self.num_h = x_hms.shape[0]
+        if self.num_h <= 0:
+            print("Error, no protons for indicator")
+            raise RuntimeError("calc_indicator 4")
+        try:
+            self.x_hs = np.zeros((self.num_h, 3), dtype=float)
+            self.x_hs = x_hms[:, :]
+        except RuntimeError("Calc indicator 3"):
+            print("Error setting Hydrogen coordinates")
+            sys.exit()
+
+        # Initialize the rho parameters
+        try:
+            rdh0 = self.rxh[type_d]
+        except RuntimeError:
+            print("Error hashing donor. Is donor in rdh0 list? is only one"
+                  " donor passed to subroutine?")
+            raise
+        pmaxs = np.asarray([rdh0 / (rdh0 + self.rxh[a]) for a in type_as])
+        pmj0 = rdh0 / self.rlist
+
+        # Initialize the other arrays
+        dims = (self.num_h, self.num_acceptors)
+        pmjs = np.zeros(dims, dtype=float)
+        xmjs = np.zeros(dims, dtype=float)
+        gmjs = np.zeros(dims, dtype=float)
+        zmjs = np.zeros(dims, dtype=float)
+        exmjs = np.zeros(dims, dtype=float)
+        sms = np.zeros(dims, dtype=float)
+        self.hop = []
+
+        #Begin the calculations
+        largest_p = 0
+        dr = 0
+        for m in range(self.num_h):
+            for j in range(self.num_acceptors):
+                pmjs[m, j] = self.calc_pmj(self.x_d, self.x_as[j], self.x_hs[m])
+                if pmjs[m, j] > pmaxs[j]:
+                    self.hop.append((m, j, pmjs[m, j]))
+                if pmjs[m, j] > largest_p:
+                    largest_p = pmjs[m, j]
+                    dr = np.linalg.norm(self.x_d - self.x_hs[m]) - \
+                         np.linalg.norm(self.x_as[j] - self.x_hs[m] )
+                xmjs[m, j] = self.calc_xmj(pmjs[m, j], pmj0, pmaxs[j])
+                gmjs[m, j] = self.calc_gmj(xmjs[m, j])
+        zmjs = self.calc_zmj(gmjs, zmjs)
+        sms = self.calc_sm(zmjs, xmjs, exmjs, sms, gmjs)
+        sI = self.calc_sI(sms)
+        gI = self.calc_gI(gmjs)
+        self.x_i[:] = self.x_d[:]
+        for j in range(self.num_acceptors):
+            for m in range(self.num_h):
+                self.x_i[:] += sms[m, j] * x_as[j]
+        self.x_i *= 1. / sI
+
+        if self.print_all:
+            self.ofi.write("Detailed Stats\n")
+            self.ofi.write("Donor Coords:\n")
+            self.ofi.write(cstr.format(*self.x_d))
+            self.ofi.write("Acceptor Coords:\n")
+            for j in range(self.num_acceptors):
+                self.ofi.write(icstr.format(j, *self.x_as[j]))
+            self.ofi.write("Proton Coords\n")
+            for m in range(self.num_h):
+                self.ofi.write(icstr.format(m, *self.x_hs[m]))
+            self.ofi.write("pmjs\n")
+            print(pmjs, file=ofi)
+            self.ofi.write("xmjs\n")
+            print(xmjs, file=ofi)
+            self.ofi.write("gmjs\n")
+            print(gmjs, file=ofi)
+            self.ofi.write("sms\n")
+            print(sms, file=ofi)
+            self.ofi.write("sI\n")
+            print(sI, file=ofi)
+            self.ofi.write("Hops:\n")
+            print(self.hop, file=ofi)
+        if self.output_freq:
+            if self.step % self.output_freq == 0:
+                self._write_log(largest_p, dr, coords=self.x_d.reshape(-1, 3))
+        self.step += 1
+        return 0
+
+    @staticmethod
+    @jit
+    def calc_zmj(gmjs, zmjs):
+        """
+        Calculate the softmax function zmj parameter
+
+        Parameters
+        ----------
+        gmjs: array
+            smoothing function parameters
+
+        Returns
+        ----------
+        zmjs: array
+        """
+        for m in range(len(gmjs)):
+            for j in range(len(gmjs[0])):
+                tempz=gmjs[m][j]/(1.0000000000001-gmjs[m][j])
+                if tempz > 30:
+                    zmjs[m][j] = 30
+                else:
+                    zmjs[m][j] = tempz
+        return zmjs
+    @staticmethod
+    @jit
+    def calc_sm(zmjs, xmjs, exmjs, sms, gmjs):
+        """
+        Calculates the Softmax function sz
+
+        Paremeters
+        ----------
+        zmjs: the calculated numerator vectors
+        xmjs: the calcualted xrho values
+        sms: empty array in dims of zmjs
+
+        Returns
+        ----------
+        sms: array full of softmax parameters
+        """
+        for m in range(len(zmjs)):
+            for j in range(len(zmjs[0])):
+                exmjs[m][j] = np.exp(0.05*zmjs[m][j])-1
+        denom = np.sum(exmjs)
+        for m in range(len(zmjs)):
+            for j in range(len(zmjs[0])):
+                sms[m][j] = ((np.exp(0.05*zmjs[m][j])-1)/(denom + 0.0000000000000001))*gmjs[m][j]
+        return sms
+    @staticmethod
+    @jit
+    def calc_sI(sms):
+        """
+        Calculate the normalization constant sI
+
+        Parameters
+        ----------
+        :param sms: the projection vectors
+        :type sms: np.ndarray
+        :return: the normalization constant
+        :rtype: np.float
+        """
+        return 1 + np.sum(sms)
 
 class MCEC(Indicator4):
     """
@@ -1486,6 +1950,193 @@ class MCEC(Indicator4):
         :return:
         """
         return -6 * x**5 + 15 * x**4 - 10 * x**3 + 1
+
+class EPI(Indicator4):
+    def __init__(self, c=0.0, ro=1.3, a=0.129):
+        Indicator4.__init__(self)
+        self.a = a # NOte in the equation, they say that a is a parameter but
+                   # in the equation it says d. Here we set d to a
+        self.d = self.a
+        self.ro = ro
+        self.c = c
+        self.correction_groups = None
+        # Yes this is the EPi but we can just use this as the
+        # holder for the variable to reuse as much code as possible
+        self.x_mcec = np.zeros(3)
+    def calc_mcec(self, rH, rXj, acc_types, correction_groups=None):
+        """
+        Main loop for calculating the EPI location.
+
+        The result is stored in self.x_mcec.
+
+        Parameters
+        ----------
+        rH: ndarray with shape(m,3)
+            The positions of the hydrogens
+        rXj: ndarray of float with shape (j,3)
+            The locations of the acceptors
+        acc_types: list of str with len (j)
+            The atom type corresponding to an the Jth acceptor
+        correction_groups: list of lr
+
+        Returns
+        -------
+
+        """
+        if rH.size == 0:
+            print("Error, no hydrogen coordinates found")
+            raise IndexError
+        if rXj.size == 0:
+            print("Error, no acceptor coordinates found")
+            raise IndexError
+        self.x_mcec[:] = calc_epi_location(rH, rXj, self.c, self.ro, self.d)
+        print("Final EPI", self.x_mcec)
+
+@jit
+def calc_epi_location(rH, rXj, c, r0, d):
+    """
+    Here we use i for oxygens and a for hydrogen indices like in the
+    paper
+    Parameters
+    ----------
+    rH
+    rXj
+    c
+    r0
+    ao
+
+    Returns
+    -------
+
+    """
+    num_hyd = rH.shape[0]
+    num_acc = rXj.shape[0]
+    epi = np.zeros(3)
+    sum_W = 0
+    for i in range(num_acc):
+        # Distance between ith oxygen and all of the hydrogens
+        ria = np.linalg.norm(rXj[i] - rH, axis=1)
+        n_i = calc_virtual_site(rH, ria, num_hyd, r0, d)
+        z_i = c*n_i + (1-c)*rXj[i]
+        W_i = calc_Wi(ria, num_hyd)
+        sum_W += W_i
+        epi += W_i * z_i
+    epi /= sum_W
+    return epi
+
+@jit(nopython=True)
+def calc_Wi(ria, num_hyd):
+    psi_i = 0
+    for a in range(num_hyd):
+        psi_i += epi_spline_S(ria[a])
+    return epi_spline_W(psi_i)
+
+@jit(nopython=True)
+def calc_virtual_site(rH, ria, num_hyd, r0, d):
+    """
+    Calculate the virtual site (eta_i) from equation 15 by summation
+    of gaussians phi_ia multiplied by the coordinates of its hydrogen a
+    Parameters
+    ----------
+    rH: ndarray
+        mx3 array of hydrogen coordinates
+    ria: ndarray
+        m array of distances from an oxygen to the a'th hydrogen
+    num_hyd: int
+        this is m, the number of hydrogens
+    r0: float
+        the r0 parameter for the gaussian function
+    d: float
+        the d parameter for the gaussian function
+
+    Returns
+    -------
+    virt_site: ndarray
+        vector of floats, size 3
+
+    """
+    virt_site = np.zeros(3)
+    sum_phi = 0.0
+    for a in range(num_hyd):
+        phi_ia = epi_gauss(ria[a], r0, d)
+        virt_site += phi_ia * rH[a]
+        sum_phi += phi_ia
+    virt_site /= sum_phi
+    return virt_site
+
+@jit(nopython=True)
+def epi_gauss(x, r0, d):
+    """
+    The EPI Gaussian function (equation 16)
+    Parameters
+    ----------
+    x: float
+    ro: float
+    d: float
+
+    Returns
+    -------
+    float
+    """
+    return np.exp(-(x - r0)**2 / d**2)
+
+@jit(nopython=True)
+def epi_spline_S(x):
+
+    a = 12.0
+    b = 13.2
+    d = b - a
+    p = (2*a + b) / 3
+    q = (a + 2*b) / 3
+
+    if x < a:
+        return 1
+    elif x >= a and x < p:
+        return -9*(x - a)**3 / (2 * d**3) + 1
+    elif x >= p and x < q:
+        return 9 * (x - p)**3 / (d**3) -\
+               9 * (x - p)**2 / (2 * d**2) -\
+               3*(x-p)/(2*d) + 5/6.
+    elif x >= q and x < b:
+        return -9*(x - b)**3 / (2 * d**3)
+    return 0
+
+@jit(nopython=True)
+def epi_spline_W(x):
+    """
+    Calculate the EPI spline function (equation 31) for the
+    equation 19 in the EPI paper.
+    This outputs a float between 1 and 0 for numbers within the range
+    of a=2 and b=3, respectively.
+
+    The a, b, c, and d parameters are hardcoded.
+
+    CHECK IF  9(d-p)**2 should be 9(x-p)**2
+    Parameters
+    ----------
+    x: float
+
+    Returns
+    -------
+    float
+    """
+    a = 2
+    b = 3
+    d = b - a
+    p = (2 * a + b) / 3
+    q = (a + 2 * b) / 3
+
+    if x < a:
+        return 0.
+    elif x >= a and x < p:
+        return 9 * (x - a) ** 3 / (2 * d ** 3)
+    elif x >= p and x < q:
+        return -9 * (x - p) ** 3 / d ** 3 + \
+               9 * (x - p) ** 2 / (2 * d ** 2) + \
+               3 * (x - p) / (2 * d) + 1 / 6.
+    elif x >= q and x < b:
+        return 9 * (x - b) ** 3 / 2 * d ** 3 + 1
+    return 1.
 
 
 @jit(nopython=True, parallel=True)

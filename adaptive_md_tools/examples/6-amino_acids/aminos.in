@@ -1,0 +1,19 @@
+coordinates aminos.dcd
+structure aminos.mol2 mol2
+donor_index 23
+output_coords aminos_out.dcd
+groups_file ./aminos.groups
+elements_file pdb ./aminos.pdb
+write_prefix aminos
+verbose 1
+ind_output_freq 1
+rlist 3.0
+nowrap
+rdh0 NC2 1.0 ND2 1.0 NR2 1.0 NR1 1.0 NH3 1.0 OT 1.0 OC 1.0
+proton_types HT H HC
+ind_method 4
+indicator_verbose
+mcec NC2 1.33333333 ND2 1.33333333 NR2 0.5 NR1 0.5 NH3 2 OT 2
+mcec_g 5,8,10,4 31,35,1 
+rsw 1.4
+dsw 0.04

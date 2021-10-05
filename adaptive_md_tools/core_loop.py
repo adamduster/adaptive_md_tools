@@ -110,7 +110,8 @@ def core_loop(keywords, indi):
 
     # Main Loop
     nsteps = len(u.trajectory)
-    for t in range(nsteps):
+    step_array = np.arange(nsteps)[::keywords['stride']]
+    for t in step_array:
         ts = u.trajectory[t]
 
         # Initialize the selections for this timestep
@@ -142,7 +143,10 @@ def core_loop(keywords, indi):
         if keywords["ind_method"] == -1:
             if keywords["out_coords"]:
                 W.write(sels.sys)
-            indi.x_i = box_center # Reset this for print_partitions to pass as center
+            if keywords["wrap"]:
+                indi.x_i = box_center # Reset this for print_partitions to pass as center
+            else:
+                indi.x_i = donor_coords
         elif keywords["ind_method"] > -1:
             if not keywords["allow_hop"]:
                 if ts.frame % keywords["write_freq"] != 0:
@@ -168,7 +172,8 @@ def core_loop(keywords, indi):
                 # The below wrap commands are useful to output a debug trajectory.
                 sels.all.translate(ind_translate)
                 sels.all.wrap(compound=keywords['wrap_style'], center='com')
-
+            if keywords["outind"]:
+                write_indxyz(keywords, indi, u)
             if keywords["out_coords"]:
                 W.write(sels.all)
 
@@ -617,7 +622,7 @@ def calc_indicator(u, all_u, indi, sels, keywords):
         print("Acc indices: ", sels.a.indices)
         print("Hyd indices: ", sels.h.indices)
     # Calculate the indicator location
-    if keywords["ind_method"] == 0:
+    if keywords["ind_method"] in [0, 12, 13]:
         indi.calc_indicator(sels.d.positions[0], sels.a.positions,
                             sels.h.positions, sels.d.types[0], sels.a.types)
     elif keywords["ind_method"] == 1:
@@ -674,6 +679,7 @@ def calc_indicator(u, all_u, indi, sels, keywords):
         if indi.correction_groups:
             group_locs = get_group_positions(u, indi)
         indi.calc_mcec(hyds.positions, accs.positions, accs.types, group_locs)
+
 
     # Update the atoms positions in the larger universe
     if keywords["mcec"]:
@@ -969,3 +975,34 @@ def initialize_universe(struct, coords, xdim, ydim, zdim, frame=0):
 
     u.dimensions = [xdim, ydim, zdim, 90, 90, 90]
     return u
+
+def write_indxyz(keywords, indi, u):
+    """
+    Output the xyz coordinates of the indicator and the mcec/epi if
+    applicable to the xyz file defined in the input file.
+
+    Parameters
+    ----------
+    keywords: dict
+        dictionary of keywords
+    indi: Indicator
+        indicator
+    u: mda.universe
+        The universe the indicator is part of
+
+    Returns
+    -------
+    None
+    """
+    if not keywords["mcec"]:
+        print("1", file=indi.indfi)
+    else:
+        print("2", file=indi.indfi)
+    print("step {0:d}".format(u.trajectory.frame), file=indi.indfi)
+    print("I    {0:10.3f}   {1:10.3f}    {2:10.3f}".format(
+        indi.x_i[0], indi.x_i[1], indi.x_i[2]),
+        file=indi.indfi)
+    if keywords["mcec"]:
+        print("Br   {0:10.3f}   {1:10.3f}    {2:10.3f}".format(
+            indi.x_mcec[0], indi.x_mcec[1], indi.x_mcec[2]),
+            file=indi.indfi)

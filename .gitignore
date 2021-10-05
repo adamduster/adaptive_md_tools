@@ -102,3 +102,6 @@ ENV/
 
 # mypy
 gmypy_cache/
+
+.idea/
+.idea

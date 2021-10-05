@@ -91,11 +91,19 @@ def read_input_file(ifpath):
                 "rdh0": [],
                 "ratio_topology_change": True,
                 "mcec": False,
+                "epi": False,
                 "rsw": 1.4,
                 "dsw": 0.04,
                 'mcec_g': [],
                 'out_coords': None,
-                'ap_write_probability': None
+                'ap_write_probability': None,
+                'varpower_s': 4.,
+                'varpower_t': 6.,
+                'softmax_a': 0.05,
+                'softmax_zmax': 30,
+                'stride': 1,
+                'outind': None,
+                'outmcec': None
                 }
     print("*********************** INPUT FILE ***********************")
     while True:
@@ -202,6 +210,10 @@ def read_input_file(ifpath):
                 keywords['mcec'] = True
                 keywords['mcec_w'] = words[:]
                 continue
+            if words[0] == 'epi':
+                keywords['epi'] = True
+                keywords['mcec'] = True
+                continue
             if words[0] == 'rsw':
                 keywords['rsw'] = float(words[1])
                 continue
@@ -213,6 +225,24 @@ def read_input_file(ifpath):
                 continue
             if words[0] == 'ap_write_probability':
                 keywords['ap_write_probability'] = float(words[1])
+                continue
+            if words[0] == 'varpower_s':
+                keywords['varpower_s'] = float(words[1])
+                continue
+            if words[0] == 'varpower_t':
+                keywords['varpower_t'] = float(words[1])
+                continue
+            if words[0] == 'softmax_a':
+                keywords['softmax_a'] = float(words[1])
+                continue
+            if words[0] == 'softmax_zmax':
+                keywords['softmax_zmax'] = float(words[1])
+                continue
+            if words[0] == 'stride':
+                keywords['stride'] = int(words[1])
+                continue
+            if words[0] == 'outind':
+                keywords['outind'] = words[1]
                 continue
             print("Could not find keyword: " + words[0])
             raise RuntimeError
@@ -282,6 +312,8 @@ def check_keywords(keywords, indi):
          if keywords["ap_write_probability"] < 0 or \
             keywords["ap_write_probability"] > 1:
              sys.exit("Error write probability must be between 0 and 1")
+    if keywords["stride"] < 1:
+        sys.exit("Error, stride must be >1")
     # Print all of the indicator variables
     print("\nINDICATOR VARIABLES")
     print("rlist: {0:0.3f}".format(indi.rlist))
@@ -317,7 +349,7 @@ def check_keywords(keywords, indi):
         if keywords['write_partitions']:
             print("AP SETTINGS")
             print("Active radius: {0:0.8f}".format(keywords["active_radius"]))
-            print("Buffer radius: {0:0.8f}".format(keywords["active_radius"]))
+            print("Buffer radius: {0:0.8f}".format(keywords["buffer_radius"]))
             print("Permute order: {0:1d}".format(keywords["pap_order"]))
     except ValueError:
         print("Error printing AP keywords")
@@ -337,9 +369,12 @@ def set_indicator(keywords):
         indi = IndicatorNull()
     elif keywords["mcec"]:
         if keywords["ind_method"] in [4, 11]:
-            indi = MCEC()
+            if keywords["epi"]:
+                indi = EPI()
+            else:
+                indi = MCEC()
         else:
-            print("Currently, you must only use mcec with indicator 4")
+            print("Currently, you must only use mcec/epi with indicator 4")
             raise NotImplementedError
     elif keywords["ind_method"] in [0, 1, 2, 8]:
         indi = Indicator()
@@ -353,6 +388,10 @@ def set_indicator(keywords):
         indi = Indicator9()
     elif keywords["ind_method"] in [11]:
         indi = Indicator11()
+    elif keywords["ind_method"] in [12]:
+        indi = VariablePower(s=keywords['varpower_s'], t=keywords['varpower_t'])
+    elif keywords["ind_method"] in [13]:
+        indi = Softmax(a=keywords["softmax_a"], zmax=keywords["softmax_zmax"])
     else:
         print("Error, could not recognize indicator type")
         raise TypeError
@@ -397,8 +436,12 @@ def set_indicator(keywords):
         print("Error setting indicator.printall flag")
     indi.set_output_freq(keywords["ind_output_freq"], keywords['write_prefix'])
 
-    if keywords['mcec']:
+    if keywords['epi']:
+        pass
+    elif keywords['mcec']:
         initialize_mcec(keywords, indi)
+    if keywords['outind']:
+        indi.initialize_outind(keywords['outind'])
     return indi
 
 

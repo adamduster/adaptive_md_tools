@@ -1,0 +1,18 @@
+coordinates ../../data/wbox_long.dcd
+structure ../../data/water_box.psf psf
+donor_index 4306
+output_coords ./soft.dcd
+groups_file ../../data/water_box.groups
+elements_file pdb pdb ../../data/water_box.pdb
+write_prefix soft
+verbose 0
+ind_output_freq 1
+rlist 3.0
+nowrap
+ind_method 13
+rdh0 OT 1.0 O 1.0
+proton_types H HT
+stride 1
+outind yes
+softmax_a 0.5
+softmax_zmax 30

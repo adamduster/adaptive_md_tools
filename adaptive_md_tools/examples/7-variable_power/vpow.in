@@ -1,0 +1,17 @@
+coordinates ../../data/wbox_long.dcd
+structure ../../data/water_box.psf psf
+donor_index 4306
+output_coords ./vpow.dcd
+groups_file ../../data/water_box.groups
+elements_file pdb pdb ../../data/water_box.pdb
+write_prefix vpow
+verbose 1
+ind_output_freq 1
+rlist 3.0
+nowrap
+ind_method 12
+rdh0 OT 1.0 O 1.0
+proton_types H HT
+indicator_verbose
+varpower_s 4.0
+varpower_t 6.0
